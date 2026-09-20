@@ -1,12 +1,12 @@
 # Workbench: coordinator + Orca subscription workers
 
-This feature branch adds `/workbench` to Memory Hub alongside the existing task board. It implements a first vertical slice: plan → human-approved dispatch → separate Orca worktree → inspect output → advisory coordinator review.
+This feature branch adds `/workbench` to Memory Hub alongside the existing task board. It provides a persistent coordinator conversation beside worker sessions and a workspace for files, diffs, and review. Conversations and worker state survive Panel restarts. The coordinator proposes workers in chat; each launch requires an explicit approval.
 
 The coordinator uses an API model. The worker is a real Codex or Claude Code process launched by Orca, using the account already authenticated on that runtime. No worker model requests are routed through Tencent's model proxy. Orca does not guarantee a subscription is selected: the runtime owner must verify the client's login and remove any unwanted API billing configuration.
 
 ## Components
 
-- Panel routes: `/api/v1/workbench/:team/options|runs|plan|dispatch|refresh|review`.
+- Panel routes: `/api/v1/workbench/:team/options|runs|start|message|plan|dispatch|refresh|workspace|file|send|stop|decision|review`.
 - The existing Tencent auth and active team membership check protect every request. Plans and receipts are scoped to instance, team, and user.
 - A server-managed binding grants one user access to one runner/repository. URLs, credentials, CLI arguments, and repository selectors are never accepted from the browser or coordinator output.
 - A private Node bridge runs beside Orca under the same OS user. It invokes `worktree create --agent ... --prompt ... --setup skip --no-parent --json` using an argument array, never a shell.
@@ -63,9 +63,18 @@ The coordinator key is explicit: it does not silently borrow the Wiki, memory, o
 
 ## Try it
 
-Open Workbench, select a runtime, enter an objective, and optionally attach a Tencent task ID and relevant memory/Wiki excerpts. Preparing a plan makes an API call but launches no workers. Read each worker's ownership and acceptance criteria, then approve dispatch. Refresh to read output. Request an advisory review when evidence is available. Inspect the actual diff and checks in Orca before merging.
+Open Workbench, select a runtime, and send an objective to the coordinator. Optionally attach a Tencent task ID and relevant memory/Wiki excerpts. Conversation messages make coordinator API calls but do not launch workers. Read a proposed worker's ownership and acceptance criteria, then approve its launch.
 
-Orca's native UI remains the place to answer interactive login/permission prompts, steer or stop workers, and inspect/merge diffs. This surface does not embed Orca's full editor/terminal renderer yet. Setup hooks are skipped; repository setup may need to be included in the approved task or performed on the runtime first.
+The coordinator conversation remains visible while selecting workers and switching between these workspace tabs:
+
+- **Session:** periodically refreshed terminal output, follow-up messages, and an explicit stop confirmation. Stopping retains the worktree and files.
+- **Files:** searchable repository file list and read-only source view.
+- **Changes:** committed and uncommitted changes since the worker's starting commit, plus nonignored untracked files.
+- **Review:** advisory coordinator assessment and recorded approval or requested changes for an exact diff snapshot. Approval does not merge or deploy. Changed or incomplete snapshots cannot reuse an approval. Requested changes are recorded feedback; use Session to send them to the worker.
+
+Orca's native UI remains available for interactive login/permission prompts, editing, and merging. This is a Tencent-native workspace backed by Orca's CLI, not the entire Orca desktop renderer. Follow-ups require Orca to report the expected agent identity and confirm prompt acceptance; they are refused for an unknown terminal or shell. Setup hooks are skipped; include required setup in the approved task or prepare the runtime first.
+
+Files and diffs currently require worktrees local to the bridge host. Place the bridge beside the worker runtime; Orca remote-host worktrees are rejected for filesystem inspection. File reads reject traversal, symlinks, binary content, and oversized files. Diff limits are surfaced as incomplete evidence.
 
 ## Current boundaries
 
@@ -78,8 +87,10 @@ Orca's native UI remains the place to answer interactive login/permission prompt
 
 ## Validation
 
-`npm run typecheck`, `npm test -- tests/workbench.test.ts`, and `node --test scripts/workbench/runner.test.mjs` in MemoryPanel; `npm run build` in MemoryPanel/web. The bridge tests exercise HTTP auth, approved repositories, duplicate requests, persisted receipts after restart, and ambiguous execution outcomes using a fake Orca command. The UI fixture is `/tests/workbench-preview/index.html` on Vite and clearly labels synthetic data.
+Run `npm run typecheck`, `npm test`, and `node --test scripts/workbench/*.test.mjs` in MemoryPanel; run `npm run build` in MemoryPanel/web.
 
-CLI contract references: Orca `src/cli/handlers/worktree.ts`, `src/cli/handlers/terminal.ts`, `src/shared/runtime-worktree-contracts.ts`, and `docs/site/content/docs/cli/reference.mdx`. A live subscription-backed smoke run remains required before calling the integration production-ready.
+Development verification: **33 Panel tests and 4 bridge/workspace tests passed**, along with TypeScript, the frontend production build, and component ESLint. Tests cover scope and membership, persistent conversation retries, approved dispatch, uncertain outcomes, bridge authentication, receipt persistence, follow-up identity checks, verified stop, real temporary Git worktree inspection, path rejection, and stale/incomplete review evidence.
 
-Development verification: 31 Panel tests and 2 bridge tests passed; TypeScript and frontend production build passed. The browser fixture was exercised through plan, approval, output, and review. The installed Orca runtime answered `status --json`. No actual worker was launched. CLI source inspected at Orca commit `0cc2b2688d8a4bfe2f69634ad7cdbf2bc8601552`.
+The browser fixture at `/tests/workbench-preview/index.html` was exercised through coordinator conversation, worker follow-up, files, changes, advisory review, and recorded feedback. It prominently labels synthetic data and performs no execution or model calls.
+
+CLI contracts were inspected at Orca commit `0cc2b2688d8a4bfe2f69634ad7cdbf2bc8601552`, including `src/cli/handlers/worktree.ts`, `src/cli/handlers/terminal.ts`, and `src/shared/runtime-worktree-contracts.ts`. The installed Orca runtime answered `status --json`. **No live subscription worker was launched and no production deployment was performed.** A configured, subscription-backed smoke run remains required before calling the integration production-ready.

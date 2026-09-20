@@ -192,3 +192,169 @@ test("provider failures never disclose diagnostics", async () => {
   expect(r.status).toBe(502);
   expect(await r.text()).not.toContain("secret-provider-token");
 });
+
+test("persistent conversation accepts follow-ups without launching or duplicating messages", async () => {
+  const chat = vi
+    .fn()
+    .mockResolvedValue({ reply: "Let us discuss the scope.", workers: [] });
+  // Reopen with the same store and extended dependencies to exercise persisted messages.
+  close();
+  const deps = {
+    instanceRegistry: {
+      resolve: (id: string) => ({
+        instance_id: id,
+        gateway_endpoint: "",
+        api_key: "",
+      }),
+    },
+    metaKernel: {
+      invoke: async (action: string, b: any) => ({
+        code: 0,
+        data:
+          action === "auth/verify"
+            ? { valid: true, user: { user_id: b.user_key } }
+            : { status: "active" },
+      }),
+    },
+  } as unknown as PanelDeps;
+  app = new Hono();
+  close = registerWorkbenchRoutes(app, deps, {
+    root,
+    bindings: [
+      {
+        id: "r1",
+        label: "Runtime",
+        instance: "default",
+        team: "team",
+        user: "alice",
+        repo: "id:repo",
+        url: "http://localhost",
+        token: "x".repeat(32),
+      },
+    ],
+    coordinator: { plan, review, chat },
+    runner: { launch, read } as any,
+  });
+  const start = await (
+    await req("start", {
+      binding: "r1",
+      objective: "Discuss the workspace layout",
+    })
+  ).json();
+  expect(start.messages).toHaveLength(2);
+  expect(start.workers).toHaveLength(0);
+  expect(launch).not.toHaveBeenCalled();
+  const body = {
+    id: start.id,
+    text: "Keep the conversation visible",
+    operation: "11111111-1111-4111-8111-111111111111",
+  };
+  expect((await req("message", body)).status).toBe(200);
+  expect((await req("message", body)).status).toBe(200);
+  expect(chat).toHaveBeenCalledTimes(2);
+  close();app=new Hono();close=registerWorkbenchRoutes(app,deps,{root,bindings:[],coordinator:{plan,review,chat},runner:{launch,read} as any});
+  const saved = await (await req("runs")).json();
+  expect(saved.items[0].messages).toHaveLength(4);
+  expect(
+    chat.mock.calls[1]?.[0].some(
+      (m: any) => m.text === "Keep the conversation visible",
+    ),
+  ).toBe(true);
+});
+
+test("workspace inspection and review decisions remain owner-scoped and reject stale diffs", async () => {
+  const workspace = vi
+    .fn()
+    .mockResolvedValue({
+      files: [],
+      branch: "test",
+      base: "abc",
+      diff: "change",
+      snapshot: "current",
+      truncated: false,
+    });
+  const file = vi.fn().mockResolvedValue({ path: "test.ts", content: "safe" });
+  close();
+  const deps = {
+    instanceRegistry: {
+      resolve: (id: string) => ({
+        instance_id: id,
+        gateway_endpoint: "",
+        api_key: "",
+      }),
+    },
+    metaKernel: {
+      invoke: async (action: string, b: any) => ({
+        code: 0,
+        data:
+          action === "auth/verify"
+            ? { valid: true, user: { user_id: b.user_key } }
+            : { status: "active" },
+      }),
+    },
+  } as unknown as PanelDeps;
+  app = new Hono();
+  close = registerWorkbenchRoutes(app, deps, {
+    root,
+    bindings: [
+      {
+        id: "r1",
+        label: "Runtime",
+        instance: "default",
+        team: "team",
+        user: "alice",
+        repo: "id:repo",
+        url: "http://localhost",
+        token: "x".repeat(32),
+      },
+    ],
+    coordinator: { plan, review } as any,
+    runner: { launch, read, workspace, file } as any,
+  });
+  const run = await make(),
+    body = { id: run.id, workerId: run.workers[0].id };
+  await req("dispatch", body);
+  expect((await req("workspace", body, "bob")).status).toBe(404);
+  expect(workspace).not.toHaveBeenCalled();
+  expect(
+    (await req("decision", { ...body, decision: "approved", snapshot: "old" }))
+      .status,
+  ).toBe(409);
+  expect(
+    (
+      await req("decision", {
+        ...body,
+        decision: "approved",
+        snapshot: "current",
+      })
+    ).status,
+  ).toBe(200);
+  workspace.mockResolvedValueOnce({
+    files: [],
+    branch: "test",
+    base: "abc",
+    diff: "new",
+    snapshot: "new",
+    truncated: false,
+  });
+  await req("workspace", body);
+  const list = await (await req("runs")).json();
+  expect(list.items[0].workers[0].review.stale).toBe(true);
+  workspace.mockResolvedValueOnce({
+    files: [],
+    branch: "test",
+    base: "abc",
+    diff: "partial",
+    snapshot: "current",
+    truncated: true,
+  });
+  expect(
+    (
+      await req("decision", {
+        ...body,
+        decision: "approved",
+        snapshot: "current",
+      })
+    ).status,
+  ).toBe(409);
+});

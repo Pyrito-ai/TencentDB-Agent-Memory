@@ -1,3 +1,4 @@
+import type { WorkspaceSnapshot, FileContent } from "./types.js";
 import { readFileSync } from "node:fs";
 import { z } from "zod";
 const bindingSchema = z.object({
@@ -52,13 +53,22 @@ export interface Runner {
     spec: string,
   ): Promise<Receipt>;
   read(binding: Binding, id: string): Promise<Receipt>;
+  workspace(binding: Binding, id: string): Promise<WorkspaceSnapshot>;
+  file(binding: Binding, id: string, path: string): Promise<FileContent>;
+  send(
+    binding: Binding,
+    id: string,
+    text: string,
+    operation: string,
+  ): Promise<Receipt>;
+  stop(binding: Binding, id: string, operation: string): Promise<Receipt>;
 }
 export function createRunner(): Runner {
   async function request(
     b: Binding,
     path: string,
     body?: unknown,
-  ): Promise<Receipt> {
+  ): Promise<unknown> {
     const r = await fetch(b.url.replace(/\/$/, "") + path, {
       method: body ? "POST" : "GET",
       redirect: "error",
@@ -73,8 +83,10 @@ export function createRunner(): Runner {
       throw Error(
         "Runner unavailable or request rejected. Refresh before attempting any further dispatch.",
       );
-    const data = await r.json();
-    return z
+    return r.json();
+  }
+  const receipt = (data: unknown) =>
+    z
       .object({
         id: z.string(),
         state: z.enum(["launching", "running", "exited", "unknown"]),
@@ -84,10 +96,37 @@ export function createRunner(): Runner {
         notice: z.string().optional(),
       })
       .parse(data);
-  }
+
   return {
     launch: (b, id, agent, spec) =>
-      request(b, "/jobs", { id, repo: b.repo, agent, spec }),
-    read: (b, id) => request(b, `/jobs/${encodeURIComponent(id)}`),
+      request(b, "/jobs", { id, repo: b.repo, agent, spec }).then(receipt),
+    read: (b, id) =>
+      request(b, `/jobs/${encodeURIComponent(id)}`).then(receipt),
+    workspace: (b, id) =>
+      request(b, `/jobs/${id}/workspace`).then((data) =>
+        z
+          .object({
+            files: z
+              .array(z.object({ path: z.string(), status: z.string() }))
+              .max(1000),
+            branch: z.string(),
+            base: z.string(),
+            diff: z.string().max(300000),
+            snapshot: z.string(),
+            truncated: z.boolean(),
+            notice: z.string().optional(),
+          })
+          .parse(data),
+      ),
+    file: (b, id, path) =>
+      request(b, `/jobs/${id}/file`, { path }).then((data) =>
+        z
+          .object({ path: z.string(), content: z.string().max(300000) })
+          .parse(data),
+      ),
+    send: (b, id, text, operation) =>
+      request(b, `/jobs/${id}/send`, { text, operation }).then(receipt),
+    stop: (b, id, operation) =>
+      request(b, `/jobs/${id}/stop`, { operation }).then(receipt),
   };
 }

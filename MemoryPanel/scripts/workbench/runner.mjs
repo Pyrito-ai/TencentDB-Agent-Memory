@@ -1,3 +1,5 @@
+import { inspectWorkspace, readWorkspaceFile } from "./workspace.mjs";
+import { realpath } from "node:fs/promises";
 /** Private single-owner Orca bridge. Start behind TLS or use loopback only. */
 import http from "node:http";
 import { execFile } from "node:child_process";
@@ -39,7 +41,8 @@ export async function createBridge({ token, root, repos, command }) {
   };
   const read = async (id) => JSON.parse(await readFile(file(id), "utf8"));
   const publicJob = (job) => {
-    const { fingerprint, repo, ...data } = job;
+    const { fingerprint, repo, directory, host, base, operations, ...data } =
+      job;
     return data;
   };
   return http.createServer(async (req, res) => {
@@ -58,6 +61,125 @@ export async function createBridge({ token, root, repos, command }) {
     )
       return reply(401, { error: "Unauthorized" });
     try {
+      const scoped =
+        /^\/jobs\/([0-9a-f-]{36})\/(workspace|file|send|stop)$/.exec(
+          req.url || "",
+        );
+      if (scoped) {
+        let job;
+        try {
+          job = await read(scoped[1]);
+        } catch {
+          return reply(404, { error: "Job not found" });
+        }
+        if (!repos.includes(job.repo))
+          return reply(403, { error: "Repository access removed" });
+        const action = scoped[2];
+        if (action === "workspace" && req.method === "GET")
+          return reply(200, await inspectWorkspace(job));
+        if (req.method !== "POST")
+          return reply(405, { error: "Method not allowed" });
+        let raw = "";
+        for await (const part of req) {
+          raw += part;
+          if (Buffer.byteLength(raw) > 20000)
+            return reply(413, { error: "Request too large" });
+        }
+        let input;
+        try {
+          input = JSON.parse(raw);
+        } catch {
+          return reply(400, { error: "Invalid JSON" });
+        }
+        if (action === "file")
+          return reply(200, await readWorkspaceFile(job, input.path));
+        if (!job.terminal)
+          return reply(409, { error: "No worker terminal is available." });
+        if (!/^[0-9a-f-]{36}$/.test(input.operation || ""))
+          return reply(400, { error: "Operation ID required." });
+        if (
+          action === "send" &&
+          (typeof input.text !== "string" ||
+            !input.text.trim() ||
+            input.text.length > 8000)
+        )
+          return reply(400, { error: "Invalid message." });
+        if (busy.has(job.id))
+          return reply(409, { error: "Worker operation in progress." });
+        busy.add(job.id);
+        try {
+          job.operations ||= {};
+          const fingerprint = createHash("sha256")
+            .update(JSON.stringify({ action, text: input.text || "" }))
+            .digest("hex");
+          const previous = job.operations[input.operation];
+          if(previous){
+            if(previous.fingerprint!==fingerprint)return reply(409,{error:'Operation ID conflict'});
+            if(previous.state!=='done'){job.state='unknown';job.notice='Previous operation outcome is uncertain. Inspect Orca before retrying.';await persist(job);}
+            return reply(200,publicJob(job));
+          }
+          job.operations[input.operation] = { fingerprint, state: "pending" };
+          await persist(job);
+          try {
+            if (action === "send") {
+              if (job.state !== "running")
+                throw Error("Worker is not running.");
+              const shown = await command([
+                "terminal",
+                "show",
+                "--terminal",
+                job.terminal,
+              ]);
+              if (
+                !shown.terminal?.writable ||
+                shown.terminal?.agentIdentity !== job.agent
+              )
+                throw Error("Worker identity could not be verified.");
+              const sent = await command([
+                "terminal",
+                "send",
+                "--terminal",
+                job.terminal,
+                "--text",
+                input.text,
+                "--enter",
+                "--wait-submit",
+                "20",
+              ]);
+              if (sent.send?.accepted !== true)
+                throw Error("Prompt not accepted.");
+              job.notice =
+                "Follow-up accepted by Orca. Check the session output for the worker response.";
+            } else {
+              const result = await command([
+                "terminal",
+                "close",
+                "--terminal",
+                job.terminal,
+              ]);
+              if (
+                result.close?.ptyKilled !== true ||
+                result.close?.ptyStopVerdict
+              )
+                throw Error("Stop not verified.");
+              job.state = "exited";
+              job.stopped = true;
+              job.notice =
+                "Worker terminal stopped; its worktree is preserved.";
+            }
+            job.operations[input.operation].state = "done";
+          } catch {
+            job.operations[input.operation].state = "unknown";
+            job.state = "unknown";
+            job.notice =
+              "Operation outcome uncertain. Inspect Orca before retrying.";
+          }
+          await persist(job);
+          return reply(200, publicJob(job));
+        } finally {
+          busy.delete(job.id);
+        }
+      }
       const match = /^\/jobs\/([0-9a-f-]{36})$/.exec(req.url || "");
       if (req.method === "GET" && match) {
         let job;
@@ -68,10 +190,12 @@ export async function createBridge({ token, root, repos, command }) {
             error: "Unknown job. Inspect the runtime before retrying a launch.",
           });
         }
+        if (!repos.includes(job.repo))
+          return reply(403, { error: "Repository access removed" });
         if (busy.has(job.id)) return reply(200, publicJob(job));
         busy.add(job.id);
         try {
-          if (job.terminal) {
+          if (job.terminal && !job.stopped) {
             try {
               const result = await command([
                 "terminal",
@@ -155,7 +279,7 @@ export async function createBridge({ token, root, repos, command }) {
               ? publicJob(existing)
               : { error: "Job ID already used for a different request" },
           );
-        const job = { id, repo, fingerprint, state: "launching" };
+        const job = { id, repo, agent, fingerprint, state: "launching" };
         await persist(job);
         try {
           const result = await command([
@@ -174,6 +298,11 @@ export async function createBridge({ token, root, repos, command }) {
             "--no-parent",
           ]);
           job.worktree = result.worktree?.id;
+          job.host = result.worktree?.hostId;
+          job.base = result.worktree?.git?.head;
+          if (job.host === "local" && result.worktree?.path) {
+            job.directory = await realpath(result.worktree.path);
+          }
           job.terminal = result.agentTerminalHandle;
           job.state = job.terminal ? "running" : "unknown";
           if (!job.terminal)

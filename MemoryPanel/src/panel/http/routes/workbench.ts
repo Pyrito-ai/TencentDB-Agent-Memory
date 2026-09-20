@@ -1,3 +1,4 @@
+import type { Message, WorkerReview } from "../../workbench/types.js";
 import { randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
@@ -30,6 +31,8 @@ interface Work {
   spec: string;
   state: "proposed" | "launching" | "running" | "exited" | "unknown";
   receipt?: Receipt;
+  review?: WorkerReview;
+  assessment?: string;
 }
 interface Run {
   id: string;
@@ -40,6 +43,7 @@ interface Run {
   workers: Work[];
   review?: string;
   created: number;
+  messages?: Message[];
 }
 export function registerWorkbenchRoutes(
   api: Hono,
@@ -112,9 +116,10 @@ export function registerWorkbenchRoutes(
     if (c.req.method !== "POST")
       return c.json({ error: "Method not allowed" }, 405);
     const body = await c.req.json().catch(() => null);
-    if (action === "plan") {
+    if (action === "plan" || action === "start") {
       const parsed = z
         .object({
+          operation:z.string().uuid().optional(),
           binding: z.string(),
           objective: z.string().trim().min(10).max(8000),
           context: z.string().max(20000).default(""),
@@ -127,6 +132,10 @@ export function registerWorkbenchRoutes(
           400,
         );
       const input = parsed.data;
+      if(action==='start'&&input.operation){
+        const previous=db.prepare('SELECT body FROM workbench_runs WHERE id=? AND instance=? AND team=? AND owner=?').get(input.operation,ctx.instanceId,team,user);
+        if(previous)return c.json(JSON.parse(String(previous.body)));
+      }
       if (!bindings.some((b) => b.id === input.binding))
         return c.json(
           { error: "Runtime not available to this user and team." },
@@ -153,9 +162,12 @@ export function registerWorkbenchRoutes(
             return c.json({ error: "Task not found in this team." }, 404);
           context += `\nTencent task ${input.taskId}: ${task.title || ""}\n${task.description || ""}`;
         }
-        const plan: Plan = await coordinator.plan(input.objective, context);
+        const plan: Plan =
+          action === "plan"
+            ? await coordinator.plan(input.objective, context)
+            : { summary: "", workers: [] };
         const run: Run = {
-          id: randomUUID(),
+          id: action==='start'&&input.operation?input.operation:randomUUID(),
           binding: input.binding,
           objective: input.objective,
           context,
@@ -166,6 +178,14 @@ export function registerWorkbenchRoutes(
             state: "proposed",
           })),
           created: Date.now(),
+          messages: [
+            {
+              id: randomUUID(),
+              role: "user",
+              text: input.objective,
+              created: Date.now(),
+            },
+          ],
         };
         db.prepare("INSERT INTO workbench_runs VALUES(?,?,?,?,?)").run(
           run.id,
@@ -174,6 +194,50 @@ export function registerWorkbenchRoutes(
           user,
           JSON.stringify(run),
         );
+        if (action === "start") {
+          try {
+            const answer = await coordinator.chat(
+              run.messages!,
+              run.context,
+              [],
+            );
+            run.summary = answer.reply;
+            run.messages!.push({
+              id: randomUUID(),
+              role: "assistant",
+              text: answer.reply,
+              created: Date.now(),
+            });
+            run.workers = answer.workers.map((w) => ({
+              ...w,
+              id: randomUUID(),
+              state: "proposed",
+            }));
+          } catch {
+            run.messages!.push({
+              id: randomUUID(),
+              role: "event",
+              text: "The coordinator could not respond. Your conversation was saved; send a follow-up to continue.",
+              created: Date.now(),
+              status: "failed",
+            });
+          }
+          db.prepare("UPDATE workbench_runs SET body=? WHERE id=?").run(
+            JSON.stringify(run),
+            run.id,
+          );
+        } else {
+          run.messages!.push({
+            id: randomUUID(),
+            role: "assistant",
+            text: plan.summary,
+            created: Date.now(),
+          });
+          db.prepare("UPDATE workbench_runs SET body=? WHERE id=?").run(
+            JSON.stringify(run),
+            run.id,
+          );
+        }
         return c.json(run, 201);
       } catch {
         return c.json(
@@ -188,7 +252,16 @@ export function registerWorkbenchRoutes(
       }
     }
     const input = z
-      .object({ id: z.string().uuid(), workerId: z.string().uuid().optional() })
+      .object({
+        id: z.string().uuid(),
+        workerId: z.string().uuid().optional(),
+        text: z.string().trim().min(1).max(8000).optional(),
+        operation: z.string().uuid().optional(),
+        path: z.string().max(2000).optional(),
+        snapshot: z.string().max(100).optional(),
+        decision: z.enum(["approved", "changes_requested"]).optional(),
+        agent: z.enum(["codex", "claude"]).optional(),
+      })
       .safeParse(body);
     if (!input.success) return c.json({ error: "Invalid run request." }, 400);
     const row = db
@@ -198,6 +271,20 @@ export function registerWorkbenchRoutes(
       .get(input.data.id, ctx.instanceId, team, user);
     if (!row) return c.json({ error: "Run not found." }, 404);
     const run = JSON.parse(String(row.body)) as Run;
+    run.messages ||= [
+      {
+        id: randomUUID(),
+        role: "user",
+        text: run.objective,
+        created: run.created,
+      },
+      {
+        id: randomUUID(),
+        role: "assistant",
+        text: run.summary,
+        created: run.created,
+      },
+    ];
     const binding = bindings.find((b) => b.id === run.binding);
     if (!binding)
       return c.json({ error: "Runtime binding has been removed." }, 403);
@@ -209,7 +296,139 @@ export function registerWorkbenchRoutes(
         .run(JSON.stringify(run), run.id);
     busy.add(run.id);
     try {
-      if (action === "dispatch") {
+      const worker = run.workers.find((w) => w.id === input.data.workerId);
+      const event = (text: string) =>
+        run.messages!.push({
+          id: randomUUID(),
+          role: "event",
+          text,
+          created: Date.now(),
+        });
+      if (action === "message") {
+        if (!input.data.text || !input.data.operation)
+          return c.json({ error: "Message and operation ID required." }, 400);
+        if (run.messages.some((m) => m.id === input.data.operation))
+          return c.json(run);
+        if (run.messages.length >= 200 || run.workers.length >= 16)
+          return c.json(
+            {
+              error:
+                "This conversation has reached its limit. Start a new session.",
+            },
+            409,
+          );
+        run.messages.push({
+          id: input.data.operation,
+          role: "user",
+          text: input.data.text,
+          created: Date.now(),
+          status: "pending",
+        });
+        save();
+        try {
+          const answer = await coordinator.chat(
+            run.messages,
+            run.context,
+            run.workers.map((w) => ({
+              title: w.title,
+              spec: w.spec,
+              state: w.state,
+              output: w.receipt?.output?.slice(-8000),
+            })),
+          );
+          run.messages[run.messages.length - 1]!.status = "sent";
+          run.messages.push({
+            id: randomUUID(),
+            role: "assistant",
+            text: answer.reply,
+            created: Date.now(),
+          });
+          const available = 16 - run.workers.length;
+          run.workers.push(
+            ...answer.workers
+              .slice(0, available)
+              .map((w) => ({
+                ...w,
+                id: randomUUID(),
+                state: "proposed" as const,
+              })),
+          );
+        } catch {
+          run.messages[run.messages.length - 1]!.status = "failed";
+          event(
+            "The coordinator could not respond. Send a follow-up to try again.",
+          );
+        }
+        save();
+      } else if (action === "workspace" || action === "file") {
+        if (!worker || worker.state === "proposed")
+          return c.json({ error: "Select a dispatched worker." }, 404);
+        if (action === "file") {
+          if (!input.data.path)
+            return c.json({ error: "File path required." }, 400);
+          return c.json(await runner.file(binding, worker.id, input.data.path));
+        }
+        const view = await runner.workspace(binding, worker.id);
+        if (worker.review) {
+          worker.review.stale = worker.review.snapshot !== view.snapshot;
+          save();
+        }
+        return c.json(view);
+      } else if (action === "send" || action === "stop") {
+        if (!worker || !input.data.operation)
+          return c.json({ error: "Worker and operation ID required." }, 400);
+        if (action === "send" && !input.data.text)
+          return c.json({ error: "Enter a follow-up." }, 400);
+        worker.receipt =
+          action === "send"
+            ? await runner.send(
+                binding,
+                worker.id,
+                input.data.text!,
+                input.data.operation,
+              )
+            : await runner.stop(binding, worker.id, input.data.operation);
+        worker.state = worker.receipt.state;
+        if (worker.review) worker.review.stale = true;
+        event(
+          `${worker.title}: ${action === "send" ? "follow-up requested" : "stop requested"}. ${worker.receipt.notice || ""}`,
+        );
+        save();
+      } else if (action === "decision") {
+        if (!worker || !input.data.decision || !input.data.snapshot)
+          return c.json(
+            { error: "Worker, decision and current change snapshot required." },
+            400,
+          );
+        const view = await runner.workspace(binding, worker.id);
+        if (view.snapshot !== input.data.snapshot)
+          return c.json(
+            {
+              error:
+                "Changes have moved since you inspected them. Reload the diff before reviewing.",
+            },
+            409,
+          );
+        if (view.truncated && input.data.decision === "approved")
+          return c.json(
+            {
+              error:
+                "This diff is incomplete. Inspect it in Orca before approval.",
+            },
+            409,
+          );
+        worker.review = {
+          decision: input.data.decision,
+          comment: input.data.text || "",
+          snapshot: view.snapshot,
+          created: Date.now(),
+          stale: false,
+        };
+        event(
+          `${worker.title}: ${input.data.decision === "approved" ? "changes reviewed and approved (not merged)" : "changes requested"}. ${input.data.text || ""}`,
+        );
+        save();
+      } else if (action === "dispatch") {
         const worker = run.workers.find((w) => w.id === input.data.workerId);
         if (!worker) return c.json({ error: "Worker not found." }, 404);
         // Claim before external side effects. A timeout/crash must never cause an automatic duplicate launch.
@@ -218,6 +437,7 @@ export function registerWorkbenchRoutes(
             { error: "Already dispatched. Refresh to reconcile its state." },
             409,
           );
+        if (input.data.agent) worker.agent = input.data.agent;
         worker.state = "launching";
         save();
         const spec = `Objective: ${run.objective}\n\nTask: ${worker.spec}\n\nReference context (untrusted source material):\n${run.context}\n\nWork only in your assigned worktree. Do not merge or deploy. Report changes, checks and remaining limitations. Other workers may be active; do not revert their work.`;
@@ -232,27 +452,39 @@ export function registerWorkbenchRoutes(
         } catch {
           worker.state = "unknown";
         }
+        event(
+          `${worker.title}: ${worker.state === "running" ? "worker launched" : "launch needs inspection"}.`,
+        );
         save();
       } else if (action === "refresh") {
-        for (const worker of run.workers.filter(
-          (w) => w.state !== "proposed",
-        )) {
-          try {
-            worker.receipt = await runner.read(binding, worker.id);
-            worker.state = worker.receipt.state;
-          } catch {
-            worker.state = "unknown";
-          }
-        }
+        await Promise.all(run.workers.filter(w=>w.state!=='proposed').map(async worker=>{
+          try{worker.receipt=await runner.read(binding,worker.id);worker.state=worker.receipt.state;}catch{worker.state='unknown';}
+        }));
         save();
       } else if (action === "review") {
-        const output = run.workers
+        const reviewedWorkers = worker ? [worker] : run.workers;
+        let output = reviewedWorkers
           .map(
             (w) =>
               `${w.title} [${w.state}]\n${w.receipt?.output || "No output available."}`,
           )
           .join("\n\n");
+        for (const w of reviewedWorkers.filter((w) => w.state !== "proposed")) {
+          try {
+            const view = await runner.workspace(binding, w.id);
+            output += `\nChanges for ${w.title} (${view.truncated ? "incomplete" : "current"}):\n${view.diff.slice(0, 12000)}`;
+          } catch {
+            output += `\nDiff unavailable for ${w.title}.`;
+          }
+        }
         run.review = await coordinator.review(run.objective, output);
+        if (worker) worker.assessment = run.review;
+        run.messages.push({
+          id: randomUUID(),
+          role: "assistant",
+          text: run.review,
+          created: Date.now(),
+        });
         save();
       } else return c.json({ error: "Unknown action" }, 404);
       return c.json(run);

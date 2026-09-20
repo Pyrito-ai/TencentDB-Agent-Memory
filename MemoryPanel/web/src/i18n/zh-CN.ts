@@ -1,6 +1,21 @@
 /** 中文翻译 — zh-CN */
 
 export const zhCN = {
+  "time.title": "工时记录",
+  "time.start": "开始计时",
+  "time.stop": "停止计时",
+  "time.manual": "手动记录工时",
+  "time.other": "另一个任务正在计时，请先停止该计时。",
+  "time.started": "开始时间（本地时间）",
+  "time.minutes": "时长（分钟）",
+  "time.note": "工作备注（可选）",
+  "time.save": "保存工时",
+  "time.empty": "暂无工时记录。",
+  "time.timer": "计时器",
+  "time.running": "计时中",
+  "time.removeConfirm": "删除此工时记录？",
+  "time.hint": "关闭任务或浏览器后仍会继续计时。只能修改自己的记录。",
+
   'board.participation': '人员与 Agent 参与记录',
   "board.activity.title": "笔记与附件",
   "board.activity.login": "请重新登录。",

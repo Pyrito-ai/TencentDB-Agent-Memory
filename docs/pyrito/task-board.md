@@ -25,4 +25,12 @@ Notes and attachments are retained on disk if the parent task is deleted, but be
 - `cd MemoryPanel/web && npm run build`
 - Synthetic browser fixture: run `node --import tsx scripts/board-preview-server.ts` in MemoryPanel and `npm run dev -- --host 127.0.0.1` in MemoryPanel/web. Visit `/tests/board-preview/index.html`. Fixture tasks are in-memory; activity uses temporary local storage and no production credentials. No production API calls are made by this fixture.
 
-Not yet deployed to Coolify or verified against the live task dataset. Labels, checklists, dependencies, subtasks, linked Wiki selection and agent execution controls remain subsequent work.
+The board release was deployed to Coolify and verified with a disposable task, note, and attachment round trip through the public HTTPS service. Labels, checklists, dependencies, subtasks, linked Wiki selection and agent execution controls remain subsequent work.
+
+## Human time tracking
+
+Task details include a start/stop timer, manual past-work entries (1 minute to 24 hours), optional work notes, and totals by teammate. Active team members can log their own time regardless of who created the task. Entries are attributed from the authenticated session; only their author can stop a timer or remove a completed entry. A person can run one timer per instance at a time. Timers use server timestamps and continue while the browser is closed.
+
+Time records are stored in `TASK_BOARD_DATA_DIR/time.sqlite` using SQLite WAL and an atomic uniqueness constraint for running timers. Back up the persistent directory consistently, including SQLite sidecar files, or stop the Hub before copying. Node 22 with node:sqlite support is required. Tests cover concurrent starts, restart persistence, authorship, active membership, task/instance isolation, and manual duration validation. Browser QA verified timer start/stop and manual entries updating totals.
+
+This version provides task-level tracking, not billing, timesheet exports, or organization-wide reports. Stop a timer before deleting its task or removing its author from the team; retained records on inaccessible tasks currently require administrator maintenance.

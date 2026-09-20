@@ -1,6 +1,21 @@
 /** English translation — en-US */
 
 export const enUS = {
+  "time.title": "Time tracking",
+  "time.start": "Start timer",
+  "time.stop": "Stop timer",
+  "time.manual": "Log time manually",
+  "time.other": "You have a timer running on another task. Stop it there before starting a new timer.",
+  "time.started": "Work started (local time)",
+  "time.minutes": "Duration in minutes",
+  "time.note": "Work note (optional)",
+  "time.save": "Save time entry",
+  "time.empty": "No time logged yet.",
+  "time.timer": "Timer",
+  "time.running": "Running",
+  "time.removeConfirm": "Remove this time entry?",
+  "time.hint": "Timers keep running when you close the task or browser. You can only change your own entries.",
+
   "board.activity.title": "Notes & attachments",
   "board.activity.login": "Please log in again.",
   "board.activity.failed": "The request failed. Please try again.",

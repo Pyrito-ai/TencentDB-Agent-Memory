@@ -1,3 +1,4 @@
+import TaskTime from './TaskTime';
 import TaskActivity from './TaskActivity';
 import { BOARD_STATUSES, PRIORITIES, readTaskBoard } from '@/services/task-board';
 /**
@@ -188,6 +189,7 @@ export default function TaskDetail({
         {t('task.footer', { created: new Date(task.created_at_ms).toLocaleString(), updated: new Date(task.updated_at_ms).toLocaleString() })}
       </Text>
 
+      <TaskTime key={task.task_id} taskId={task.task_id} currentUser={currentUser} />
       <TaskActivity key={task.task_id} taskId={task.task_id} creator={task.creator_user_id} currentUser={currentUser} />
 
       <details className="project-board-agent-details"><summary>{t('board.participation')}</summary>

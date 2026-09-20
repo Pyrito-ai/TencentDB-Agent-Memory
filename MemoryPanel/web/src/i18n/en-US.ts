@@ -1,6 +1,24 @@
 /** English translation — en-US */
 
 export const enUS = {
+  'memory.notify.editSuccess': 'Saved',
+  'memory.notify.editFailed': 'Could not save changes',
+  'memory.notify.searchFailed': 'Search failed',
+  'memory.detail.editTitle': 'Edit memory',
+  'memory.detail.save': 'Save',
+  'memory.detail.cancel': 'Cancel',
+  'memory.detail.search': 'Search',
+  'memory.detail.searchPlaceholder': 'Search this memory by meaning…',
+  'memory.detail.searchPlaceholderL0': 'Search original L0 conversations…',
+  'memory.detail.searchPlaceholderL1': 'Search L1 atomic memories…',
+  'memory.detail.clearSearch': 'Clear search',
+  'memory.detail.searchResultCount': '{{count}} relevant results',
+  'memory.detail.searchEmpty': 'No relevant memories found. Try another search.',
+  'memory.detail.searchScore': 'Relevance {{score}}',
+  'memory.detail.modeBrowse': 'Browse',
+  'memory.detail.modeSearch': 'Search',
+  'memory.detail.searchPrompt': 'Enter a query to search this memory by meaning.',
+
   "time.title": "Time tracking",
   "time.start": "Start timer",
   "time.stop": "Stop timer",

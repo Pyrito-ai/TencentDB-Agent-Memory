@@ -24,7 +24,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { SettingsDialog } from '@/components/SettingsDialog';
 import { type TeamRole } from '@/services/useCurrentRole';
 import { TeamSwitcher } from './TeamSwitcher';
-import { LanguageSwitcher } from './LanguageSwitcher';
 import './style.css';
 
 export function GlobalHeader({
@@ -74,7 +73,6 @@ export function GlobalHeader({
           {t('header.guide')}
         </button>
 
-        <LanguageSwitcher />
 
         <button
           type="button"

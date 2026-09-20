@@ -215,7 +215,7 @@ export function registerMetaProxyRoutes(api: Hono, deps: PanelDeps): void {
     // 内核权限模型下 caller 只能 set 自己 owner 的 agent，跨 owner 会 403。
     // 保留脏 binding 也无害：injection / memory-bridge / 面板详情页在读侧调
     // apply_visibility_filter=true 过滤掉 canBindAsset=false 的项。
-    return respondEnvelope(c, envelope);
+    return respondEnvelope(c, { ...envelope, data: englishSeedDescriptions(envelope.data) });
   });
 }
 
@@ -223,7 +223,7 @@ export function registerMetaProxyRoutes(api: Hono, deps: PanelDeps): void {
 
 // 默认 Agent 预置字段（对齐内核 DEFAULT_AGENT_*，无模板时建 default-agent 用）
 const DEFAULT_AGENT_NAME = 'default-agent';
-const DEFAULT_AGENT_DESCRIPTION = '默认助手，可处理通用开发任务与日常协作。';
+const DEFAULT_AGENT_DESCRIPTION = 'Default assistant for general development tasks and everyday collaboration.';
 const DEFAULT_AGENT_PROMPT = '';
 const DEFAULT_AGENT_METADATA_JSON = JSON.stringify({
   ui: { role_prompt: '', rules_prompt: '' },
@@ -511,4 +511,17 @@ async function importDefaultSkillsForNewMember(
       error: err instanceof Error ? err.message : String(err),
     });
   }
+}
+
+/** Localize upstream-generated descriptions without altering user-authored content. */
+function englishSeedDescriptions(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(englishSeedDescriptions);
+  if (!value || typeof value !== 'object') return value;
+  const descriptions: Record<string, string> = {
+    '系统初始化时自动创建的默认团队，用于存放默认助手': 'Default team created during setup for the default assistant.',
+    '默认助手，可处理通用开发任务与日常协作。': 'Default assistant for general development tasks and everyday collaboration.',
+  };
+  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key,
+    key === 'description' && typeof item === 'string' && descriptions[item]
+      ? descriptions[item] : englishSeedDescriptions(item)]));
 }

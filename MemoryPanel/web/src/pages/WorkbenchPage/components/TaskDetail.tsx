@@ -1,14 +1,16 @@
+import TaskActivity from './TaskActivity';
+import { BOARD_STATUSES, PRIORITIES, readTaskBoard } from '@/services/task-board';
 /**
  * TaskDetail —— 工作台任务详情（编辑标题/描述、切换状态、查看参与者、删除）。
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Segment, Text } from 'tea-component';
+import { Button, Input, Text } from 'tea-component';
 import { DeleteIcon, EditIcon, UserIcon, UsergroupIcon } from 'tea-icons-react';
-import { canEditTask, type Task, type Team } from '@/services';
+import { canEditTask, type Task, type TaskPatch, type Team } from '@/services';
 import { useUserDisplayName } from '@/services/user-profile-store';
 import { tea } from '@/lib/tea-bridge';
-import { useStatusLabels, type AgentOption, type TaskParticipationView } from '../utils/workbench-utils';
+import { type AgentOption, type TaskParticipationView } from '../utils/workbench-utils';
 
 /**
  * 参与者 chip：可见文本显示 display_name（缓存未命中先回退 id），
@@ -37,7 +39,6 @@ function UserChip({
 
 export default function TaskDetail({
   task,
-  onUpdateStatus,
   onUpdateTask,
   onDelete,
   canDelete,
@@ -47,8 +48,7 @@ export default function TaskDetail({
   participation,
 }: {
   task: Task;
-  onUpdateStatus: (s: Task['status']) => void;
-  onUpdateTask: (patch: Partial<Pick<Task, 'title' | 'description' | 'source_type' | 'source_url' | 'linked_agents'>>) => void;
+  onUpdateTask: (patch: TaskPatch) => Promise<boolean>;
   /** 删除当前 task（权限校验与二次确认由外层统一处理） */
   onDelete: () => void;
   canDelete: boolean;
@@ -60,7 +60,9 @@ export default function TaskDetail({
   participation: TaskParticipationView;
 }) {
   const { t } = useTranslation();
-  const statusLabels = useStatusLabels();
+  const board = readTaskBoard(task);
+  const [draftBoard, setDraftBoard] = useState(board);
+  const [saving, setSaving] = useState(false);
   // 编辑权限：team 内任意 member 可改 task（含切换 status）。
   const canEdit = canEditTask(task, team, currentUser);
 
@@ -69,23 +71,17 @@ export default function TaskDetail({
   const [draftTitle, setDraftTitle] = useState(task.title);
   const [draftDesc, setDraftDesc] = useState(task.description);
 
-  // 切换 task / 退出编辑时同步草稿（避免编辑 A 后切换到 B 草稿还停在 A）
-  useEffect(() => {
-    setEditing(false);
-    setDraftTitle(task.title);
-    setDraftDesc(task.description);
-  }, [task.task_id]);
-
   function startEdit() {
     setDraftTitle(task.title);
     setDraftDesc(task.description);
+    setDraftBoard(readTaskBoard(task));
     setEditing(true);
   }
   function cancelEdit() {
     setEditing(false);
   }
-  function saveEdit() {
-    const patch: Partial<Pick<Task, 'title' | 'description' | 'source_type' | 'source_url' | 'linked_agents'>> = {};
+  async function saveEdit() {
+    const patch: TaskPatch = {};
     const title = draftTitle.trim();
     if (title.length === 0) {
       tea.notify.warning(t('task.titleRequired'));
@@ -94,12 +90,14 @@ export default function TaskDetail({
     if (title !== task.title) patch.title = title;
     if (draftDesc !== task.description) patch.description = draftDesc;
 
+    const boardPatch = Object.fromEntries(Object.entries(draftBoard).filter(([key, value]) => value !== board[key as keyof typeof board]));
+    if (Object.keys(boardPatch).length) patch.board = boardPatch;
     if (Object.keys(patch).length === 0) {
       setEditing(false);
       return;
     }
-    onUpdateTask(patch);
-    setEditing(false);
+    setSaving(true);
+    try { if (await onUpdateTask(patch)) setEditing(false); } finally { setSaving(false); }
   }
 
   // 参与者展示：creator 单列独立；其余进 "参与的 User"。
@@ -128,8 +126,8 @@ export default function TaskDetail({
               size="full"
               className="_memory-workbench-title-input"
             />
-            <Button onClick={cancelEdit}>{t('common.cancel')}</Button>
-            <Button type="primary" onClick={saveEdit}>{t('task.save')}</Button>
+            <Button disabled={saving} onClick={cancelEdit}>{t('common.cancel')}</Button>
+            <Button type="primary" disabled={saving} onClick={() => void saveEdit()}>{t('task.save')}</Button>
           </>
         ) : (
           <>
@@ -139,19 +137,60 @@ export default function TaskDetail({
                 {t('task.edit')}
               </Button>
             )}
-            <Segment
-              value={task.status}
-              onChange={(v) => onUpdateStatus(v as Task['status'])}
-              disabled={!canEdit}
-              options={(Object.keys(statusLabels) as Task['status'][]).map((s) => ({
-                value: s,
-                text: statusLabels[s],
-              }))}
-            />
+            <span className="project-board-detail-status">{t(`board.status.${board.status}`)}</span>
           </>
         )}
       </div>
 
+      <fieldset className="project-board-fields" disabled={!editing || saving}>
+        <legend>{t('board.planning')}</legend>
+        <label>{t('board.workflow')}<select value={(editing ? draftBoard : board).status} onChange={e => setDraftBoard({ ...draftBoard, status: e.target.value as typeof board.status })}>
+          {BOARD_STATUSES.map(s => <option key={s} value={s}>{t(`board.status.${s}`)}</option>)}
+        </select></label>
+        <label>{t('board.assignee')}<select value={(editing ? draftBoard : board).assignee} onChange={e => setDraftBoard({ ...draftBoard, assignee: e.target.value })}>
+          <option value="">{t('board.unassigned')}</option>
+          {team?.members.map(m => <option key={m.user_id} value={m.user_id}>{m.username || m.user_id}</option>)}
+          {board.assignee && !team?.members.some(m => m.user_id === board.assignee) && <option value={board.assignee}>{board.assignee}</option>}
+        </select></label>
+        <label>{t('board.priority')}<select value={(editing ? draftBoard : board).priority} onChange={e => setDraftBoard({ ...draftBoard, priority: e.target.value as typeof board.priority })}>
+          {PRIORITIES.map(p => <option key={p} value={p}>{t(`board.priority.${p}`)}</option>)}
+        </select></label>
+        <label>{t('board.dueDate')}<input type="date" value={(editing ? draftBoard : board).dueDate} onChange={e => setDraftBoard({ ...draftBoard, dueDate: e.target.value })} /></label>
+      </fieldset>
+      <p className="project-board-detail-note">{t('board.sessionNote')}</p>
+      {/* === 描述 === */}
+      <div className="_memory-workbench-block">
+        <Text theme="label" className="_memory-workbench-block-label">{t('task.description')}</Text>
+        {editing ? (
+          <Input.TextArea
+            value={draftDesc}
+            onChange={setDraftDesc}
+            rows={6}
+            size="full"
+            placeholder={t('task.descriptionPlaceholder')}
+          />
+        ) : (
+          <div className="_memory-workbench-desc-view">{task.description}</div>
+        )}
+      </div>
+
+      <div className="_memory-workbench-block">
+        <label className="project-board-criteria-label">{t('board.criteria')}
+          {editing ? <textarea rows={5} disabled={saving} value={draftBoard.acceptanceCriteria} onChange={e => setDraftBoard({ ...draftBoard, acceptanceCriteria: e.target.value })} />
+            : <div className="_memory-workbench-desc-view">{board.acceptanceCriteria || t('board.noCriteria')}</div>}
+        </label>
+      </div>
+      <div className="_memory-workbench-block">
+        <Text theme="label">{t('board.linkedAgents')}</Text>
+        <p>{task.linked_agents.map(id => agents.find(a => a.id === id)?.name ?? id).join(', ') || '—'}</p>
+      </div>
+      <Text theme="weak" className="_memory-workbench-footer">
+        {t('task.footer', { created: new Date(task.created_at_ms).toLocaleString(), updated: new Date(task.updated_at_ms).toLocaleString() })}
+      </Text>
+
+      <TaskActivity key={task.task_id} taskId={task.task_id} creator={task.creator_user_id} currentUser={currentUser} />
+
+      <details className="project-board-agent-details"><summary>{t('board.participation')}</summary>
       {/* === 参与者 === */}
       <div className="_memory-workbench-people">
         <div className="_memory-workbench-people-row">
@@ -196,25 +235,7 @@ export default function TaskDetail({
         </div>
       </div>
 
-      {/* === 描述 === */}
-      <div className="_memory-workbench-block">
-        <Text theme="label" className="_memory-workbench-block-label">{t('task.description')}</Text>
-        {editing ? (
-          <Input.TextArea
-            value={draftDesc}
-            onChange={setDraftDesc}
-            rows={6}
-            size="full"
-            placeholder={t('task.descriptionPlaceholder')}
-          />
-        ) : (
-          <div className="_memory-workbench-desc-view">{task.description}</div>
-        )}
-      </div>
-
-      <Text theme="weak" className="_memory-workbench-footer">
-        {t('task.footer', { created: new Date(task.created_at_ms).toLocaleString(), updated: new Date(task.updated_at_ms).toLocaleString() })}
-      </Text>
+      </details>
 
       {/* === 危险操作 === */}
       {canDelete && (

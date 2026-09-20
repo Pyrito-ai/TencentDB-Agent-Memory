@@ -13,6 +13,7 @@ export type {
   TeamMember,
   Team,
   Task,
+  TaskPatch,
   TaskStatus,
   TaskSourceType,
   Agent,

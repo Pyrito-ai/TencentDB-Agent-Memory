@@ -23,7 +23,10 @@ export const routes: RouteObject[] = [
     element: <ConsoleLayout />,
     children: [
       { index: true, element: <WorkbenchPage /> },
+      { path: 'today', element: <WorkbenchPage view="today" /> },
+      { path: 'upcoming', element: <WorkbenchPage view="upcoming" /> },
       { path: 'timesheets', element: <WorkbenchPage view="timesheets" /> },
+      { path: 'areas', element: <WorkbenchPage view="areas" /> },
       { path: 'loops', element: <WorkbenchPage view="loops" /> },
       { path: 'wiki', element: <WikiPage /> },
       { path: 'code', element: <CodePage /> },

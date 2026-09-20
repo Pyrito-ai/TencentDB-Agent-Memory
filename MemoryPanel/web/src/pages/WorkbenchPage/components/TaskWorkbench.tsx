@@ -26,6 +26,7 @@ import { tea } from '@/lib/tea-bridge';
 import { TeamHeaderCard } from '@/components/team/TeamHeaderCard';
 import TaskCreateDialog, { type TaskDraft } from './TaskCreateDialog';
 import BoardView from './BoardView';
+import Timesheets from './Timesheets';
 import { useTeamParticipation } from '../hooks/useTeamParticipation';
 import { errMsg, type AgentOption, type WorkbenchTab } from '../utils/workbench-utils';
 import '../styles/task-workbench.css';
@@ -64,6 +65,7 @@ export default function TaskWorkbench(props: {
   const { tasks, loading: tasksLoading } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
   const { teams, activeTeam } = useTeams();
   const participationByTask = useTeamParticipation(activeTeamId);
+  const [view, setView] = useState<'board'|'timesheets'>('board');
   const [showCreate, setShowCreate] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -115,7 +117,8 @@ export default function TaskWorkbench(props: {
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
           {activeTeam && <TeamHeaderCard team={activeTeam} />}
-          <BoardView key={activeTeamId}
+          <div className="workbench-view-switch" aria-label="Workbench view"><button aria-pressed={view==='board'} onClick={()=>setView('board')}>Task board</button><button aria-pressed={view==='timesheets'} onClick={()=>setView('timesheets')}>Timesheets</button></div>
+          {view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
           tasks={sortedTasks}
           tasksLoading={tasksLoading}
           selected={selected}
@@ -163,7 +166,7 @@ export default function TaskWorkbench(props: {
           teams={teams}
           currentUser={currentUser}
           participationByTask={participationByTask}
-          />
+          />}
         </>
       )}
 

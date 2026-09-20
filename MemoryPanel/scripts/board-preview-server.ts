@@ -12,8 +12,8 @@ const deps = {
  instanceRegistry: { resolve: (id: string) => ({ instance_id: id, gateway_endpoint: '', api_key: '' }) },
  metaKernel: { invoke: async (action: string, body: any) => ({ code: 0, data:
   action === 'auth/verify' ? { valid: body.user_key === 'john', user: { user_id: 'john' } } :
-  action === 'task/get' ? { team_id: 'preview', creator_user_id: 'john' } :
-  action === 'team-member/get' ? { status: 'active' } : null }) },
+  action === 'task/get' ? { team_id: 'preview', creator_user_id: 'john', title: 'Build the project board' } :
+  action === 'team-member/get' ? { status: 'active', role: 'admin' } : action === 'team/get' ? { owner_user_id: 'john' } : null }) },
 } as unknown as PanelDeps;
 const root = await mkdtemp(path.join(tmpdir(), 'board-preview-'));
 registerTaskActivityRoutes(api, deps, root);

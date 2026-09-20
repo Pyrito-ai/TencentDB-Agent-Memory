@@ -1,6 +1,8 @@
 # Workbench: coordinator + Orca subscription workers
 
-This feature branch adds `/workbench` to Memory Hub alongside the existing task board. It provides a persistent coordinator conversation beside worker sessions and a workspace for files, diffs, and review. Conversations and worker state survive Panel restarts. The coordinator proposes workers in chat; each launch requires an explicit approval.
+This feature branch adds `/workbench` to Memory Hub alongside the existing task board. A full-width coordinator band sits above **Orca's actual browser renderer**, loaded from a configured browser-client URL in a separate-origin iframe. The band can expand or collapse and retains conversations, context, worker proposals, and explicit launch approval. The earlier custom three-pane worker UI has been replaced.
+
+Orca ships `web-index.html`, whose `src/renderer/src/web/main.tsx` installs the browser transport and mounts the same `App` used by its desktop renderer after pairing. We reuse that interface directly. Orca supplies the sidebar, terminals, worktree controls, files, diffs, and review UI; availability depends on the paired Orca version.
 
 The coordinator uses an API model. The worker is a real Codex or Claude Code process launched by Orca, using the account already authenticated on that runtime. No worker model requests are routed through Tencent's model proxy. Orca does not guarantee a subscription is selected: the runtime owner must verify the client's login and remove any unwanted API billing configuration.
 
@@ -44,6 +46,7 @@ Run one bridge process per Orca owner/runtime. Do not share an OS account, home 
     "user": "EXACT_TENCENT_USER_ID",
     "repo": "id:YOUR_ORCA_REPOSITORY_ID",
     "url": "https://PRIVATE_RUNNER_HOST",
+    "webUrl": "https://PRIVATE_ORCA_WEB_HOST/web-index.html",
     "token": "SAME_RANDOM_RUNNER_SECRET"
   }
 ]
@@ -65,16 +68,19 @@ The coordinator key is explicit: it does not silently borrow the Wiki, memory, o
 
 Open Workbench, select a runtime, and send an objective to the coordinator. Optionally attach a Tencent task ID and relevant memory/Wiki excerpts. Conversation messages make coordinator API calls but do not launch workers. Read a proposed worker's ownership and acceptance criteria, then approve its launch.
 
-The coordinator conversation remains visible while selecting workers and switching between these workspace tabs:
+The coordinator remains in the top band while Orca fills the rest of the page. Use the conversation selector to resume saved conversations, Context for excerpts, and expand/hide to adjust the band. Approve proposals in the band, then inspect and steer the worker in Orca. “Sync workers” refreshes the coordinator's dispatch receipts from the bridge.
 
-- **Session:** periodically refreshed terminal output, follow-up messages, and an explicit stop confirmation. Stopping retains the worktree and files.
-- **Files:** searchable repository file list and read-only source view.
-- **Changes:** committed and uncommitted changes since the worker's starting commit, plus nonignored untracked files.
-- **Review:** advisory coordinator assessment and recorded approval or requested changes for an exact diff snapshot. Approval does not merge or deploy. Changed or incomplete snapshots cannot reuse an approval. Requested changes are recorded feedback; use Session to send them to the worker.
+## Connect the real Orca interface
 
-Orca's native UI remains available for interactive login/permission prompts, editing, and merging. This is a Tencent-native workspace backed by Orca's CLI, not the entire Orca desktop renderer. Follow-ups require Orca to report the expected agent identity and confirm prompt acceptance; they are refused for an unknown terminal or shell. Setup hooks are skipped; include required setup in the approved task or prepare the runtime first.
+`webUrl` is optional and administrator-managed per user/team/runtime binding. It must be HTTPS (or loopback HTTP for development), use a separate origin from Tencent, and contain no credentials, query, or fragment. Serve Orca's browser build (`out/web`, built upstream with `pnpm build:web`) on that origin, or use the runtime's existing browser endpoint. Preserve assets and upstream license when distributing a copy. The host must permit framing by the Tencent origin. HTTPS Tencent needs HTTPS Orca and a reachable secure WebSocket endpoint. A browser loopback URL refers to the user's computer, not the Tencent server.
 
-Files and diffs currently require worktrees local to the bridge host. Place the bridge beside the worker runtime; Orca remote-host worktrees are rejected for filesystem inspection. File reads reject traversal, symlinks, binary content, and oversized files. Diff limits are surfaced as incomplete evidence.
+Pair inside Orca's own connection screen using its runtime browser-access link. Tencent never forwards its login or bridge bearer token to the iframe, reads Orca's pairing storage, or exchanges arbitrary postMessage commands. The coordinator bridge and paired interface must target the same Orca runtime. Selecting a Tencent conversation does not automatically select an Orca worktree; runtime identity matching is not yet automatically verified. Navigate to the created worker in Orca's sidebar.
+
+**Orca browser pairing is a separate access grant.** Full runtime pairing can expose repositories and terminals beyond the coordinator bridge's allowlisted repository. Use a dedicated runtime for the intended owner. Tencent team authorization does not narrow an Orca pairing grant. Revoking a Tencent binding does not revoke an existing Orca pairing; revoke that separately in Orca.
+
+The local preview loads the real browser bundle from installed Orca 1.4.196 at loopback port 5188. Coordinator conversations and approvals remain synthetic. It initially displays Orca's genuine connection screen. Pairing enables live control inside the Orca pane. The bundle is a local verification artifact, not checked into Tencent or deployed. A paired session remains unverified pending approval.
+
+The prior scoped file/diff/review API and tests remain available, but the primary UI delegates those interactions to Orca. No worker launch or production deployment is implied by opening this page.
 
 ## Current boundaries
 
@@ -87,10 +93,8 @@ Files and diffs currently require worktrees local to the bridge host. Place the 
 
 ## Validation
 
-Run `npm run typecheck`, `npm test`, and `node --test scripts/workbench/*.test.mjs` in MemoryPanel; run `npm run build` in MemoryPanel/web.
+Run `npm run typecheck` and `npm test` in MemoryPanel, `npm run build` and component ESLint in MemoryPanel/web. 39 Panel tests, TypeScript, frontend production build, and component ESLint passed. Browser checks confirmed band collapse/restore and a sample coordinator reply without replacing the Orca iframe. This revision adds browser-URL validation tests for HTTPS, loopback, credential rejection, and pairing-token rejection. The unchanged bridge/workspace suite previously passed four tests.
 
-Development verification: **33 Panel tests and 4 bridge/workspace tests passed**, along with TypeScript, the frontend production build, and component ESLint. Tests cover scope and membership, persistent conversation retries, approved dispatch, uncertain outcomes, bridge authentication, receipt persistence, follow-up identity checks, verified stop, real temporary Git worktree inspection, path rejection, and stale/incomplete review evidence.
+The revised browser fixture loads the actual Orca connection screen beneath the coordinator band. Coordinator actions remain synthetic; the Orca pane becomes live if paired. Prior custom-UI browser checks are not proof of the new embedded runtime connection.
 
-The browser fixture at `/tests/workbench-preview/index.html` was exercised through coordinator conversation, worker follow-up, files, changes, advisory review, and recorded feedback. It prominently labels synthetic data and performs no execution or model calls.
-
-CLI contracts were inspected at Orca commit `0cc2b2688d8a4bfe2f69634ad7cdbf2bc8601552`, including `src/cli/handlers/worktree.ts`, `src/cli/handlers/terminal.ts`, and `src/shared/runtime-worktree-contracts.ts`. The installed Orca runtime answered `status --json`. **No live subscription worker was launched and no production deployment was performed.** A configured, subscription-backed smoke run remains required before calling the integration production-ready.
+Orca source inspected at `0cc2b2688d8a4bfe2f69634ad7cdbf2bc8601552`; local browser bundle from installed Orca 1.4.196. No live worker launched and no production deployment performed. A paired end-to-end run is required before calling this production-ready.

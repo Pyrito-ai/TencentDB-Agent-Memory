@@ -80,7 +80,7 @@ let runs: any[] = [
       {
         id: 'm5',
         role: 'assistant',
-        text: 'Agreed. The coordinator stays in the center. Selecting a worker changes only the workspace on the right. Its session, files, changes, and review stay together.\n\nThe connection worker is running now. You can approve the UI worker below when you’re ready.',
+        text: 'Agreed. The coordinator stays in the band above Orca. The workspace below uses Orca’s actual interface, including its sessions, files, diffs, and worktree controls.\n\nThe connection worker is running now. You can approve the UI worker below when you’re ready.',
         created: now - 210000,
       },
     ],
@@ -104,7 +104,13 @@ window.fetch = async (input, init) => {
   const b = JSON.parse(String(init?.body || '{}'));
   if (action === 'options')
     return Response.json({
-      bindings: [{ id: 'demo', label: 'Tencent Agent Memory' }],
+      bindings: [
+        {
+          id: 'demo',
+          label: 'Tencent Agent Memory',
+          webUrl: 'http://127.0.0.1:5188/web-index.html',
+        },
+      ],
       coordinatorReady: true,
     });
   if (action === 'runs') return Response.json({ items: runs });
@@ -138,7 +144,7 @@ window.fetch = async (input, init) => {
       {
         id: crypto.randomUUID(),
         role: 'assistant',
-        text: 'I’ll keep that constraint in this conversation. We can inspect the worker’s current changes on the right before deciding what to do next.',
+        text: 'I’ll keep that constraint in this conversation. We can inspect the worker’s current changes in Orca below before deciding what to do next.',
         created: Date.now(),
       },
     );
@@ -211,7 +217,7 @@ createRoot(document.getElementById('root')!).render(
         font: '11px system-ui',
       }}
     >
-      LOCAL PREVIEW · Synthetic conversations and workers · No execution or model charges
+      PREVIEW · Coordinator uses sample data · Orca interface is real; pairing enables live control
     </div>
     <Workspace team="preview" />
   </>,

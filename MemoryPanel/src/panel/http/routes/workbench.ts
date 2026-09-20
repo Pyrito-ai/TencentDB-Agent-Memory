@@ -98,7 +98,11 @@ export function registerWorkbenchRoutes(
     );
     if (action === "options" && c.req.method === "GET")
       return c.json({
-        bindings: bindings.map((b) => ({ id: b.id, label: b.label })),
+        bindings: bindings.map((b) => ({
+          id: b.id,
+          label: b.label,
+          ...(b.webUrl ? { webUrl: b.webUrl } : {}),
+        })),
         coordinatorReady:
           !!options.coordinator ||
           !!(
@@ -119,7 +123,7 @@ export function registerWorkbenchRoutes(
     if (action === "plan" || action === "start") {
       const parsed = z
         .object({
-          operation:z.string().uuid().optional(),
+          operation: z.string().uuid().optional(),
           binding: z.string(),
           objective: z.string().trim().min(10).max(8000),
           context: z.string().max(20000).default(""),
@@ -132,9 +136,13 @@ export function registerWorkbenchRoutes(
           400,
         );
       const input = parsed.data;
-      if(action==='start'&&input.operation){
-        const previous=db.prepare('SELECT body FROM workbench_runs WHERE id=? AND instance=? AND team=? AND owner=?').get(input.operation,ctx.instanceId,team,user);
-        if(previous)return c.json(JSON.parse(String(previous.body)));
+      if (action === "start" && input.operation) {
+        const previous = db
+          .prepare(
+            "SELECT body FROM workbench_runs WHERE id=? AND instance=? AND team=? AND owner=?",
+          )
+          .get(input.operation, ctx.instanceId, team, user);
+        if (previous) return c.json(JSON.parse(String(previous.body)));
       }
       if (!bindings.some((b) => b.id === input.binding))
         return c.json(
@@ -167,7 +175,10 @@ export function registerWorkbenchRoutes(
             ? await coordinator.plan(input.objective, context)
             : { summary: "", workers: [] };
         const run: Run = {
-          id: action==='start'&&input.operation?input.operation:randomUUID(),
+          id:
+            action === "start" && input.operation
+              ? input.operation
+              : randomUUID(),
           binding: input.binding,
           objective: input.objective,
           context,
@@ -345,13 +356,11 @@ export function registerWorkbenchRoutes(
           });
           const available = 16 - run.workers.length;
           run.workers.push(
-            ...answer.workers
-              .slice(0, available)
-              .map((w) => ({
-                ...w,
-                id: randomUUID(),
-                state: "proposed" as const,
-              })),
+            ...answer.workers.slice(0, available).map((w) => ({
+              ...w,
+              id: randomUUID(),
+              state: "proposed" as const,
+            })),
           );
         } catch {
           run.messages[run.messages.length - 1]!.status = "failed";
@@ -457,9 +466,18 @@ export function registerWorkbenchRoutes(
         );
         save();
       } else if (action === "refresh") {
-        await Promise.all(run.workers.filter(w=>w.state!=='proposed').map(async worker=>{
-          try{worker.receipt=await runner.read(binding,worker.id);worker.state=worker.receipt.state;}catch{worker.state='unknown';}
-        }));
+        await Promise.all(
+          run.workers
+            .filter((w) => w.state !== "proposed")
+            .map(async (worker) => {
+              try {
+                worker.receipt = await runner.read(binding, worker.id);
+                worker.state = worker.receipt.state;
+              } catch {
+                worker.state = "unknown";
+              }
+            }),
+        );
         save();
       } else if (action === "review") {
         const reviewedWorkers = worker ? [worker] : run.workers;

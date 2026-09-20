@@ -10,6 +10,7 @@ const bindingSchema = z.object({
   repo: z.string().min(1),
   url: z.string().url(),
   token: z.string().min(32),
+  webUrl: z.string().url().optional(),
 });
 export type Binding = z.infer<typeof bindingSchema>;
 export function loadBindings(): Binding[] {
@@ -19,19 +20,23 @@ export function loadBindings(): Binding[] {
     .array(bindingSchema)
     .parse(JSON.parse(readFileSync(file, "utf8")));
   for (const b of bindings) {
-    const u = new URL(b.url);
-    if (
-      u.username ||
-      u.password ||
-      u.search ||
-      u.hash ||
-      !(
-        u.protocol === "https:" ||
-        (u.protocol === "http:" &&
-          ["127.0.0.1", "localhost", "[::1]"].includes(u.hostname))
+    for (const address of [b.url, ...(b.webUrl ? [b.webUrl] : [])]) {
+      const u = new URL(address);
+      if (
+        u.username ||
+        u.password ||
+        u.search ||
+        u.hash ||
+        !(
+          u.protocol === "https:" ||
+          (u.protocol === "http:" &&
+            ["127.0.0.1", "localhost", "[::1]"].includes(u.hostname))
+        )
       )
-    )
-      throw Error("Workbench runners require HTTPS or loopback HTTP.");
+        throw Error(
+          "Workbench endpoints require HTTPS or loopback HTTP without credentials, query strings, or fragments.",
+        );
+    }
   }
   if (new Set(bindings.map((b) => b.id)).size !== bindings.length)
     throw Error("Duplicate Workbench binding IDs.");

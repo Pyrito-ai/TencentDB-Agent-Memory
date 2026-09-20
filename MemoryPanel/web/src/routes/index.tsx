@@ -1,3 +1,4 @@
+import { OrcaWorkbench } from '@/pages/OrcaWorkbench';
 /**
  * 路由表定义
  *
@@ -23,6 +24,7 @@ export const routes: RouteObject[] = [
     element: <ConsoleLayout />,
     children: [
       { index: true, element: <WorkbenchPage /> },
+      { path: 'workbench', element: <OrcaWorkbench /> },
       { path: 'timesheets', element: <WorkbenchPage view="timesheets" /> },
       { path: 'loops', element: <WorkbenchPage view="loops" /> },
       { path: 'wiki', element: <WikiPage /> },

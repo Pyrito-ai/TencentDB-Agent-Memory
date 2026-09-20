@@ -1,0 +1,220 @@
+.orca-workbench {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  max-width: 1440px;
+  margin: auto;
+  padding: 24px;
+  color: #202b37;
+}
+.orca-workbench header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.orca-workbench h1 {
+  font-size: 30px;
+  letter-spacing: -1px;
+  margin: 6px 0;
+}
+.orca-workbench h2 {
+  font-size: 19px;
+  margin: 0 0 12px;
+}
+.orca-workbench h3 {
+  font-size: 16px;
+  margin: 0;
+}
+.orca-workbench p {
+  line-height: 1.6;
+}
+.wb-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  color: #447264;
+}
+.wb-pill {
+  font-size: 12px;
+  background: #eef4f1;
+  border: 1px solid #d9e5df;
+  padding: 6px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.wb-grid {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 24px;
+}
+.wb-card {
+  background: #fff;
+  border: 1px solid #dce3e5;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.wb-muted {
+  font-size: 13px;
+  color: #61717f;
+}
+.orca-workbench label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 16px 0;
+}
+.orca-workbench input,
+.orca-workbench select,
+.orca-workbench textarea {
+  box-sizing: border-box;
+  width: 100%;
+  display: block;
+  margin-top: 7px;
+  border: 1px solid #bac6cc;
+  border-radius: 6px;
+  padding: 10px;
+  background: #fff;
+  font: inherit;
+  color: inherit;
+}
+.orca-workbench textarea {
+  resize: vertical;
+  font-weight: 400;
+}
+.orca-workbench button {
+  cursor: pointer;
+  border: 1px solid #cbd6d2;
+  border-radius: 6px;
+  background: #fff;
+  padding: 10px 14px;
+  font: inherit;
+}
+.orca-workbench button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.orca-workbench button.wb-primary {
+  background: #285d4b;
+  color: white;
+  border-color: #285d4b;
+}
+.orca-workbench :is(button, input, textarea, select, summary):focus-visible {
+  outline: 3px solid #8dbfac;
+  outline-offset: 3px;
+}
+.wb-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.wb-error {
+  padding: 12px;
+  background: #fff0ec;
+  border: 1px solid #f1c7b9;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+.wb-empty {
+  background: #f5f7f6;
+  padding: 16px;
+  border-radius: 8px;
+}
+.wb-history {
+  padding: 16px 6px;
+}
+.wb-history button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.wb-history button[aria-pressed='true'] {
+  background: #edf5f1;
+  border-color: #6d9c88;
+}
+.wb-history small {
+  display: block;
+  color: #61717f;
+  margin-top: 6px;
+}
+.wb-welcome {
+  padding: 48px 32px;
+  border: 1px dashed #b7cbc1;
+  border-radius: 12px;
+  background: linear-gradient(130deg, #f4f8f5, #fff);
+}
+.wb-welcome h2 {
+  font-size: 28px;
+  max-width: 420px;
+  line-height: 1.2;
+  margin-top: 20px;
+}
+.wb-welcome > p {
+  max-width: 580px;
+  color: #61717f;
+}
+.wb-stages {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.wb-stages b {
+  display: block;
+  color: #6b9283;
+  font-size: 22px;
+  margin-bottom: 12px;
+}
+.wb-stages strong {
+  display: block;
+}
+.wb-stages p {
+  font-size: 13px;
+  color: #61717f;
+}
+.wb-worker-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.wb-spec {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.orca-workbench summary {
+  cursor: pointer;
+  margin: 12px 0;
+}
+.orca-workbench pre {
+  max-height: 440px;
+  overflow: auto;
+  padding: 16px;
+  background: #172922;
+  color: #e1eee7;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.wb-main {
+  min-width: 0;
+}
+@media (max-width: 1000px) {
+  .wb-grid {
+    grid-template-columns: 1fr;
+  }
+  .wb-stages {
+    grid-template-columns: 1fr;
+  }
+  .orca-workbench header,
+  .wb-worker-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .wb-welcome {
+    padding: 24px;
+  }
+}

@@ -17,6 +17,7 @@ import {
 } from 'tea-icons-react';
 
 export type PageId =
+  | 'orca_workbench'
   | 'workbench_board'
   | 'timesheets'
   | 'loops'
@@ -46,6 +47,7 @@ export interface PageMeta {
 export function usePageMeta(): Record<PageId, PageMeta> {
   const { t } = useTranslation();
   return {
+    orca_workbench: { id: 'orca_workbench', label: 'Workbench', desc: 'Coordinate subscription workers with Orca', group: t('menu.group.workbench'), order: 3 },
     workbench_board: { id: 'workbench_board', label: t('menu.workbench_board'), desc: t('menu.desc.workbench_board'), group: t('menu.group.workbench'), order: 0, affix: true },
     timesheets: { id: 'timesheets', label: t('menu.timesheets'), group: t('menu.group.workbench'), order: 1 },
     loops: { id: 'loops', label: t('menu.loops'), group: t('menu.group.workbench'), order: 2 },
@@ -65,6 +67,7 @@ export const GROUP_ORDER_KEYS = ['workbench', 'observability', 'organization', '
 
 /** 每个页面在侧边栏菜单中的图标（Tea 官方图标，size 16） */
 export const ITEM_ICON: Record<PageId, JSX.Element> = {
+  orca_workbench: <ToolsIcon size={16} />,
   workbench_board: <DashboardIcon size={16} />,
   timesheets: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>,
   loops: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>,

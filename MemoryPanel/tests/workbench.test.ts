@@ -1,0 +1,194 @@
+import { beforeEach, afterEach, test, expect, vi } from "vitest";
+import { Hono } from "hono";
+import { mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { registerWorkbenchRoutes } from "../src/panel/http/routes/workbench.js";
+import type { PanelDeps } from "../src/panel/panel-deps.js";
+let app: Hono, close: () => void, root: string, active: boolean;
+const launch = vi.fn(),
+  read = vi.fn(),
+  plan = vi.fn(),
+  review = vi.fn();
+beforeEach(async () => {
+  vi.resetAllMocks();
+  root = await mkdtemp(path.join(tmpdir(), "workbench-"));
+  active = true;
+  plan.mockResolvedValue({
+    summary: "Bounded work",
+    workers: [
+      {
+        title: "Fix tests",
+        agent: "codex",
+        spec: "Own tests only. Verify with test runner.",
+      },
+    ],
+  });
+  review.mockResolvedValue("Evidence incomplete.");
+  launch.mockImplementation(async (_b, id) => ({
+    id,
+    state: "running",
+    terminal: "t1",
+  }));
+  read.mockImplementation(async (_b, id) => ({
+    id,
+    state: "exited",
+    output: "Tests passed",
+  }));
+  const deps = {
+    instanceRegistry: {
+      resolve: (id: string) => ({
+        instance_id: id,
+        gateway_endpoint: "",
+        api_key: "",
+      }),
+    },
+    metaKernel: {
+      invoke: async (action: string, b: any) => ({
+        code: 0,
+        data:
+          action === "auth/verify"
+            ? { valid: b.user_key !== "invalid", user: { user_id: b.user_key } }
+            : action === "team-member/get"
+              ? {
+                  status:
+                    active && b.user_id !== "outsider" ? "active" : "removed",
+                }
+              : action === "task/get"
+                ? {
+                    team_id: b.task_id === "foreign" ? "other" : "team",
+                    title: "Task",
+                    description: "Acceptance",
+                  }
+                : null,
+      }),
+    },
+  } as unknown as PanelDeps;
+  app = new Hono();
+  close = registerWorkbenchRoutes(app, deps, {
+    root,
+    bindings: [
+      {
+        id: "r1",
+        label: "My runtime",
+        instance: "default",
+        team: "team",
+        user: "alice",
+        repo: "id:repo1",
+        url: "http://127.0.0.1:8791",
+        token: "x".repeat(32),
+      },
+    ],
+    runner: { launch, read },
+    coordinator: { plan, review },
+  });
+});
+afterEach(async () => {
+  close();
+  await rm(root, { recursive: true, force: true });
+});
+function req(
+  action: string,
+  body?: unknown,
+  user = "alice",
+  instance = "default",
+  team = "team",
+) {
+  return app.request(`/workbench/${team}/${action}`, {
+    method: body ? "POST" : "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Tdai-Service-Id": instance,
+      "X-Tdai-User-Key": user,
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+}
+async function make() {
+  return (
+    await req("plan", { binding: "r1", objective: "Fix the flaky tests" })
+  ).json();
+}
+test("planning cannot execute; approval launches once with server-owned binding", async () => {
+  const run = await make();
+  expect(launch).not.toHaveBeenCalled();
+  const body = { id: run.id, workerId: run.workers[0].id };
+  const result = await Promise.all([
+    req("dispatch", body),
+    req("dispatch", body),
+  ]);
+  expect(result.map((r) => r.status).sort()).toEqual([200, 409]);
+  expect(launch).toHaveBeenCalledTimes(1);
+  expect(launch.mock.calls[0]?.[0].repo).toBe("id:repo1");
+  expect((await req("dispatch", body)).status).toBe(409);
+});
+test("invalid, removed and other users cannot inspect or launch another run", async () => {
+  const run = await make();
+  expect((await req("runs", undefined, "invalid")).status).toBe(401);
+  expect((await req("runs", undefined, "outsider")).status).toBe(403);
+  expect((await (await req("runs", undefined, "bob")).json()).items).toEqual(
+    [],
+  );
+  expect(
+    (await req("dispatch", { id: run.id, workerId: run.workers[0].id }, "bob"))
+      .status,
+  ).toBe(404);
+  expect((await req("refresh", { id: run.id }, "alice", "other")).status).toBe(
+    404,
+  );
+  active = false;
+  expect((await req("refresh", { id: run.id })).status).toBe(403);
+  expect(launch).not.toHaveBeenCalled();
+});
+test("runtime credentials are never returned and arbitrary runtime cannot be selected", async () => {
+  const o = await (await req("options")).json();
+  expect(JSON.stringify(o)).not.toContain("xxxxxxxx");
+  expect(o.bindings).toEqual([{ id: "r1", label: "My runtime" }]);
+  expect(
+    (await req("plan", { binding: "evil", objective: "Perform this work" }))
+      .status,
+  ).toBe(403);
+  expect(
+    (
+      await req("plan", {
+        binding: "r1",
+        objective: "Perform this work",
+        taskId: "foreign",
+      })
+    ).status,
+  ).toBe(404);
+  expect(plan).not.toHaveBeenCalled();
+});
+test("uncertain launch cannot retry; refresh reconciles without a second execution", async () => {
+  launch.mockRejectedValueOnce(Error("timeout"));
+  const run = await make();
+  const body = { id: run.id, workerId: run.workers[0].id };
+  const dispatched = await (await req("dispatch", body)).json();
+  expect(dispatched.workers[0].state).toBe("unknown");
+  expect((await req("dispatch", body)).status).toBe(409);
+  const refreshed = await (await req("refresh", { id: run.id })).json();
+  expect(refreshed.workers[0].state).toBe("exited");
+  expect(launch).toHaveBeenCalledTimes(1);
+});
+test("review is advisory and task context is scoped", async () => {
+  const run = await (
+    await req("plan", {
+      binding: "r1",
+      objective: "Fix the flaky tests",
+      taskId: "local",
+    })
+  ).json();
+  expect(plan.mock.calls[0]?.[1]).toContain("Acceptance");
+  const r = await (await req("review", { id: run.id })).json();
+  expect(r.review).toBe("Evidence incomplete.");
+  expect(launch).not.toHaveBeenCalled();
+});
+test("provider failures never disclose diagnostics", async () => {
+  plan.mockRejectedValue(Error("secret-provider-token"));
+  const r = await req("plan", {
+    binding: "r1",
+    objective: "Fix the flaky tests",
+  });
+  expect(r.status).toBe(502);
+  expect(await r.text()).not.toContain("secret-provider-token");
+});

@@ -1,5 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loops from './Loops';
+import Areas from './Areas';
+import Agenda from './Agenda';
 /**
  * TaskWorkbench — 用户工作台。
  *
@@ -48,7 +50,7 @@ function EmptyTeam() {
 }
 
 export default function TaskWorkbench(props: {
-  view?: 'board' | 'timesheets' | 'loops';
+  view?: 'board' | 'timesheets' | 'loops' | 'areas' | 'today' | 'upcoming';
   tab?: WorkbenchTab;
   onTabChange?: (tab: WorkbenchTab) => void;
   /** 当前激活的 team id（可空：未选时只显示 empty state） */
@@ -126,7 +128,7 @@ export default function TaskWorkbench(props: {
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
           {activeTeam && <TeamHeaderCard team={activeTeam} />}
-          {view==='loops' ? <Loops key={activeTeamId} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
+          {view==='areas'?<Areas key={activeTeamId} teamId={activeTeamId}/>:view==='today'||view==='upcoming' ? <Agenda key={activeTeamId} view={view} teamId={activeTeamId} tasks={tasks} loading={tasksLoading} currentUser={currentUser} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))} onOpenLoops={(id,due)=>navigate('/loops'+(id?'?loop='+encodeURIComponent(id)+(due?'&due='+encodeURIComponent(due):''):''))}/> : view==='loops' ? <Loops initialLoop={searchParams.get('loop')||''} initialDue={searchParams.get('due')||''} key={activeTeamId} members={activeTeam?.members} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
           tasks={sortedTasks}
           tasksLoading={tasksLoading}
           selected={selected}

@@ -1,3 +1,4 @@
+import { registerTaskTimeRoutes } from './routes/task-time.js';
 import { registerTaskActivityRoutes } from './routes/task-activity.js';
 import path from 'node:path';
 import { serveStatic } from '@hono/node-server/serve-static';
@@ -41,6 +42,7 @@ export function buildPanelApp(deps: PanelDeps): Hono {
   // Task 聚合路由：task/list + 批量 task-agent/list 一次返回
   registerTaskRoutes(api, deps);
   registerTaskActivityRoutes(api, deps);
+  registerTaskTimeRoutes(api, deps);
   registerAgentOverviewRoutes(api, deps);
   // Agent 生命周期业务路由：/agent/delete-cascade 在 control 层级联清 skill 再 archive
   registerAgentLifecycleRoutes(api, deps);

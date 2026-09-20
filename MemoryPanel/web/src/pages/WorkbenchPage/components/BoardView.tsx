@@ -1,3 +1,5 @@
+import Projects from './Projects';
+import { useProjects } from '../hooks/useProjects';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Drawer } from 'tea-component';
@@ -9,14 +11,18 @@ import { participationOf, type AgentOption, type TaskParticipationView } from '.
 import '../styles/project-board.css';
 
 export default function BoardView({ tasks, tasksLoading, selected, onSelect, onCreate, onDelete,
-  onUpdateTask, agents, teams, currentUser, participationByTask }: {
-  tasks: Task[]; tasksLoading: boolean; selected: Task | null;
+  onUpdateTask, agents, teams, currentUser, participationByTask, teamId }: {
+  teamId?: string; tasks: Task[]; tasksLoading: boolean; selected: Task | null;
   onSelect: (id: string | null) => void; onCreate: () => void; onDelete: (task: Task) => void;
   onUpdateTask: (task: Task, patch: TaskPatch) => Promise<boolean>;
   agents: AgentOption[]; teams: Team[]; currentUser: string;
   participationByTask: Map<string, TaskParticipationView>;
 }) {
   const { t } = useTranslation();
+  const projectTeam = teamId || tasks[0]?.team_id || teams[0]?.team_id || '';
+  const projects = useProjects(projectTeam);
+  const [projectFilter,setProjectFilter] = useState('all');
+  const taskProject=(id:string)=>projects.assignments.find(a=>a.task===id)?.project_id||'';
   const resolveName = useDisplayNameResolver();
   const [query, setQuery] = useState('');
   const [assignee, setAssignee] = useState('all');
@@ -31,7 +37,8 @@ export default function BoardView({ tasks, tasksLoading, selected, onSelect, onC
     const board = readTaskBoard(task);
     return `${task.title} ${task.description}`.toLowerCase().includes(query.toLowerCase())
       && (assignee === 'all' || board.assignee === assignee)
-      && (priority === 'all' || board.priority === priority);
+      && (priority === 'all' || board.priority === priority)
+      && (projectFilter === 'all' || taskProject(task.task_id) === projectFilter);
   });
   async function move(task: Task, status: BoardStatus) {
     if (pending || tasksLoading || readTaskBoard(task).status === status) return;
@@ -48,6 +55,7 @@ export default function BoardView({ tasks, tasksLoading, selected, onSelect, onC
       <div><h2>{t('board.title')}</h2><p>{t('board.subtitle')}</p></div>
       <Button type="primary" onClick={onCreate}>{t('task.create')}</Button>
     </header>
+    <Projects teamId={projectTeam} projectId={projectFilter} onSelect={setProjectFilter}/>
     <div className="project-board-filters">
       <input aria-label={t('board.search')} placeholder={t('board.search')} value={query} onChange={e => setQuery(e.target.value)} />
       <select aria-label={t('board.assignee')} value={assignee} onChange={e => setAssignee(e.target.value)}>
@@ -81,6 +89,7 @@ export default function BoardView({ tasks, tasksLoading, selected, onSelect, onC
               <button className="project-board-card-open" onClick={() => onSelect(task.task_id)}>
                 {board.priority !== 'none' && <span className={`project-board-priority ${board.priority}`}>{t(`board.priority.${board.priority}`)}</span>}
                 <strong>{task.title}</strong>
+                {taskProject(task.task_id) && <span className="project-board-card-meta">{projects.items.find(p=>p.id===taskProject(task.task_id))?.name}</span>}
                 {task.description && <p>{task.description}</p>}
                 <span className="project-board-card-meta">{board.assignee ? resolveName(board.assignee) : t('board.unassigned')}{board.dueDate && ` · ${board.dueDate}`}</span>
                 <span className="project-board-card-meta">{t('board.agentCount', { count: task.linked_agents.length })} · {t('task.peopleCount', { count: participation.users.length })}</span>

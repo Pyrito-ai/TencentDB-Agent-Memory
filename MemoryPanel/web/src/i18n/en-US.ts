@@ -67,6 +67,8 @@ export const enUS = {
   'app.checkingSession': 'Checking session…',
 
   // ===== Menu / Navigation =====
+  'menu.timesheets': 'Timesheets',
+  'menu.loops': 'Loops',
   'menu.workbench_board': 'Task Board',
   'menu.wiki': 'Wiki Knowledge Base',
   'menu.code': 'Code_Graph',

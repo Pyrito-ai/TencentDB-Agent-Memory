@@ -9,7 +9,7 @@ import { useTeams, useAgents } from '@/services';
 import { useCurrentRole } from '@/services/useCurrentRole';
 import TaskWorkbench from './components/TaskWorkbench';
 
-export function WorkbenchPage() {
+export function WorkbenchPage({ view = 'board' }: { view?: 'board' | 'timesheets' | 'loops' }) {
   const { auth } = useAuthStore();
   const role = useCurrentRole();
   const { activeTeamId } = useTeams();
@@ -23,6 +23,7 @@ export function WorkbenchPage() {
 
   return (
     <TaskWorkbench
+      view={view}
       activeTeamId={activeTeamId}
       currentUser={auth.user_id}
       agents={teamAgents}

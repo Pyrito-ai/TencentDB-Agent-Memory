@@ -1,3 +1,4 @@
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Loops from './Loops';
 /**
  * TaskWorkbench — 用户工作台。
@@ -47,6 +48,7 @@ function EmptyTeam() {
 }
 
 export default function TaskWorkbench(props: {
+  view?: 'board' | 'timesheets' | 'loops';
   tab?: WorkbenchTab;
   onTabChange?: (tab: WorkbenchTab) => void;
   /** 当前激活的 team id（可空：未选时只显示 empty state） */
@@ -59,16 +61,22 @@ export default function TaskWorkbench(props: {
   isAdmin?: boolean;
 }) {
   const { t } = useTranslation();
-  const { activeTeamId, currentUser, agents } = props;
+  const { activeTeamId, currentUser, agents, view = 'board' } = props;
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   // 后端分页：useTasks 根据 page + pageSize 调 Panel 聚合接口，内核只返回当前页
   const PAGE_SIZE = 0; // The board loads all pages so columns and filters are complete.
   const currentPage = 1;
   const { tasks, loading: tasksLoading } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
   const { teams, activeTeam } = useTeams();
   const participationByTask = useTeamParticipation(activeTeamId);
-  const [view, setView] = useState<'board'|'timesheets'|'loops'>('board');
   const [showCreate, setShowCreate] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedId = searchParams.get('task');
+  const setSelectedId = (id: string | null) => {
+    const next = new URLSearchParams(searchParams);
+    if (id) next.set('task', id); else next.delete('task');
+    setSearchParams(next, { replace: true });
+  };
 
   // 切换 team 时重置到第 1 页
 
@@ -118,8 +126,7 @@ export default function TaskWorkbench(props: {
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
           {activeTeam && <TeamHeaderCard team={activeTeam} />}
-          <div className="workbench-view-switch" aria-label="Workbench view"><button aria-pressed={view==='board'} onClick={()=>setView('board')}>Task board</button><button aria-pressed={view==='timesheets'} onClick={()=>setView('timesheets')}>Timesheets</button><button aria-pressed={view==='loops'} onClick={()=>setView('loops')}>Loops</button></div>
-          {view==='loops' ? <Loops key={activeTeamId} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>{setSelectedId(id);setView('board');}}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
+          {view==='loops' ? <Loops key={activeTeamId} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
           tasks={sortedTasks}
           tasksLoading={tasksLoading}
           selected={selected}

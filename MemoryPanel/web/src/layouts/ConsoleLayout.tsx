@@ -20,6 +20,8 @@ const { Body, Sider, Content } = Layout;
 /** 路由 path → PageId */
 const PATH_TO_PAGE: Record<string, PageId> = {
   '/': 'workbench_board',
+  '/timesheets': 'timesheets',
+  '/loops': 'loops',
   '/wiki': 'wiki',
   '/code': 'code',
   '/skills': 'skills',

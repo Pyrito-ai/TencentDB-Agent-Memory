@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getPanelSession } from '@/lib/panelSession';
 import { useDisplayNameResolver } from '@/services/user-profile-store';
-interface Entry { id: string; author: string; started: number; ended: number | null; seconds: number | null; note: string; kind: string; review_state: string }
+interface Entry { id: string; author: string; started: number; ended: number | null; seconds: number | null; note: string; kind: string; review_state: string; loop_linked?: number }
 function duration(seconds: number) { const s = Math.max(0, Math.floor(seconds)); return `${Math.floor(s/3600)}h ${Math.floor(s/60)%60}m ${s%60}s`; }
 function localDate() { const d = new Date(Date.now()-3600000); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,16); }
 export default function TaskTime({ taskId, currentUser }: { taskId: string; currentUser: string }) {
@@ -59,7 +59,7 @@ export default function TaskTime({ taskId, currentUser }: { taskId: string; curr
   {entries.map(entry=><article className="project-board-time-entry" key={entry.id}>
    <div><strong>{name(entry.author)}</strong> · {new Date(entry.started).toLocaleString()}<p>{entry.note || (entry.kind==='timer'?t('time.timer'):t('time.manual'))}</p></div>
    <span>{duration(elapsed(entry))}{entry.ended===null && ` · ${t('time.running')}`}</span>
-   {entry.author===currentUser && entry.ended!==null && entry.review_state==='pending' && <button disabled={busy} onClick={()=>{if(window.confirm(t('time.removeConfirm')))void mutate('delete',{id:entry.id});}}>{t('board.activity.delete')}</button>}
+   {entry.author===currentUser && entry.ended!==null && entry.review_state==='pending' && !entry.loop_linked && <button disabled={busy} onClick={()=>{if(window.confirm(t('time.removeConfirm')))void mutate('delete',{id:entry.id});}}>{t('board.activity.delete')}</button>}
   </article>)}
   <p className="project-board-detail-note">{t('time.hint')}</p>
  </section>;

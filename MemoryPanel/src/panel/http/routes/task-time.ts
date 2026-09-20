@@ -1,3 +1,4 @@
+import { registerLoops } from './loops.js';
 import { registerProjects } from './projects.js';
 import { migrateTimesheets, registerTimesheets } from './timesheets.js';
 import { randomUUID } from 'node:crypto';
@@ -26,6 +27,7 @@ export function registerTaskTimeRoutes(api: Hono, deps: PanelDeps,
   migrateTimesheets(db);
   registerProjects(api, deps, db);
   registerTimesheets(api, deps, db);
+  registerLoops(api, deps, db);
   api.use('/task/time/*', validatePanelMetaHeaders(deps));
   api.use('/task/time/*', bodyLimit({ maxSize: 8192, onError: c => c.json({ error: 'Request too large' }, 413) }));
   api.all('/task/time/:taskId/:action', async c => {
@@ -42,7 +44,7 @@ export function registerTaskTimeRoutes(api: Hono, deps: PanelDeps,
     c.header('Cache-Control', 'private, no-store');
     const action = c.req.param('action'); const now = Date.now();
     if (action === 'list' && c.req.method === 'GET') {
-      const items = db.prepare('SELECT id,author,started,ended,seconds,note,kind,review_state FROM task_time WHERE instance=? AND task=? ORDER BY started DESC').all(instance,taskId);
+      const items = db.prepare('SELECT id,author,started,ended,seconds,note,kind,review_state,EXISTS(SELECT 1 FROM loop_time WHERE time_id=task_time.id) AS loop_linked FROM task_time WHERE instance=? AND task=? ORDER BY started DESC').all(instance,taskId);
       // Do not disclose another task's identity through the running-timer check.
       const otherRunning = !!db.prepare('SELECT 1 FROM task_time WHERE instance=? AND author=? AND task<>? AND ended IS NULL').get(instance,author,taskId);
       return c.json({ items, otherRunning, serverNow: now });
@@ -77,8 +79,8 @@ export function registerTaskTimeRoutes(api: Hono, deps: PanelDeps,
       return c.json({ ok: true });
     }
     if (action === 'delete') {
-      const result = db.prepare("DELETE FROM task_time WHERE id=? AND instance=? AND task=? AND author=? AND ended IS NOT NULL AND review_state='pending'").run(id,instance,taskId,author);
-      if (!result.changes) return c.json({ error: 'Only your own pending completed entries can be removed.' }, 403);
+      const result = db.prepare("DELETE FROM task_time WHERE id=? AND instance=? AND task=? AND author=? AND ended IS NOT NULL AND review_state='pending' AND NOT EXISTS (SELECT 1 FROM loop_time WHERE time_id=task_time.id)").run(id,instance,taskId,author);
+      if (!result.changes) return c.json({ error: 'Only your own pending completed entries not linked to a loop completion can be removed.' }, 403);
       return c.json({ ok: true });
     }
     return c.json({ error: 'Unknown action' }, 404);

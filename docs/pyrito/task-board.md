@@ -60,3 +60,7 @@ Each contributor starts and accepts their own occurrences, contributing to a sha
 Occurrence request IDs make successful retries idempotent. If the Core response is lost, the retained preparing occurrence reconciles by its metadata tag in Core task listings rather than blindly creating a second task. If creation cannot be confirmed, it stays visibly unresolved for inspection; no automatic retry of the create action is performed. SQLite writes are transactional where possible, but Core task creation and Panel records are not one distributed transaction. Existing notes/files remain on the linked task. Loops are not yet exposed through Core MCP, and do not include scheduled agent execution, notifications, or automatic acceptance.
 
 Verification adds seven tests covering timezone/DST and year/month boundaries, target-based streaks, idempotent task creation, lost-response reconciliation, contributor attribution, shared targets, scoped agent/project permissions, recurrence immutability, history preservation, URL validation, and linked-time accounting locks. Browser QA exercised project/Loop creation, timezone selection, agent handoff, time linkage, and human acceptance.
+
+## Page navigation
+
+Task Board (`#/`), Timesheets (`#/timesheets`), and Loops (`#/loops`) are separate pages in the left navigation, in that order. Each page keeps the active team context and supports refresh/direct linking. Loop task links navigate to `#/?task=<task-id>` and open the task drawer after tasks load. The former in-page view switch is removed from the production workbench.

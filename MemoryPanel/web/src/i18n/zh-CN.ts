@@ -67,6 +67,8 @@ export const zhCN = {
   'app.checkingSession': '正在检测登录态…',
 
   // ===== Menu / Navigation =====
+  'menu.timesheets': '工时表',
+  'menu.loops': '循环任务',
   'menu.workbench_board': '任务看板',
   'menu.wiki': 'Wiki 知识库',
   'menu.code': 'Code_Graph',

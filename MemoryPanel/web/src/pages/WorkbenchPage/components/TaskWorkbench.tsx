@@ -1,3 +1,4 @@
+import Loops from './Loops';
 /**
  * TaskWorkbench — 用户工作台。
  *
@@ -65,7 +66,7 @@ export default function TaskWorkbench(props: {
   const { tasks, loading: tasksLoading } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
   const { teams, activeTeam } = useTeams();
   const participationByTask = useTeamParticipation(activeTeamId);
-  const [view, setView] = useState<'board'|'timesheets'>('board');
+  const [view, setView] = useState<'board'|'timesheets'|'loops'>('board');
   const [showCreate, setShowCreate] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -117,8 +118,8 @@ export default function TaskWorkbench(props: {
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
           {activeTeam && <TeamHeaderCard team={activeTeam} />}
-          <div className="workbench-view-switch" aria-label="Workbench view"><button aria-pressed={view==='board'} onClick={()=>setView('board')}>Task board</button><button aria-pressed={view==='timesheets'} onClick={()=>setView('timesheets')}>Timesheets</button></div>
-          {view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
+          <div className="workbench-view-switch" aria-label="Workbench view"><button aria-pressed={view==='board'} onClick={()=>setView('board')}>Task board</button><button aria-pressed={view==='timesheets'} onClick={()=>setView('timesheets')}>Timesheets</button><button aria-pressed={view==='loops'} onClick={()=>setView('loops')}>Loops</button></div>
+          {view==='loops' ? <Loops key={activeTeamId} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>{setSelectedId(id);setView('board');}}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
           tasks={sortedTasks}
           tasksLoading={tasksLoading}
           selected={selected}

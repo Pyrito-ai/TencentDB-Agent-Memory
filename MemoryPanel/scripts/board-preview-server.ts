@@ -8,12 +8,17 @@ import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 const api = new Hono();
+const tasks: any[] = [];
 const deps = {
  instanceRegistry: { resolve: (id: string) => ({ instance_id: id, gateway_endpoint: '', api_key: '' }) },
- metaKernel: { invoke: async (action: string, body: any) => ({ code: 0, data:
+ metaKernel: { invoke: async (action: string, body: any) => {
+  if(action==='task/create'){const task={...body,task_id:'fixture-'+tasks.length};tasks.push(task);return {code:0,data:task};}
+  return { code: 0, data:
   action === 'auth/verify' ? { valid: body.user_key === 'john', user: { user_id: 'john' } } :
-  action === 'task/get' ? { team_id: 'preview', creator_user_id: 'john', title: 'Build the project board' } :
-  action === 'team-member/get' ? { status: 'active', role: 'admin' } : action === 'team/get' ? { owner_user_id: 'john' } : null }) },
+  action === 'agent/get' ? { team_id:'preview',status:'active',visibility:'team' } :
+  action === 'task/list' ? {items:tasks,total:tasks.length} :
+  action === 'task/get' ? tasks.find(t=>t.task_id===body.task_id) || { team_id: 'preview', creator_user_id: 'john', title: 'Build the project board' } :
+  action === 'team-member/get' ? { status: 'active', role: 'admin' } : action === 'team/get' ? { owner_user_id: 'john' } : null };} },
 } as unknown as PanelDeps;
 const root = await mkdtemp(path.join(tmpdir(), 'board-preview-'));
 registerTaskActivityRoutes(api, deps, root);

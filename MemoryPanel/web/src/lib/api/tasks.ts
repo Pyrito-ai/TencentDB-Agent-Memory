@@ -1,3 +1,4 @@
+import { writeTaskBoard } from '../../services/task-board';
 /**
  * api/tasks.ts — Task + ParticipationLog（meta/task/* + meta/task-agent/* + meta/participation-log/*）。
  */
@@ -59,6 +60,17 @@ export const tasksApi = {
     teamId: string,
     params?: { limit?: number; offset?: number },
   ): Promise<{ items: BackendTaskWithAgents[]; total: number }> => {
+    if (params?.limit === 0) {
+      const items: BackendTaskWithAgents[] = [];
+      let total = 0;
+      do {
+        const page = await tasksApi.listWithAgents(teamId, { limit: 100, offset: items.length });
+        total = page.total;
+        if (!page.items.length) break;
+        items.push(...page.items);
+      } while (items.length < total);
+      return { items, total };
+    }
     const session = getPanelSession();
     if (!session) throw new ApiError(401, 'Unauthorized', 'no active panel session');
     const body: Record<string, unknown> = { team_id: teamId };
@@ -100,6 +112,7 @@ export const tasksApi = {
       team_id: teamId,
       creator_user_id: me.user_id,
       title: data.title,
+      metadata_json: writeTaskBoard(undefined, { status: 'backlog' }),
       description: data.description,
       source_type: data.source_type ?? 'manual',
       source_url: data.source_url,
@@ -115,6 +128,7 @@ export const tasksApi = {
       title: string;
       description: string;
       status: TaskStatus;
+      metadata_json: string;
       risk_level: 'low' | 'medium' | 'high';
       source_url: string;
     }>

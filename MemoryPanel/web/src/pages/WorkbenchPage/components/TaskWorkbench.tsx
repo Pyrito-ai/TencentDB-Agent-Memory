@@ -10,7 +10,7 @@
  *
  * 数据走后端链路 A（services/backendStore.ts，内部调用 @/lib/teamApi 的 meta 接口）。
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Text } from 'tea-component';
 import {
@@ -19,7 +19,6 @@ import {
   createTask,
   deleteTask,
   updateTask,
-  updateTaskStatus,
   canDeleteTask,
   canEditTask,
 } from '@/services';
@@ -60,16 +59,16 @@ export default function TaskWorkbench(props: {
   const { t } = useTranslation();
   const { activeTeamId, currentUser, agents } = props;
   // 后端分页：useTasks 根据 page + pageSize 调 Panel 聚合接口，内核只返回当前页
-  const PAGE_SIZE = 12;
-  const [currentPage, setCurrentPage] = useState(1);
-  const { tasks, total: tasksTotal, loading: tasksLoading } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
+  const PAGE_SIZE = 0; // The board loads all pages so columns and filters are complete.
+  const currentPage = 1;
+  const { tasks, loading: tasksLoading } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
   const { teams, activeTeam } = useTeams();
   const participationByTask = useTeamParticipation(activeTeamId);
   const [showCreate, setShowCreate] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // 切换 team 时重置到第 1 页
-  useEffect(() => { setCurrentPage(1); }, [activeTeamId]);
+
 
   const sortedTasks = useMemo(() => {
     return [...tasks].sort((a, b) => b.updated_at_ms - a.updated_at_ms);
@@ -116,13 +115,9 @@ export default function TaskWorkbench(props: {
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
           {activeTeam && <TeamHeaderCard team={activeTeam} />}
-          <BoardView
+          <BoardView key={activeTeamId}
           tasks={sortedTasks}
           tasksLoading={tasksLoading}
-          tasksTotal={tasksTotal}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          pageSize={PAGE_SIZE}
           selected={selected}
           onSelect={(id) => setSelectedId(id)}
           onCreate={() => setShowCreate(true)}
@@ -150,29 +145,18 @@ export default function TaskWorkbench(props: {
               }
             }
           }}
-          onUpdateStatus={async (task, status) => {
-            // 权限：编辑 task（含切换 status）允许 team 内任意 member / admin
-            const team = teams.find((t) => t.team_id === task.team_id) ?? null;
-            if (!canEditTask(task, team, currentUser)) {
-              tea.notify.warning(t('task.noPermissionEdit'));
-              return;
-            }
-            try {
-              await updateTaskStatus(task.task_id, status, currentUser);
-            } catch (err) {
-              tea.notify.error(errMsg(err));
-            }
-          }}
           onUpdateTask={async (task, patch) => {
-            const team = teams.find((t) => t.team_id === task.team_id) ?? null;
+            const team = teams.find(t => t.team_id === task.team_id);
             if (!canEditTask(task, team, currentUser)) {
               tea.notify.warning(t('task.noPermissionEdit'));
-              return;
+              return false;
             }
             try {
               await updateTask(task.task_id, patch, currentUser);
+              return true;
             } catch (err) {
               tea.notify.error(errMsg(err));
+              return false;
             }
           }}
           agents={agents}

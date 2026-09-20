@@ -1,3 +1,4 @@
+import { writeTaskBoard, type TaskBoard } from './task-board';
 /**
  * backendStore.ts — Team / Agent / Task 的后端数据层（链路 A）。
  *
@@ -67,6 +68,8 @@ export interface Agent {
 
 export type TaskStatus = 'running' | 'completed';
 export type TaskSourceType = 'manual' | 'tapd';
+
+export type TaskPatch = Partial<Pick<Task, 'title' | 'description' | 'source_type' | 'source_url' | 'linked_agents'>> & { board?: Partial<TaskBoard> };
 
 export interface Task {
   task_id: string;
@@ -340,11 +343,11 @@ export function canManageAsset(
 export function canEditTask(task: Task, team: Team | null | undefined, userId: string): boolean {
   if (!userId) return false;
   if (!team || team.team_id !== task.team_id) return false;
-  return isTeamMember(team, userId);
+  return task.creator_user_id === userId && isTeamMember(team, userId);
 }
 
 export function canDeleteTask(task: Task, team: Team | null | undefined, userId: string): boolean {
-  return canManageAsset({ owner_user_id: task.creator_user_id, team_id: task.team_id }, team, userId);
+  return canEditTask(task, team, userId);
 }
 
 // ========================= Task mutations（async，包一层 diff/参与者逻辑） =========================
@@ -394,7 +397,7 @@ export async function updateTaskStatusAsync(taskId: string, status: TaskStatus, 
 
 export async function updateTaskAsync(
   taskId: string,
-  patch: Partial<Pick<Task, 'title' | 'description' | 'source_type' | 'source_url' | 'linked_agents'>>,
+  patch: TaskPatch,
   actorUserId?: string
 ): Promise<void> {
   const current = await tasksApi.get(taskId);
@@ -409,6 +412,10 @@ export async function updateTaskAsync(
     : ui.participants;
   if (nextParticipants !== ui.participants) {
     updatePayload.metadata_json = writeTaskUiMeta(current.metadata_json, { participants: nextParticipants });
+  }
+  if (patch.board) {
+    updatePayload.metadata_json = writeTaskBoard((updatePayload.metadata_json as string | undefined) ?? current.metadata_json, patch.board);
+    if (patch.board.status) updatePayload.status = patch.board.status === 'done' ? 'completed' : 'running';
   }
   if (Object.keys(updatePayload).length > 0) {
     await tasksApi.update(taskId, updatePayload as Parameters<typeof tasksApi.update>[1]);

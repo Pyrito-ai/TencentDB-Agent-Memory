@@ -1,3 +1,5 @@
+import { TaskExecution } from '@/pages/OrcaWorkbench/TaskExecution';
+import '@/pages/OrcaWorkbench/workbench.css';
 import { TaskProject } from './Projects';
 import TaskTime from './TaskTime';
 import TaskActivity from './TaskActivity';
@@ -196,6 +198,7 @@ export default function TaskDetail({
       </Text>
 
       <TaskProject teamId={task.team_id} taskId={task.task_id} canEdit={canEdit}/>
+      <TaskExecution key={`execution-${task.task_id}`} team={task.team_id} taskId={task.task_id} initialSpec={`${task.title}\n\n${task.description || ''}\n\nAcceptance criteria:\n${board.acceptanceCriteria || 'Not yet specified'}`} />
       <TaskTime key={task.task_id} taskId={task.task_id} currentUser={currentUser} />
       <TaskActivity key={task.task_id} taskId={task.task_id} creator={task.creator_user_id} currentUser={currentUser} />
 

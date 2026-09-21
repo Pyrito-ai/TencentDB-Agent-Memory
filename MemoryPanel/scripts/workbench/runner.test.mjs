@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -18,7 +18,13 @@ test("private runner enforces allowlist, persists idempotency, and reads the Orc
   let server;
   let base;
   async function start() {
-    server = await createBridge({ token, root, repos: ["id:repo"], command });
+    server = await createBridge({
+      native: false,
+      token,
+      root,
+      repos: ["id:repo"],
+      command,
+    });
     await new Promise((r) => server.listen(0, "127.0.0.1", r));
     base = `http://127.0.0.1:${server.address().port}`;
   }
@@ -75,6 +81,7 @@ test("uncertain command outcomes are persisted, never automatically retried", as
   let calls = 0;
   const token = "y".repeat(32);
   const server = await createBridge({
+    native: false,
     token,
     root,
     repos: ["id:r"],
@@ -124,7 +131,13 @@ test("worker follow-ups verify identity and are never replayed; stop preserves w
     if (args[1] === "close") return { close: { ptyKilled: true } };
     throw Error("unexpected command");
   };
-  const server = await createBridge({ token, root, repos: ["id:r"], command });
+  const server = await createBridge({
+    native: false,
+    token,
+    root,
+    repos: ["id:r"],
+    command,
+  });
   await new Promise((r) => server.listen(0, "127.0.0.1", r));
   const base = `http://127.0.0.1:${server.address().port}`;
   const post = (url, body) =>
@@ -167,6 +180,207 @@ test("worker follow-ups verify identity and are never replayed; stop preserves w
     assert.equal(calls.filter((a) => a[1] === "send").length, 1);
   } finally {
     await new Promise((r) => server.close(r));
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("native jobs keep durable identities private, replay once across bridge instances, and retain failed launch receipt", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "orca-native-http-"));
+  const token = "n".repeat(32),
+    calls = [];
+  const command = async (args) => {
+    calls.push(args);
+    switch (args.slice(0, 2).join(" ")) {
+      case "worktree list":
+        return {
+          worktrees: [
+            {
+              id: "r::/repo",
+              repoId: "r",
+              isMainWorktree: true,
+              hostId: "local",
+            },
+          ],
+        };
+      case "repo show":
+        return { repo: { id: "r", path: "/repo" } };
+      case "terminal show":
+        return { terminal: { handle: "controller", connected: true } };
+      case "terminal create":
+        return { terminal: { handle: "controller", paneKey: "pane" } };
+      case "orchestration run-create":
+        return { run: { id: "run" } };
+      case "orchestration task-create":
+        return { task: { id: "task", run_id: "run" } };
+      case "orchestration worker-start":
+        return {
+          runId: "run",
+          taskId: "task",
+          dispatchId: "dispatch",
+          state: "failed",
+          failedStage: "dispatch_input",
+          residualResources: [{ kind: "terminal", id: "worker" }],
+        };
+      case "orchestration worker-show":
+        return {
+          dispatch: {
+            id: "dispatch",
+            run_id: "run",
+            task_id: "task",
+            status: "failed",
+          },
+          worker: {
+            dispatch_id: "dispatch",
+            state: "failed",
+            agent_terminal_handle: "worker",
+          },
+          observation: { status: "live" },
+        };
+      case "orchestration worker-read":
+        return { dispatchId: "dispatch", terminal: { tail: ["blocked"] } };
+      case "orchestration check":
+        return { runId: "run", messages: [] };
+      default:
+        throw Error("unexpected");
+    }
+  };
+  const servers = await Promise.all(
+    [1, 2].map(() => createBridge({ token, root, repos: ["id:r"], command })),
+  );
+  await Promise.all(
+    servers.map((s) => new Promise((r) => s.listen(0, "127.0.0.1", r))),
+  );
+  const input = {
+    id: randomUUID(),
+    repo: "id:r",
+    agent: "claude",
+    spec: "spec",
+  };
+  const post = (s) =>
+    fetch(`http://127.0.0.1:${s.address().port}/jobs`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(input),
+    });
+  try {
+    const concurrent = await Promise.all(servers.map(post));
+    assert.ok(concurrent.some((r) => r.status === 200));
+    assert.ok(concurrent.some((r) => r.status === 409));
+    const receipt = await (await post(servers[0])).json();
+    assert.equal(receipt.native.dispatchId, "dispatch");
+    assert.equal(receipt.native.launchState, "failed");
+    assert.equal(receipt.lifecycle, "failed");
+    assert.equal(receipt.state, "unknown");
+    assert.equal(receipt.controller, undefined);
+    assert.equal(receipt.nativeJournal, undefined);
+    const operation = randomUUID();
+    const send = await fetch(
+      `http://127.0.0.1:${servers[0].address().port}/jobs/${input.id}/send`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ operation, text: "Continue" }),
+      },
+    );
+    const refused = await send.json();
+    assert.deepEqual(refused.lastOperation, {
+      id: operation,
+      action: "send",
+      status: "refused",
+    });
+    assert.equal(refused.lifecycle, "failed");
+    assert.match(refused.notice, /cannot resume/);
+    assert.equal(calls.filter((a) => a[1] === "worker-start").length, 1);
+  } finally {
+    await Promise.all(servers.map((s) => new Promise((r) => s.close(r))));
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("continuation accepts full approved task context up to launch specification limit", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "orca-large-continuation-"));
+  const token = "c".repeat(32),
+    id = randomUUID();
+  let taskId = "original-task",
+    dispatchId = "original-dispatch",
+    receivedSpec;
+  const job = {
+    id,
+    repo: "id:r",
+    agent: "codex",
+    state: "running",
+    lifecycle: "review",
+    controller: "controller",
+    worktree: "r::workspace",
+    directory: root,
+    host: "local",
+    native: { runId: "run", taskId, dispatchId },
+  };
+  await writeFile(path.join(root, id + ".json"), JSON.stringify(job));
+  const command = async (args) => {
+    switch (args.slice(0, 2).join(" ")) {
+      case "orchestration worker-show":
+        return {
+          dispatch: {
+            id: dispatchId,
+            runId: "run",
+            taskId,
+            status:
+              dispatchId === "original-dispatch" ? "completed" : "dispatched",
+          },
+          worker: { dispatchId, worktreeId: "r::workspace" },
+          observation: { status: "live" },
+        };
+      case "worktree show":
+        return {
+          worktree: {
+            id: "r::workspace",
+            repoId: "r",
+            hostId: "local",
+            path: root,
+          },
+        };
+      case "terminal show":
+        return { terminal: { handle: "controller", connected: true } };
+      case "orchestration task-create":
+        receivedSpec = args[args.indexOf("--spec") + 1];
+        return { task: { id: "revision-task", run_id: "run" } };
+      case "orchestration worker-start":
+        taskId = "revision-task";
+        dispatchId = "revision-dispatch";
+        return { runId: "run", taskId, dispatchId, state: "ready" };
+      case "orchestration worker-read":
+        return { dispatchId, terminal: { tail: [] } };
+      case "orchestration check":
+        return { runId: "run", messages: [] };
+      default:
+        throw Error("Unexpected command");
+    }
+  };
+  const server = await createBridge({ token, root, repos: ["id:r"], command });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const post = (spec) =>
+    fetch(`http://127.0.0.1:${server.address().port}/jobs/${id}/continue`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ operation: randomUUID(), spec }),
+    });
+  const context =
+    "Approved revision: simplify header.\nAcceptance: preserve keyboard navigation.\nWiki context: " +
+    "Context excerpt with project decisions. ".repeat(1500);
+  const spec = context.slice(0, 50000);
+  try {
+    assert.equal(spec.length, 50000);
+    const response = await post(spec);
+    assert.equal(response.status, 200);
+    const receipt = await response.json();
+    assert.equal(receipt.lastOperation.status, "accepted");
+    assert.equal(receipt.native.dispatchId, "revision-dispatch");
+    assert.equal(receivedSpec, spec);
+    assert.equal((await post(spec + "x")).status, 400);
+    assert.equal((await post("x".repeat(100001))).status, 413);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
     await rm(root, { recursive: true, force: true });
   }
 });

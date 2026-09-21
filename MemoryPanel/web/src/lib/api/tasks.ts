@@ -1,4 +1,4 @@
-import { writeTaskBoard } from '../../services/task-board';
+import { type BoardStatus, writeTaskBoard } from '../../services/task-board';
 /**
  * api/tasks.ts — Task + ParticipationLog（meta/task/* + meta/task-agent/* + meta/participation-log/*）。
  */
@@ -41,6 +41,9 @@ export interface BackendTaskWithAgents extends BackendTask {
 export const tasksApi = {
   /** 列出 team 下所有 task */
   list: (teamId: string) => metaListAll<BackendTask>('task/list', { team_id: teamId }),
+
+  boardState: (taskId: string) => metaPost<{ task: BackendTask; revision: string }>('task/board-state', { task_id: taskId }),
+  boardTransition: (taskId: string, revision: string, status: BoardStatus) => metaPost<{ task: BackendTask; revision: string }>('task/board-transition', { task_id: taskId, expected_revision: revision, status }),
 
   /** 获取 task 详情（含 linked agents） */
   get: async (taskId: string) => {
@@ -129,6 +132,7 @@ export const tasksApi = {
       description: string;
       status: TaskStatus;
       metadata_json: string;
+      expected_revision: string;
       risk_level: 'low' | 'medium' | 'high';
       source_url: string;
     }>

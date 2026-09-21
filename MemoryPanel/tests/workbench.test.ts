@@ -1,3 +1,5 @@
+import { createRequire } from "node:module";
+const { DatabaseSync } = createRequire(import.meta.url)("node:sqlite");
 import { beforeEach, afterEach, test, expect, vi } from "vitest";
 import { Hono } from "hono";
 import { mkdtemp, rm } from "node:fs/promises";
@@ -14,6 +16,11 @@ beforeEach(async () => {
   vi.resetAllMocks();
   root = await mkdtemp(path.join(tmpdir(), "workbench-"));
   active = true;
+  const board = new DatabaseSync(path.join(root, "time.sqlite"));
+  board.exec(
+    "CREATE TABLE projects(id,instance,team,created_by,archived);CREATE TABLE task_projects(instance,team,task,project_id);INSERT INTO projects VALUES('p','default','team','alice',0);INSERT INTO task_projects VALUES('default','team','task','p');",
+  );
+  board.close();
   plan.mockResolvedValue({
     summary: "Bounded work",
     workers: [
@@ -54,19 +61,32 @@ beforeEach(async () => {
                   status:
                     active && b.user_id !== "outsider" ? "active" : "removed",
                 }
-              : action === "task/get"
+              : action === "task/board-state"
                 ? {
-                    team_id: b.task_id === "foreign" ? "other" : "team",
-                    title: "Task",
-                    description: "Acceptance",
+                    task: {
+                      task_id: b.task_id,
+                      team_id: "team",
+                      creator_user_id: "alice",
+                      title: "Task",
+                      description: "Acceptance",
+                      metadata: { project_board: { status: "ready" } },
+                    },
+                    revision: "1",
                   }
-                : null,
+                : action === "task/get"
+                  ? {
+                      team_id: b.task_id === "foreign" ? "other" : "team",
+                      title: "Task",
+                      description: "Acceptance",
+                    }
+                  : null,
       }),
     },
   } as unknown as PanelDeps;
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
     root,
+    boardRoot: root,
     bindings: [
       {
         id: "r1",
@@ -105,8 +125,18 @@ function req(
   });
 }
 async function make() {
+  await req("execution-bind", { projectId: "p", binding: "r1" });
+  await req("execution-approve", {
+    taskId: "task",
+    agent: "codex",
+    spec: "Own tests only. Verify with test runner.",
+  });
   return (
-    await req("plan", { binding: "r1", objective: "Fix the flaky tests" })
+    await req("plan", {
+      binding: "r1",
+      taskId: "task",
+      objective: "Fix the flaky tests",
+    })
   ).json();
 }
 test("planning cannot execute; approval launches once with server-owned binding", async () => {
@@ -213,13 +243,28 @@ test("persistent conversation accepts follow-ups without launching or duplicatin
         data:
           action === "auth/verify"
             ? { valid: true, user: { user_id: b.user_key } }
-            : { status: "active" },
+            : action === "task/board-state"
+              ? {
+                  task: {
+                    task_id: b.task_id,
+                    team_id: "team",
+                    creator_user_id: "alice",
+                    title: "Task",
+                    description: "Acceptance",
+                    metadata: { project_board: { status: "ready" } },
+                  },
+                  revision: "1",
+                }
+              : action === "task/get"
+                ? { team_id: "team", title: "Task", description: "Acceptance" }
+                : { status: "active" },
       }),
     },
   } as unknown as PanelDeps;
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
     root,
+    boardRoot: root,
     bindings: [
       {
         id: "r1",
@@ -256,6 +301,7 @@ test("persistent conversation accepts follow-ups without launching or duplicatin
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
     root,
+    boardRoot: root,
     bindings: [],
     coordinator: { plan, review, chat },
     runner: { launch, read } as any,
@@ -294,13 +340,28 @@ test("workspace inspection and review decisions remain owner-scoped and reject s
         data:
           action === "auth/verify"
             ? { valid: true, user: { user_id: b.user_key } }
-            : { status: "active" },
+            : action === "task/board-state"
+              ? {
+                  task: {
+                    task_id: b.task_id,
+                    team_id: "team",
+                    creator_user_id: "alice",
+                    title: "Task",
+                    description: "Acceptance",
+                    metadata: { project_board: { status: "ready" } },
+                  },
+                  revision: "1",
+                }
+              : action === "task/get"
+                ? { team_id: "team", title: "Task", description: "Acceptance" }
+                : { status: "active" },
       }),
     },
   } as unknown as PanelDeps;
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
     root,
+    boardRoot: root,
     bindings: [
       {
         id: "r1",
@@ -380,7 +441,21 @@ test("managed projects require owner scope and confirmation before selecting or 
         data:
           action === "auth/verify"
             ? { valid: true, user: { user_id: b.user_key } }
-            : { status: "active" },
+            : action === "task/board-state"
+              ? {
+                  task: {
+                    task_id: b.task_id,
+                    team_id: "team",
+                    creator_user_id: "alice",
+                    title: "Task",
+                    description: "Acceptance",
+                    metadata: { project_board: { status: "ready" } },
+                  },
+                  revision: "1",
+                }
+              : action === "task/get"
+                ? { team_id: "team", title: "Task", description: "Acceptance" }
+                : { status: "active" },
       }),
     },
   } as unknown as PanelDeps;
@@ -390,16 +465,15 @@ test("managed projects require owner scope and confirmation before selecting or 
   const createProject = vi
     .fn()
     .mockResolvedValue({ id: "p2", name: "New project" });
-  const chat = vi
-    .fn()
-    .mockResolvedValue({
-      reply: "Proposed new project",
-      workers: [],
-      project: { action: "create", name: "New project" },
-    });
+  const chat = vi.fn().mockResolvedValue({
+    reply: "Proposed new project",
+    workers: [],
+    project: { action: "create", name: "New project" },
+  });
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
     root,
+    boardRoot: root,
     bindings: [
       {
         id: "owner",

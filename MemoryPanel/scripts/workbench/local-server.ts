@@ -27,7 +27,7 @@ deps.kernelHttp.postEnvelope = async <T>(
       headers: {
         "Content-Type": "application/json",
         "X-Tdai-Service-Id": cred.instanceId,
-        "X-Tdai-User-Key": ownerKey,
+        ...(cred.userKey ? { "X-Tdai-User-Key": cred.userKey } : {}),
       },
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(20000),
@@ -86,10 +86,26 @@ app.get("/api/v1/local-session", (c) => {
       id: t.team_id,
       name: t.name || t.team_name || t.team_id,
     })),
-    user: { id: user.user_id, name: user.name || user.user_name },
+    user: Object.fromEntries(
+      [
+        "user_id",
+        "auth_provider",
+        "external_id",
+        "username",
+        "display_name",
+        "email",
+        "status",
+        "created_at",
+        "updated_at",
+        "user_type",
+      ]
+        .filter((key) => user[key] !== undefined)
+        .map((key) => [key, user[key]]),
+    ),
   });
 });
-app.use("/api/v1/workbench/*", async (c, next) => {
+app.use("/api/v1/*", async (c, next) => {
+  if (c.req.path === "/api/v1/local-session") return next();
   const supplied = Buffer.from(getCookie(c, "workbench_local") || "");
   const expected = Buffer.from(token);
   if (
@@ -104,12 +120,77 @@ app.use("/api/v1/workbench/*", async (c, next) => {
   const headers = new Headers(req.headers);
   headers.set("X-Tdai-Service-Id", config.instance);
   headers.set("X-Tdai-User-Key", ownerKey);
-  const forwarded = new Request(req, { headers });
-  return api.fetch(forwarded);
+  if (c.req.path.startsWith("/api/v1/workbench/"))
+    return api.fetch(new Request(req, { headers }));
+  const meta = c.req.path.match(
+    /^\/api\/v1\/meta\/(task\/(?:list|create|board-state|board-transition|update))$/,
+  );
+  const project = c.req.path.match(
+    /^\/api\/v1\/projects\/[^/]+\/(list|assign)$/,
+  );
+  if (
+    (!meta || req.method !== "POST") &&
+    (!project ||
+      (project[1] === "list" ? req.method !== "GET" : req.method !== "POST"))
+  )
+    return c.json({ error: "Unsupported local development route" }, 404);
+  const response = await fetch(config.tencentUrl + c.req.path, {
+    method: req.method,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Tdai-Service-Id": config.instance,
+      "X-Tdai-User-Key": ownerKey,
+    },
+    ...(req.method === "GET" ? {} : { body: await req.text() }),
+    signal: AbortSignal.timeout(20000),
+  });
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+  });
 });
 const api = new Hono();
 const routes = new Hono();
-registerWorkbenchRoutes(routes, deps);
+async function boardRead(
+  scope: { ctx: { instanceId: string; userKey?: string }; team: string },
+  kind: "projects" | "loops",
+) {
+  if (!scope.ctx.userKey) throw Error("Authenticated Board lookup required");
+  const response = await fetch(
+    `${config.tencentUrl}/api/v1/${kind}/${encodeURIComponent(scope.team)}/list`,
+    {
+      headers: {
+        "X-Tdai-Service-Id": scope.ctx.instanceId,
+        "X-Tdai-User-Key": scope.ctx.userKey,
+      },
+      signal: AbortSignal.timeout(20000),
+    },
+  );
+  if (!response.ok) throw Error("Task Board lookup unavailable");
+  return response.json() as Promise<any>;
+}
+registerWorkbenchRoutes(routes, deps, {
+  boardLookup: {
+    async project(scope, taskId) {
+      const data = await boardRead(scope, "projects");
+      const id = data.assignments.find(
+        (x: any) => x.task === taskId,
+      )?.project_id;
+      return data.items.find((x: any) => x.id === id && !x.archived);
+    },
+    async byId(scope, projectId) {
+      const data = await boardRead(scope, "projects");
+      return data.items.find((x: any) => x.id === projectId && !x.archived);
+    },
+    async isLoopTask(scope, taskId) {
+      const data = await boardRead(scope, "loops");
+      return data.history.some((x: any) => x.task_id === taskId);
+    },
+  },
+});
 api.route("/api/v1", routes);
 app.onError((_e, c) =>
   c.json(

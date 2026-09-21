@@ -207,9 +207,12 @@ const routeTable: Record<string, Handler> = {
   [`${V3_PREFIX}/task/create`]: bind(S.taskCreateSchema, (d, c, s) => s.createTaskForCaller(d, c)),
   [`${V3_PREFIX}/task/get`]: bind(S.taskGetSchema, async (d, _c, s) => orNotFound(await s.getTaskById(d.task_id), "task_not_found", d.task_id)),
   [`${V3_PREFIX}/task/update`]: bind(S.taskUpdateSchema, (d, c, s) => {
-    const { task_id, ...patch } = d;
-    return s.updateTaskForCaller(task_id, patch, c);
+    const { task_id, expected_revision, ...patch } = d;
+    return s.updateTaskForCaller(task_id, patch, c, expected_revision);
   }),
+  [`${V3_PREFIX}/task/board-state`]: bind(S.taskBoardStateSchema, (d, c, s) => s.getTaskBoardForCaller(d.task_id, c)),
+  [`${V3_PREFIX}/task/board-transition`]: bind(S.taskBoardTransitionSchema, (d, c, s) => s.transitionTaskBoardForCaller(d.task_id, d.expected_revision, d.status, c)),
+  [`${V3_PREFIX}/task/execution-grant`]: bind(S.taskExecutionGrantSchema, (d, c, s) => s.grantTaskExecutionForCaller(d.task_id, d.expected_revision, d.service_user_id, c)),
   [`${V3_PREFIX}/task/delete`]: bind(S.taskDeleteSchema, (d, c, s) => s.deleteTasksForCaller(d.task_ids, c)),
   [`${V3_PREFIX}/task/list`]: bind(S.taskListSchema, async (d, _c, s) => {
     const filter: TaskFilter = {};
@@ -224,7 +227,7 @@ const routeTable: Record<string, Handler> = {
     if (d.team_id) return s.listTasksByTeam(d.team_id, pagination, filter);
     return s.listTasks(filter, pagination);
   }),
-  [`${V3_PREFIX}/task/archive`]: bind(S.taskArchiveSchema, (d, c, s) => s.archiveTaskForCaller(d.task_id, c)),
+  [`${V3_PREFIX}/task/archive`]: bind(S.taskArchiveSchema, (d, c, s) => s.archiveTaskForCaller(d.task_id, c, d.expected_revision)),
 
   // TaskAgent
   [`${V3_PREFIX}/task-agent/link`]: bind(S.taskAgentLinkSchema, (d, c, s) =>
@@ -356,6 +359,7 @@ function mapErrorCode(code: string): number {
     case "task_agent_not_linked":
       return 403;
     case "asset_not_bindable":
+    case "revision_conflict":
     case "duplicate_entry":
     case "duplicate_user_key":
     case "key_limit_exceeded":

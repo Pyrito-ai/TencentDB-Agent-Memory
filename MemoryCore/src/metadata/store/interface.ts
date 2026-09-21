@@ -137,6 +137,8 @@ export interface IMetadataStore {
   createTask(input: CreateTaskInput): MaybePromise<TaskEntity>;
   getTaskById(taskId: string): MaybePromise<TaskEntity | null>;
   updateTask(taskId: string, patch: Partial<TaskEntity>): MaybePromise<TaskEntity | null>;
+  /** Atomic field-specific board mutation. Null means snapshot or active membership changed. */
+  compareAndSetTaskBoard(snapshot: TaskEntity, metadataJson: string, status: TaskEntity["status"], callerId: string, patch?: Partial<TaskEntity>): MaybePromise<TaskEntity | null>;
   deleteTasks(taskIds: string[]): MaybePromise<BatchDeleteResult>;
   listTasksByTeam(teamId: string, pagination?: PaginationParams | null, filter?: TaskFilter): MaybePromise<ListPage<TaskEntity>>;
   listTasks(filter: TaskFilter, pagination?: PaginationParams | null): MaybePromise<ListPage<TaskEntity>>;

@@ -334,3 +334,167 @@
   border-top: 1px solid var(--wb-border);
   padding-top: 6px;
 }
+
+.coordinator-title a {
+  color: inherit;
+  font-size: 11px;
+}
+.coordinator-task-settings {
+  padding: 4px 14px 8px;
+  max-height: 250px;
+  overflow: auto;
+}
+.coordinator-task-settings > summary {
+  cursor: pointer;
+}
+.worker-identifiers,
+.task-execution small {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--wb-muted, #666);
+}
+.worker-followup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+.worker-followup label,
+.worker-followup small {
+  flex-basis: 100%;
+}
+.worker-followup textarea {
+  flex: 1;
+  min-width: 180px;
+  min-height: 56px;
+  border: 1px solid var(--wb-border);
+  border-radius: 5px;
+  padding: 6px;
+}
+.coordinator-receipts > div {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--wb-border);
+}
+.task-execution {
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  margin: 12px 0;
+  border: 1px solid var(--wb-border, #dedee3);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.task-execution-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.task-execution a {
+  color: inherit;
+  text-decoration: underline;
+}
+.task-execution label {
+  display: grid;
+  gap: 5px;
+}
+.task-execution textarea {
+  min-height: 95px;
+  width: 100%;
+  resize: vertical;
+}
+.task-execution :is(select, textarea, button) {
+  font: inherit;
+  padding: 6px;
+  border: 1px solid var(--wb-border, #dedee3);
+  border-radius: 4px;
+  color: inherit;
+  background: transparent;
+}
+.task-execution button {
+  justify-self: start;
+  cursor: pointer;
+}
+.task-execution button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.task-execution pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 220px;
+  overflow: auto;
+}
+.task-execution .task-execution-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.task-execution details > label {
+  margin: 9px 0;
+}
+.task-execution p {
+  margin: 0;
+}
+.task-execution [role='alert'] {
+  color: #a22;
+}
+.coordinator-task-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 8px;
+}
+.coordinator-task-picker > label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.coordinator-task-picker > label select {
+  max-width: 340px;
+}
+.coordinator-task-picker > form,
+.coordinator-task-picker > p {
+  flex-basis: 100%;
+}
+.coordinator-task-picker > form {
+  max-height: 280px;
+  overflow: auto;
+}
+.coordinator-context {
+  flex-wrap: wrap;
+}
+.coordinator-context label {
+  font-size: 11px;
+  display: grid;
+  gap: 4px;
+}
+.coordinator-band {
+  max-height: 60%;
+  overflow: auto;
+}
+.coordinator-approval-notice {
+  margin: 0;
+  padding: 8px 14px;
+  color: #356743;
+}
+.worker-question {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #c8a36b;
+  border-radius: 5px;
+}
+.worker-question p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.worker-question label {
+  display: grid;
+  gap: 5px;
+}
+.worker-question textarea {
+  min-height: 60px;
+  width: 100%;
+}

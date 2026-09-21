@@ -50,6 +50,43 @@ export interface Receipt {
   terminal?: string;
   output?: string;
   notice?: string;
+  lastOperation?: {
+    id: string;
+    action: "send" | "stop" | "continue";
+    status: "accepted" | "refused" | "unknown";
+  };
+  attempts?: {
+    native?: Record<string, unknown>;
+    worktree?: string;
+    lifecycle?: string;
+  }[];
+  native?: {
+    runId?: string;
+    taskId?: string;
+    dispatchId?: string;
+    runtimeId?: string;
+    launchState?: string;
+    failedStage?: string;
+  };
+  lifecycle?:
+    | "starting"
+    | "working"
+    | "needs_input"
+    | "review"
+    | "failed"
+    | "stopped"
+    | "unknown";
+  events?: {
+    id: string;
+    type: string;
+    subject: string;
+    body: string;
+    payload?: unknown;
+    runId?: string;
+    taskId?: string;
+    dispatchId?: string;
+    questionState?: "pending" | "answered";
+  }[];
 }
 export interface Runner {
   projects?(
@@ -72,6 +109,13 @@ export interface Runner {
     binding: Binding,
     id: string,
     text: string,
+    operation: string,
+    replyTo?: string,
+  ): Promise<Receipt>;
+  continue?(
+    binding: Binding,
+    id: string,
+    spec: string,
     operation: string,
   ): Promise<Receipt>;
   stop(binding: Binding, id: string, operation: string): Promise<Receipt>;
@@ -107,6 +151,58 @@ export function createRunner(): Runner {
         terminal: z.string().optional(),
         output: z.string().max(100000).optional(),
         notice: z.string().optional(),
+        lastOperation: z
+          .object({
+            id: z.string(),
+            action: z.enum(["send", "stop", "continue"]),
+            status: z.enum(["accepted", "refused", "unknown"]),
+          })
+          .optional(),
+        attempts: z
+          .array(
+            z.object({
+              native: z.record(z.unknown()).optional(),
+              worktree: z.string().optional(),
+              lifecycle: z.string().optional(),
+            }),
+          )
+          .optional(),
+        native: z
+          .object({
+            runId: z.string().optional(),
+            taskId: z.string().optional(),
+            dispatchId: z.string().optional(),
+            runtimeId: z.string().optional(),
+            launchState: z.string().optional(),
+            failedStage: z.string().optional(),
+          })
+          .optional(),
+        lifecycle: z
+          .enum([
+            "starting",
+            "working",
+            "needs_input",
+            "review",
+            "failed",
+            "stopped",
+            "unknown",
+          ])
+          .optional(),
+        events: z
+          .array(
+            z.object({
+              id: z.string(),
+              type: z.string(),
+              subject: z.string(),
+              body: z.string(),
+              payload: z.unknown(),
+              runId: z.string().optional(),
+              taskId: z.string().optional(),
+              dispatchId: z.string().optional(),
+              questionState: z.enum(["pending", "answered"]).optional(),
+            }),
+          )
+          .optional(),
       })
       .parse(data);
 
@@ -149,8 +245,12 @@ export function createRunner(): Runner {
           .object({ path: z.string(), content: z.string().max(300000) })
           .parse(data),
       ),
-    send: (b, id, text, operation) =>
-      request(b, `/jobs/${id}/send`, { text, operation }).then(receipt),
+    send: (b, id, text, operation, replyTo) =>
+      request(b, `/jobs/${id}/send`, { text, operation, replyTo }).then(
+        receipt,
+      ),
+    continue: (b, id, spec, operation) =>
+      request(b, `/jobs/${id}/continue`, { spec, operation }).then(receipt),
     stop: (b, id, operation) =>
       request(b, `/jobs/${id}/stop`, { operation }).then(receipt),
   };

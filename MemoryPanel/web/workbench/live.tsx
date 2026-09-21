@@ -12,7 +12,7 @@ function Live() {
       .then(async (r) => {
         const s = await r.json();
         if (!r.ok) throw Error(s.error);
-        setPanelSession({ instanceId: s.instance, userKey: 'local-cookie-session' });
+        setPanelSession({ instanceId: s.instance, userKey: 'local-cookie-session', user: s.user });
         setTeams(s.teams);
         setTeam(s.teams[0]?.id || '');
       })

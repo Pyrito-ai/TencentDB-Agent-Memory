@@ -7,6 +7,7 @@ export interface TaskBoard {
   assignee: string;
   priority: typeof PRIORITIES[number];
   dueDate: string;
+  plannedStart: string;
   acceptanceCriteria: string;
 }
 function metadata(raw?: string): Record<string, unknown> {
@@ -23,6 +24,7 @@ export function readTaskBoard(task: { metadata_json?: string; status: string }):
     : BOARD_STATUSES.includes(b.status!) && b.status !== 'done' ? b.status! : 'in_progress';
   return { status, assignee: typeof b.assignee === 'string' ? b.assignee : '',
     priority: PRIORITIES.includes(b.priority!) ? b.priority! : 'none',
+    plannedStart: typeof b.plannedStart === 'string' ? b.plannedStart : '',
     dueDate: typeof b.dueDate === 'string' ? b.dueDate : '',
     acceptanceCriteria: typeof b.acceptanceCriteria === 'string' ? b.acceptanceCriteria : '' };
 }

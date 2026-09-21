@@ -92,6 +92,10 @@ export default function TaskDetail({
     if (title !== task.title) patch.title = title;
     if (draftDesc !== task.description) patch.description = draftDesc;
 
+    if (draftBoard.plannedStart && draftBoard.dueDate && draftBoard.plannedStart > draftBoard.dueDate) {
+      tea.notify.warning('Planned start must be on or before the due date.');
+      return;
+    }
     const boardPatch = Object.fromEntries(Object.entries(draftBoard).filter(([key, value]) => value !== board[key as keyof typeof board]));
     if (Object.keys(boardPatch).length) patch.board = boardPatch;
     if (Object.keys(patch).length === 0) {
@@ -157,6 +161,7 @@ export default function TaskDetail({
         <label>{t('board.priority')}<select value={(editing ? draftBoard : board).priority} onChange={e => setDraftBoard({ ...draftBoard, priority: e.target.value as typeof board.priority })}>
           {PRIORITIES.map(p => <option key={p} value={p}>{t(`board.priority.${p}`)}</option>)}
         </select></label>
+        <label>Planned start<input type="date" value={(editing ? draftBoard : board).plannedStart} onChange={e => setDraftBoard({ ...draftBoard, plannedStart: e.target.value })} /></label>
         <label>{t('board.dueDate')}<input type="date" value={(editing ? draftBoard : board).dueDate} onChange={e => setDraftBoard({ ...draftBoard, dueDate: e.target.value })} /></label>
       </fieldset>
       <p className="project-board-detail-note">{t('board.sessionNote')}</p>

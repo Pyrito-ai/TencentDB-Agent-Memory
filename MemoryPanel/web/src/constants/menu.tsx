@@ -19,7 +19,10 @@ import {
 export type PageId =
   | 'orca_workbench'
   | 'workbench_board'
+  | 'today'
+  | 'upcoming'
   | 'timesheets'
+  | 'areas'
   | 'loops'
   | 'wiki'
   | 'code'
@@ -49,7 +52,10 @@ export function usePageMeta(): Record<PageId, PageMeta> {
   return {
     orca_workbench: { id: 'orca_workbench', label: 'Workbench', desc: 'Coordinate subscription workers with Orca', group: t('menu.group.workbench'), order: 3 },
     workbench_board: { id: 'workbench_board', label: t('menu.workbench_board'), desc: t('menu.desc.workbench_board'), group: t('menu.group.workbench'), order: 0, affix: true },
+    today: { id: 'today', label: 'Today', group: t('menu.group.workbench'), order: -2 },
+    upcoming: { id: 'upcoming', label: 'Upcoming', group: t('menu.group.workbench'), order: -1 },
     timesheets: { id: 'timesheets', label: t('menu.timesheets'), group: t('menu.group.workbench'), order: 1 },
+    areas: { id: 'areas', label: 'Areas', group: t('menu.group.workbench'), order: 3 },
     loops: { id: 'loops', label: t('menu.loops'), group: t('menu.group.workbench'), order: 2 },
     analytics:      { id: 'analytics',      label: t('menu.analytics'), desc: t('menu.desc.analytics'), group: t('menu.group.observability'), order: 0 },
     wiki:            { id: 'wiki',            label: t('menu.wiki'), desc: t('menu.desc.wiki'), group: t('menu.group.assets'), order: 2 },
@@ -69,7 +75,10 @@ export const GROUP_ORDER_KEYS = ['workbench', 'observability', 'organization', '
 export const ITEM_ICON: Record<PageId, JSX.Element> = {
   orca_workbench: <ToolsIcon size={16} />,
   workbench_board: <DashboardIcon size={16} />,
+  today: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg>,
+  upcoming: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18m-14 5h3m4 0h3"/></svg>,
   timesheets: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>,
+  areas: <DashboardIcon size={16}/>,
   loops: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>,
   analytics: (
     <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

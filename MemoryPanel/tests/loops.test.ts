@@ -6,7 +6,7 @@ import path from 'node:path';
 import {registerTaskTimeRoutes} from '../src/panel/http/routes/task-time.js';
 import {periodFor,loopStats,nextPeriod} from '../src/panel/http/routes/loop-periods.js';
 import type {PanelDeps} from '../src/panel/panel-deps.js';
-let app:Hono,root:string,close:()=>void,project:string,loop:string;let tasks:any[],failAfterCreate:boolean;
+let app:Hono,root:string,close:()=>void,project:string,loop:string,area:string;let tasks:any[],failAfterCreate:boolean;
 beforeEach(async()=>{
  root=await mkdtemp(path.join(tmpdir(),'loops-test-'));tasks=[];failAfterCreate=false;
  const deps={instanceRegistry:{resolve:(id:string)=>({instance_id:id,gateway_endpoint:'',api_key:''})},metaKernel:{invoke:async(action:string,b:any)=>{
@@ -14,11 +14,12 @@ beforeEach(async()=>{
   return {code:0,data:action==='auth/verify'?{valid:b.user_key!=='invalid',user:{user_id:b.user_key}}:action==='team-member/get'?{status:b.user_id==='outsider'?'removed':'active',role:b.user_id==='admin'?'admin':'member'}:action==='team/get'?{owner_user_id:'admin'}:action==='agent/get'?{team_id:b.agent_id==='foreign'?'other':'team',status:'active',visibility:b.agent_id==='private'?'private':'team',owner_user_id:'admin'}:action==='task/get'?tasks.find(t=>t.task_id===b.task_id):action==='task/list'?{items:tasks,total:tasks.length}:null};
  }}} as unknown as PanelDeps;
  app=new Hono();close=registerTaskTimeRoutes(app,deps,root);
+ area=(await (await req('areas/team/create',{name:'Marketing'})).json()).id;
  project=(await (await req('projects/team/create',{name:'Project'})).json()).id;
  loop=(await (await req('loops/team/create',{name:'Review',brief:'Review the findings',projectId:project,frequency:'weekly',target:2,agents:['agent']})).json()).id;
 });
 afterEach(async()=>{close();await rm(root,{recursive:true,force:true});});
-function req(route:string,body?:unknown,who='alice',instance='default') {return app.request('/'+route,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','X-Tdai-Service-Id':instance,'X-Tdai-User-Key':who},body:body?JSON.stringify(body):undefined});}
+function req(route:string,body?:unknown,who='alice',instance='default') {if(body&&/loops\/.*\/(create|update)$/.test(route))body={areaId:area,ownerId:'alice',mode:'flexible',startDate:'',...body as object};return app.request('/'+route,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','X-Tdai-Service-Id':instance,'X-Tdai-User-Key':who},body:body?JSON.stringify(body):undefined});}
 async function start(requestId='request-1234567890',who='alice',agentId=''){const r=await req('loops/team/start',{loopId:loop,requestId,agentId},who);expect(r.status).toBeLessThan(300);return (await r.json()).occurrence;}
 test('timezone buckets respect DST, month/year transitions and Monday weeks; streaks require targets',()=>{
  expect(periodFor(Date.parse('2026-09-20T23:30:00Z'),'Europe/Madrid','daily')).toBe('2026-09-21');
@@ -48,6 +49,7 @@ test('linked time is reused, stopped, owned by contributor, and protected by app
  const o=await start();const time=(await (await req(`task/time/${o.task_id}/manual`,{started:Date.now()-7200000,seconds:3600,note:'Human work'})).json()).id;
  const running=(await (await req(`task/time/${o.task_id}/start`,{})).json()).id;
  expect((await req('loops/team/complete',{id:o.id,note:'',resultUrl:'',timeIds:[running]})).status).toBe(409);
+ await req(`task/time/${o.task_id}/stop`,{id:running});
  expect((await req('loops/team/complete',{id:o.id,note:'',resultUrl:'',timeIds:[time]})).status).toBe(200);
  expect((await req(`task/time/${o.task_id}/delete`,{id:time})).status).toBe(403);
  const history=(await (await req('loops/team/list')).json()).history;expect(history[0].time[0].seconds).toBe(3600);
@@ -69,4 +71,31 @@ test('schedule changes cannot rewrite history; archive preserves completions',as
  expect((await req('loops/team/complete',{id:o.id,note:'',resultUrl:'javascript:alert(1)',timeIds:[]})).status).toBe(400);
  await req('loops/team/complete',{id:o.id,note:'Done',resultUrl:'',timeIds:[]});await req('loops/team/archive',{id:loop,archived:true});
  expect((await (await req('loops/team/list')).json()).history).toHaveLength(1);
+});
+
+test('Areas and owners are required, scoped, and transferable without rewriting occurrence history',async()=>{
+ const body={name:'Search terms',brief:'',projectId:'',areaId:area,ownerId:'bob',mode:'flexible',frequency:'weekly',target:2,agents:[]};
+ expect((await req('loops/team/create',{...body,ownerId:'outsider'})).status).toBe(400);
+ expect((await req('loops/team/create',{...body,areaId:'foreign-area'})).status).toBe(400);
+ const created=await req('loops/team/create',body);expect(created.status).toBe(201);const id=(await created.json()).id;
+ expect((await req('loops/team/archive',{id,archived:true})).status).toBe(403);
+ const r=await req('loops/team/start',{loopId:id,requestId:'area-owner-request-1234',agentId:''});expect(r.status).toBe(201);const o=(await r.json()).occurrence;expect(o).toMatchObject({owner_id:'bob',author:'alice',area_id:area,project_id:''});
+ expect((await req('loops/team/update',{...body,id,ownerId:'alice'},'bob')).status).toBe(200);
+ const list=await (await req('loops/team/list')).json();expect(list.history.find((x:any)=>x.id===o.id).owner_id).toBe('bob');expect(list.items.find((l:any)=>l.id===id).owner_id).toBe('alice');
+ expect((await req('areas/team/archive',{id:area,archived:true})).status).toBe(409);
+ expect((await req('areas/other/update',{id:area,name:'Stolen',description:''},'admin')).status).toBe(403);
+});
+test('scheduled late completion keeps its original deadline, rejects duplicate slots, and can record skips',async()=>{
+ const body={name:'Friday report',brief:'Report',projectId:'',areaId:area,ownerId:'alice',mode:'scheduled',startDate:'2026-01-02',frequency:'weekly',target:1,agents:[]};
+ const made=await req('loops/team/create',body);expect(made.status).toBe(201);const id=(await made.json()).id;
+ expect((await req('loops/team/start',{loopId:id,requestId:'bad-scheduled-day-1234',agentId:'',dueDay:'2026-01-03'})).status).toBe(400);
+ const r=await req('loops/team/start',{loopId:id,requestId:'friday-report-day-1234',agentId:'',dueDay:'2026-01-02'});expect(r.status).toBe(201);const o=(await r.json()).occurrence;
+ expect(tasks.at(-1).metadata_json).toContain('2026-01-02');
+ expect((await req('loops/team/start',{loopId:id,requestId:'friday-duplicate-1234',agentId:'',dueDay:'2026-01-02'},'bob')).status).toBe(409);
+ expect((await req('loops/team/complete',{id:o.id,note:'Late delivery',resultUrl:'',timeIds:[]})).status).toBe(200);
+ const data=await (await req('loops/team/list')).json();expect(data.history.find((x:any)=>x.id===o.id)).toMatchObject({due_day:'2026-01-02',period:'2025-12-29'});expect(data.items.find((l:any)=>l.id===id).slots.find((s:any)=>s.day==='2026-01-02').late).toBe(true);
+ const skip={loopId:id,requestId:'skip-next-report-1234',agentId:'',dueDay:'2026-01-09',note:'Client paused reports'};
+ expect((await req('loops/team/skip',skip,'bob')).status).toBe(403);expect((await req('loops/team/skip',skip)).status).toBe(201);
+ expect((await req('loops/team/start',{loopId:id,requestId:'skip-replay-slot-1234',agentId:'',dueDay:'2026-01-09'})).status).toBe(409);
+ expect((await req('loops/team/update',{...body,id,startDate:'2026-01-03'})).status).toBe(409);
 });

@@ -1,0 +1,55 @@
+export type Loop = {
+  id: string;
+  name: string;
+  brief: string;
+  project_id: string;
+  area_id: string;
+  owner_id: string;
+  mode: 'flexible' | 'scheduled';
+  start_date: string;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  target: number;
+  timezone: string;
+  agents: string[];
+  archived: number;
+  canManage: boolean;
+  today: string;
+  nextDue: string;
+  overdue: number;
+  slots: { day: string; state: string; late: boolean }[];
+  stats: {
+    currentPeriod: string;
+    progress: number;
+    target: number;
+    currentStreak: number;
+    bestStreak: number;
+    total: number;
+  };
+};
+export type Occurrence = {
+  id: string;
+  loop_id: string;
+  author: string;
+  task_id: string | null;
+  agent_id: string;
+  project_id: string;
+  project_name: string;
+  area_id: string;
+  area_name: string;
+  owner_id: string;
+  due_day: string;
+  brief: string;
+  period: string;
+  state: string;
+  created_at: number;
+  completed_at: number | null;
+  note: string;
+  result_url: string;
+  time: { id: string; seconds: number; review_state: string }[];
+};
+export type LoopData = {
+  items: Loop[];
+  history: Occurrence[];
+  timezone: string;
+  canManageTimezone: boolean;
+};

@@ -167,6 +167,9 @@ app.use("/api/v1/*", async (c, next) => {
   );
   if (
     !readPanel &&
+    !(
+      req.method === "POST" && c.req.path === "/api/v1/task/list-with-agents"
+    ) &&
     !(readMeta && req.method === "POST") &&
     (!meta || req.method !== "POST") &&
     (!project ||

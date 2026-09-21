@@ -217,7 +217,8 @@ createRoot(document.getElementById('root')!).render(
         font: '11px system-ui',
       }}
     >
-      PREVIEW · Coordinator uses sample data · Orca interface is real; pairing enables live control
+      DEMO ONLY · This coordinator never sends tasks to Orca.{' '}
+      <a href="/workbench/index.html">Open live Workbench</a>
     </div>
     <Workspace team="preview" />
   </>,

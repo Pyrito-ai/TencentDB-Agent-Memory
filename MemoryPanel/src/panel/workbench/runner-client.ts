@@ -11,6 +11,7 @@ const bindingSchema = z.object({
   url: z.string().url(),
   token: z.string().min(32),
   webUrl: z.string().url().optional(),
+  manageProjects: z.boolean().optional(),
 });
 export type Binding = z.infer<typeof bindingSchema>;
 export function loadBindings(): Binding[] {
@@ -51,6 +52,13 @@ export interface Receipt {
   notice?: string;
 }
 export interface Runner {
+  projects?(
+    binding: Binding,
+  ): Promise<{ items: { id: string; name: string }[] }>;
+  createProject?(
+    binding: Binding,
+    name: string,
+  ): Promise<{ id: string; name: string }>;
   launch(
     binding: Binding,
     id: string,
@@ -103,6 +111,18 @@ export function createRunner(): Runner {
       .parse(data);
 
   return {
+    projects: (b) =>
+      request(b, "/projects").then((data) =>
+        z
+          .object({
+            items: z.array(z.object({ id: z.string(), name: z.string() })),
+          })
+          .parse(data),
+      ),
+    createProject: (b, name) =>
+      request(b, "/projects", { name }).then((data) =>
+        z.object({ id: z.string(), name: z.string() }).parse(data),
+      ),
     launch: (b, id, agent, spec) =>
       request(b, "/jobs", { id, repo: b.repo, agent, spec }).then(receipt),
     read: (b, id) =>

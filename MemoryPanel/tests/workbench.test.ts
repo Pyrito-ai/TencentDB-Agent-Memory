@@ -252,7 +252,14 @@ test("persistent conversation accepts follow-ups without launching or duplicatin
   expect((await req("message", body)).status).toBe(200);
   expect((await req("message", body)).status).toBe(200);
   expect(chat).toHaveBeenCalledTimes(2);
-  close();app=new Hono();close=registerWorkbenchRoutes(app,deps,{root,bindings:[],coordinator:{plan,review,chat},runner:{launch,read} as any});
+  close();
+  app = new Hono();
+  close = registerWorkbenchRoutes(app, deps, {
+    root,
+    bindings: [],
+    coordinator: { plan, review, chat },
+    runner: { launch, read } as any,
+  });
   const saved = await (await req("runs")).json();
   expect(saved.items[0].messages).toHaveLength(4);
   expect(
@@ -263,16 +270,14 @@ test("persistent conversation accepts follow-ups without launching or duplicatin
 });
 
 test("workspace inspection and review decisions remain owner-scoped and reject stale diffs", async () => {
-  const workspace = vi
-    .fn()
-    .mockResolvedValue({
-      files: [],
-      branch: "test",
-      base: "abc",
-      diff: "change",
-      snapshot: "current",
-      truncated: false,
-    });
+  const workspace = vi.fn().mockResolvedValue({
+    files: [],
+    branch: "test",
+    base: "abc",
+    diff: "change",
+    snapshot: "current",
+    truncated: false,
+  });
   const file = vi.fn().mockResolvedValue({ path: "test.ts", content: "safe" });
   close();
   const deps = {
@@ -357,4 +362,87 @@ test("workspace inspection and review decisions remain owner-scoped and reject s
       })
     ).status,
   ).toBe(409);
+});
+
+test("managed projects require owner scope and confirmation before selecting or creating", async () => {
+  close();
+  const deps = {
+    instanceRegistry: {
+      resolve: (id: string) => ({
+        instance_id: id,
+        gateway_endpoint: "",
+        api_key: "",
+      }),
+    },
+    metaKernel: {
+      invoke: async (action: string, b: any) => ({
+        code: 0,
+        data:
+          action === "auth/verify"
+            ? { valid: true, user: { user_id: b.user_key } }
+            : { status: "active" },
+      }),
+    },
+  } as unknown as PanelDeps;
+  const projects = vi
+    .fn()
+    .mockResolvedValue({ items: [{ id: "p1", name: "First project" }] });
+  const createProject = vi
+    .fn()
+    .mockResolvedValue({ id: "p2", name: "New project" });
+  const chat = vi
+    .fn()
+    .mockResolvedValue({
+      reply: "Proposed new project",
+      workers: [],
+      project: { action: "create", name: "New project" },
+    });
+  app = new Hono();
+  close = registerWorkbenchRoutes(app, deps, {
+    root,
+    bindings: [
+      {
+        id: "owner",
+        label: "Owner runtime",
+        instance: "default",
+        team: "team",
+        user: "alice",
+        repo: "managed",
+        url: "http://localhost",
+        token: "x".repeat(32),
+        manageProjects: true,
+      },
+    ],
+    runner: { launch, read, projects, createProject } as any,
+    coordinator: { chat, plan, review },
+  });
+  expect(
+    (await (await req("options")).json()).bindings.map((b: any) => b.id),
+  ).toEqual(["owner", "owner:p1"]);
+  const start = await (
+    await req("start", { binding: "owner", objective: "Create a new project" })
+  ).json();
+  expect(start.projectProposal.name).toBe("New project");
+  expect(createProject).not.toHaveBeenCalled();
+  expect((await req("project-apply", { id: start.id }, "bob")).status).toBe(
+    404,
+  );
+  const applied = await (await req("project-apply", { id: start.id })).json();
+  expect(applied.binding).toBe("owner:p2");
+  expect(applied.projectProposal).toBeUndefined();
+  expect(createProject).toHaveBeenCalledTimes(1);
+  expect(launch).not.toHaveBeenCalled();
+  expect(
+    (await req("project-create", { runtime: "owner", name: "../escape" }))
+      .status,
+  ).toBe(400);
+  expect(
+    (
+      await req(
+        "project-create",
+        { runtime: "owner", name: "Valid project" },
+        "bob",
+      )
+    ).status,
+  ).toBe(403);
 });

@@ -35,6 +35,11 @@ interface Work {
   assessment?: string;
 }
 interface Run {
+  projectProposal?: {
+    action: "create" | "select";
+    name?: string;
+    binding?: string;
+  };
   id: string;
   binding: string;
   objective: string;
@@ -92,10 +97,55 @@ export function registerWorkbenchRoutes(
     )
       return c.json({ error: "Active team membership required." }, 403);
     c.header("Cache-Control", "private, no-store");
-    const bindings = (options.bindings || loadBindings()).filter(
+    const configuredBindings = (options.bindings || loadBindings()).filter(
       (b) =>
         b.instance === ctx.instanceId && b.team === team && b.user === user,
     );
+    const bindings: Binding[] = [];
+    for (const b of configuredBindings) {
+      if (!b.manageProjects) {
+        bindings.push(b);
+        continue;
+      }
+      bindings.push({
+        ...b,
+        label: "Choose or create a project with the coordinator",
+      });
+      if (!runner.projects)
+        return c.json({ error: "Project listing is unavailable." }, 503);
+      const projects = await runner.projects(b);
+      for (const p of projects.items)
+        bindings.push({
+          ...b,
+          id: `${b.id}:${p.id}`,
+          repo: `id:${p.id}`,
+          label: p.name,
+        });
+    }
+    if (action === "project-create" && c.req.method === "POST") {
+      const input = z
+        .object({
+          runtime: z.string(),
+          name: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9 _-]{1,59}$/),
+        })
+        .safeParse(await c.req.json());
+      if (!input.success)
+        return c.json(
+          {
+            error:
+              "Choose a project name of 2–60 letters, numbers, spaces, underscores or hyphens.",
+          },
+          400,
+        );
+      const b = configuredBindings.find(
+        (b) => b.id === input.data.runtime && b.manageProjects,
+      );
+      if (!b || !runner.createProject)
+        return c.json({ error: "Project creation is not permitted." }, 403);
+      const p = await runner.createProject(b, input.data.name);
+      return c.json({ binding: `${b.id}:${p.id}`, name: p.name }, 201);
+    }
+    const catalog = `\nAvailable project bindings: ${JSON.stringify(bindings.filter((b) => b.repo !== "managed").map((b) => ({ binding: b.id, name: b.label })))}. Project creation is ${configuredBindings.some((b) => b.manageProjects) ? "available" : "unavailable"}.`;
     if (action === "options" && c.req.method === "GET")
       return c.json({
         bindings: bindings.map((b) => ({
@@ -103,6 +153,9 @@ export function registerWorkbenchRoutes(
           label: b.label,
           ...(b.webUrl ? { webUrl: b.webUrl } : {}),
         })),
+        projectRuntimes: configuredBindings
+          .filter((b) => b.manageProjects)
+          .map((b) => ({ id: b.id, label: b.label })),
         coordinatorReady:
           !!options.coordinator ||
           !!(
@@ -154,7 +207,8 @@ export function registerWorkbenchRoutes(
         return c.json({ error: "A plan is already being prepared." }, 409);
       busy.add(lock);
       try {
-        let context = input.context;
+        const project = bindings.find((b) => b.id === input.binding)!;
+        let context = `Selected Orca project: ${project.repo === "managed" ? "NONE. Choose or create a project before proposing workers" : project.label + " (" + project.repo + ")"}. Workers execute only in the selected project.\n${input.context}`;
         if (input.taskId) {
           const env = await deps.metaKernel.invoke(
             "task/get",
@@ -209,9 +263,10 @@ export function registerWorkbenchRoutes(
           try {
             const answer = await coordinator.chat(
               run.messages!,
-              run.context,
+              run.context + catalog,
               [],
             );
+            run.projectProposal = answer.project;
             run.summary = answer.reply;
             run.messages!.push({
               id: randomUUID(),
@@ -315,6 +370,52 @@ export function registerWorkbenchRoutes(
           text,
           created: Date.now(),
         });
+      if (action === "project-apply") {
+        if (run.workers.some((w) => w.state !== "proposed"))
+          return c.json(
+            {
+              error:
+                "Start a new conversation to switch a project after dispatch.",
+            },
+            409,
+          );
+        const proposal = run.projectProposal;
+        if (!proposal)
+          return c.json({ error: "No project proposal pending." }, 409);
+        let target: Binding | undefined;
+        if (proposal.action === "select")
+          target = bindings.find(
+            (b) => b.id === proposal.binding && b.repo !== "managed",
+          );
+        else {
+          const manager = configuredBindings.find(
+            (b) =>
+              b.manageProjects &&
+              (binding.id === b.id || binding.id.startsWith(b.id + ":")),
+          );
+          if (!manager || !runner.createProject || !proposal.name)
+            return c.json({ error: "Project creation unavailable." }, 403);
+          const project = await runner.createProject(manager, proposal.name);
+          target = {
+            ...manager,
+            id: `${manager.id}:${project.id}`,
+            repo: `id:${project.id}`,
+            label: project.name,
+          };
+        }
+        if (!target) return c.json({ error: "Project not available." }, 403);
+        run.binding = target.id;
+        run.context =
+          `Selected Orca project: ${target.label} (${target.repo}).\n` +
+          run.context.replace(/^Selected Orca project:.*\n/, "");
+        run.workers = [];
+        run.projectProposal = undefined;
+        event(
+          `Project selected: ${target.label}. Send the task you want a worker to execute.`,
+        );
+        save();
+        return c.json(run);
+      }
       if (action === "message") {
         if (!input.data.text || !input.data.operation)
           return c.json({ error: "Message and operation ID required." }, 400);
@@ -339,7 +440,7 @@ export function registerWorkbenchRoutes(
         try {
           const answer = await coordinator.chat(
             run.messages,
-            run.context,
+            run.context + catalog,
             run.workers.map((w) => ({
               title: w.title,
               spec: w.spec,
@@ -347,6 +448,7 @@ export function registerWorkbenchRoutes(
               output: w.receipt?.output?.slice(-8000),
             })),
           );
+          run.projectProposal = answer.project;
           run.messages[run.messages.length - 1]!.status = "sent";
           run.messages.push({
             id: randomUUID(),
@@ -438,6 +540,8 @@ export function registerWorkbenchRoutes(
         );
         save();
       } else if (action === "dispatch") {
+        if (binding.repo === "managed")
+          return c.json({ error: "Choose or create a project first." }, 409);
         const worker = run.workers.find((w) => w.id === input.data.workerId);
         if (!worker) return c.json({ error: "Worker not found." }, 404);
         // Claim before external side effects. A timeout/crash must never cause an automatic duplicate launch.

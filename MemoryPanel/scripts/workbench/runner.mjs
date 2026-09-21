@@ -1,3 +1,4 @@
+import { projectManager } from "./projects.mjs";
 import { inspectWorkspace, readWorkspaceFile } from "./workspace.mjs";
 import { realpath } from "node:fs/promises";
 /** Private single-owner Orca bridge. Start behind TLS or use loopback only. */
@@ -27,10 +28,17 @@ export function cli(binary) {
     }
   };
 }
-export async function createBridge({ token, root, repos, command }) {
+export async function createBridge({
+  token,
+  root,
+  repos,
+  command,
+  projectRoot,
+}) {
   if (typeof token !== "string" || token.length < 32)
     throw Error("A runner token of at least 32 characters is required.");
   await mkdir(root, { recursive: true, mode: 0o700 });
+  const projects = await projectManager({ root, projectRoot, repos, command });
   const busy = new Set();
   const file = (id) => path.join(root, id + ".json");
   const persist = async (job) => {
@@ -61,6 +69,25 @@ export async function createBridge({ token, root, repos, command }) {
     )
       return reply(401, { error: "Unauthorized" });
     try {
+      if (req.url === "/projects" && req.method === "GET")
+        return reply(200, { items: await projects.list() });
+      if (req.url === "/projects" && req.method === "POST") {
+        let raw = "";
+        for await (const part of req) {
+          raw += part;
+          if (Buffer.byteLength(raw) > 1000)
+            return reply(413, { error: "Too large" });
+        }
+        try {
+          const input = JSON.parse(raw);
+          return reply(201, await projects.create(input.name));
+        } catch {
+          return reply(409, {
+            error:
+              "Project could not be created. Check the name and inspect Orca before retrying.",
+          });
+        }
+      }
       const scoped =
         /^\/jobs\/([0-9a-f-]{36})\/(workspace|file|send|stop)$/.exec(
           req.url || "",
@@ -113,10 +140,16 @@ export async function createBridge({ token, root, repos, command }) {
             .update(JSON.stringify({ action, text: input.text || "" }))
             .digest("hex");
           const previous = job.operations[input.operation];
-          if(previous){
-            if(previous.fingerprint!==fingerprint)return reply(409,{error:'Operation ID conflict'});
-            if(previous.state!=='done'){job.state='unknown';job.notice='Previous operation outcome is uncertain. Inspect Orca before retrying.';await persist(job);}
-            return reply(200,publicJob(job));
+          if (previous) {
+            if (previous.fingerprint !== fingerprint)
+              return reply(409, { error: "Operation ID conflict" });
+            if (previous.state !== "done") {
+              job.state = "unknown";
+              job.notice =
+                "Previous operation outcome is uncertain. Inspect Orca before retrying.";
+              await persist(job);
+            }
+            return reply(200, publicJob(job));
           }
           job.operations[input.operation] = { fingerprint, state: "pending" };
           await persist(job);
@@ -337,6 +370,7 @@ if (
     root: config.dataDir,
     repos: config.repos,
     command: cli(config.orcaBinary),
+    projectRoot: config.projectRoot,
   });
   server.listen(config.port || 8791, config.host || "127.0.0.1", () =>
     console.log("Workbench runner listening."),

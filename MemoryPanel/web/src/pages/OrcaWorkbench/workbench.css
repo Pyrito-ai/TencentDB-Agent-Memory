@@ -309,3 +309,28 @@
     height: 400px;
   }
 }
+
+.coordinator-projects {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+}
+.coordinator-projects select {
+  max-width: 260px;
+}
+.coordinator-projects small {
+  color: var(--wb-muted);
+}
+.coordinator-projects input {
+  border: 1px solid var(--wb-border);
+  padding: 5px;
+  border-radius: 4px;
+}
+.coordinator-receipts {
+  font-size: 11px;
+  border-top: 1px solid var(--wb-border);
+  padding-top: 6px;
+}

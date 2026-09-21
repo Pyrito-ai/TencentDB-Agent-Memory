@@ -4,8 +4,16 @@ import { useTeams } from '@/services';
 import { getPanelSession } from '@/lib/panelSession';
 import './workbench.css';
 
-type Worker = { id: string; title: string; agent: string; spec: string; state: string };
+type Worker = {
+  receipt?: { output?: string; notice?: string; worktree?: string; terminal?: string };
+  id: string;
+  title: string;
+  agent: string;
+  spec: string;
+  state: string;
+};
 type Run = {
+  projectProposal?: { action: 'create' | 'select'; name?: string; binding?: string };
   id: string;
   binding: string;
   objective: string;
@@ -15,7 +23,11 @@ type Run = {
   messages?: { id: string; role: string; text: string }[];
 };
 type Binding = { id: string; label: string; webUrl?: string };
-type Options = { bindings: Binding[]; coordinatorReady: boolean };
+type Options = {
+  projectRuntimes?: { id: string; label: string }[];
+  bindings: Binding[];
+  coordinatorReady: boolean;
+};
 async function request<T>(team: string, action: string, body?: unknown): Promise<T> {
   const s = getPanelSession();
   if (!s) throw Error('Please sign in.');
@@ -48,6 +60,8 @@ export function Workspace({ team }: { team: string }) {
   const [draft, setDraft] = useState('');
   const [context, setContext] = useState('');
   const [taskId, setTaskId] = useState('');
+  const [newProject, setNewProject] = useState('');
+  const [creatingProject, setCreatingProject] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -99,11 +113,37 @@ export function Workspace({ team }: { team: string }) {
       const next = await request<Run>(team, action, { ...body, operation });
       setRuns((prev) => [next, ...prev.filter((r) => r.id !== next.id)]);
       setSelected(next.id);
+      if (action === 'project-apply') setOptions(await request<Options>(team, 'options'));
       attempts.current.delete(signature);
       return true;
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Request failed.');
       return false;
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
+  async function createProject() {
+    const runtime = options?.projectRuntimes?.[0]?.id;
+    if (!runtime || !newProject.trim() || lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError('');
+    try {
+      const project = await request<{ binding: string; name: string }>(team, 'project-create', {
+        runtime,
+        name: newProject.trim(),
+      });
+      const o = await request<Options>(team, 'options');
+      setOptions(o);
+      setBinding(project.binding);
+      setSelected('');
+      setCreatingProject(false);
+      setNewProject('');
+      setDraft((prev) => prev || `Help me plan work in ${project.name}.`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Project creation failed.');
     } finally {
       lock.current = false;
       setBusy(false);
@@ -240,6 +280,45 @@ export function Workspace({ team }: { team: string }) {
                 )}
               </div>
             )}
+            <div className="coordinator-projects">
+              <span>Project</span>
+              <select
+                aria-label="Target Orca project"
+                disabled={busy || !!run}
+                value={run?.binding || binding}
+                onChange={(e) => setBinding(e.target.value)}
+              >
+                <option value="">Choose an Orca project</option>
+                {options?.bindings.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.label}
+                  </option>
+                ))}
+              </select>
+              {!!options?.projectRuntimes?.length && (
+                <button disabled={busy} onClick={() => setCreatingProject(!creatingProject)}>
+                  New project
+                </button>
+              )}
+              {run && <small>Start a new conversation to change projects.</small>}
+              {creatingProject && (
+                <>
+                  <input
+                    aria-label="New project name"
+                    placeholder="New project name"
+                    value={newProject}
+                    maxLength={60}
+                    onChange={(e) => setNewProject(e.target.value)}
+                  />
+                  <button
+                    disabled={busy || newProject.trim().length < 2}
+                    onClick={() => void createProject()}
+                  >
+                    Create in Orca
+                  </button>
+                </>
+              )}
+            </div>
             <div className="coordinator-body">
               <div
                 className="coordinator-history"
@@ -265,6 +344,23 @@ export function Workspace({ team }: { team: string }) {
                     <p>{m.text}</p>
                   </div>
                 ))}
+                {run?.projectProposal && (
+                  <div className="coordinator-proposal">
+                    <span>
+                      {run.projectProposal.action === 'create' ? 'Create project' : 'Use project'}:{' '}
+                      {run.projectProposal.name ||
+                        options?.bindings.find((b) => b.id === run.projectProposal?.binding)
+                          ?.label ||
+                        run.projectProposal.binding}
+                    </span>
+                    <button
+                      disabled={busy}
+                      onClick={() => void act('project-apply', { id: run.id })}
+                    >
+                      Confirm project
+                    </button>
+                  </div>
+                )}
                 {run?.workers
                   .filter((w) => w.state === 'proposed')
                   .map((w) => (
@@ -283,6 +379,32 @@ export function Workspace({ team }: { team: string }) {
                       </button>
                     </div>
                   ))}
+                {!!run?.workers.some((w) => w.state !== 'proposed') && (
+                  <div className="coordinator-receipts">
+                    {run.workers
+                      .filter((w) => w.state !== 'proposed')
+                      .map((w) => (
+                        <div key={w.id}>
+                          <strong>{w.title}</strong> · {w.agent} · terminal {w.state}
+                          {w.receipt?.worktree && (
+                            <small style={{ display: 'block' }}>
+                              Worktree: {w.receipt.worktree.split('/').pop()}
+                            </small>
+                          )}
+                          {w.receipt?.output && (
+                            <details>
+                              <summary>Worker output / startup prompts</summary>
+                              <pre
+                                style={{ whiteSpace: 'pre-wrap', maxHeight: 200, overflow: 'auto' }}
+                              >
+                                {w.receipt.output}
+                              </pre>
+                            </details>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                )}
                 {busy && (
                   <p className="coordinator-pending" role="status">
                     Working…
@@ -296,20 +418,6 @@ export function Workspace({ team }: { team: string }) {
                   void send();
                 }}
               >
-                {!run && (
-                  <select
-                    aria-label="Runtime and repository"
-                    value={binding}
-                    onChange={(e) => setBinding(e.target.value)}
-                  >
-                    <option value="">Select runtime</option>
-                    {options?.bindings.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
                 <textarea
                   aria-label="Message coordinator"
                   value={draft}

@@ -60,6 +60,32 @@ const teams = await deps.metaKernel.invoke(
   upstreamContext,
 );
 const items = (teams.data as any)?.items || [];
+const publicUser = (value: any) =>
+  Object.fromEntries(
+    [
+      "user_id",
+      "auth_provider",
+      "external_id",
+      "username",
+      "display_name",
+      "email",
+      "status",
+      "created_at",
+      "updated_at",
+      "user_type",
+    ]
+      .filter((key) => value[key] !== undefined)
+      .map((key) => [key, value[key]]),
+  );
+async function verifyOwner() {
+  const result = await deps.metaKernel.invoke(
+    "auth/verify",
+    { user_key: ownerKey },
+    upstreamContext,
+  );
+  if (!(result.data as any)?.valid) throw Error("Owner authentication failed");
+  return publicUser((result.data as any).user);
+}
 const app = new Hono();
 app.use("*", async (c, next) => {
   const origin = c.req.header("origin");
@@ -70,40 +96,34 @@ app.use("*", async (c, next) => {
   c.header("Cache-Control", "no-store");
   await next();
 });
-app.get("/api/v1/local-session", (c) => {
-  // Browser-only bootstrap, bound to the developer UI origin. Never expose owner credentials.
-  if (!c.req.header("referer")?.startsWith(config.browserOrigin + "/"))
-    return c.json({ error: "Open Workbench locally." }, 403);
-  setCookie(c, "workbench_local", token, {
-    httpOnly: true,
-    sameSite: "Strict",
-    path: "/api/v1",
-    maxAge: 28800,
+// Both the standalone Workbench and the full development console use this owner session.
+for (const route of ["/api/v1/local-session", "/api/v1/auth/session"]) {
+  app.get(route, async (c) => {
+    if (!c.req.header("referer")?.startsWith(config.browserOrigin + "/"))
+      return c.json({ error: "Open the local development page." }, 403);
+    const currentUser = await verifyOwner();
+    setCookie(c, "workbench_local", token, {
+      httpOnly: true,
+      sameSite: "Strict",
+      path: "/api/v1",
+      maxAge: 28800,
+    });
+    if (route.endsWith("/auth/session"))
+      return c.json({
+        authenticated: true,
+        instance_id: config.instance,
+        user: currentUser,
+      });
+    return c.json({
+      instance: config.instance,
+      teams: items.map((t: any) => ({
+        id: t.team_id,
+        name: t.name || t.team_name || t.team_id,
+      })),
+      user: currentUser,
+    });
   });
-  return c.json({
-    instance: config.instance,
-    teams: items.map((t: any) => ({
-      id: t.team_id,
-      name: t.name || t.team_name || t.team_id,
-    })),
-    user: Object.fromEntries(
-      [
-        "user_id",
-        "auth_provider",
-        "external_id",
-        "username",
-        "display_name",
-        "email",
-        "status",
-        "created_at",
-        "updated_at",
-        "user_type",
-      ]
-        .filter((key) => user[key] !== undefined)
-        .map((key) => [key, user[key]]),
-    ),
-  });
-});
+}
 app.use("/api/v1/*", async (c, next) => {
   if (c.req.path === "/api/v1/local-session") return next();
   const supplied = Buffer.from(getCookie(c, "workbench_local") || "");
@@ -116,6 +136,14 @@ app.use("/api/v1/*", async (c, next) => {
       { error: "Open the live Workbench page to sign in locally." },
       401,
     );
+  if (c.req.path === "/api/v1/meta/auth/verify" && c.req.method === "POST") {
+    return c.json({
+      code: 0,
+      message: "ok",
+      data: { valid: true, user: await verifyOwner() },
+      request_id: "local-owner-session",
+    });
+  }
   const req = c.req.raw;
   const headers = new Headers(req.headers);
   headers.set("X-Tdai-Service-Id", config.instance);
@@ -125,25 +153,50 @@ app.use("/api/v1/*", async (c, next) => {
   const meta = c.req.path.match(
     /^\/api\/v1\/meta\/(task\/(?:list|create|board-state|board-transition|update))$/,
   );
+  const readMeta = c.req.path.match(
+    /^\/api\/v1\/meta\/(?:team|team-member|agent|task|task-agent|asset|participation-log|acl)\/(?:list|get|list-accessible|check)$/,
+  );
+  const readPanel =
+    req.method === "GET" &&
+    (c.req.path === "/api/v1/meta/instances" ||
+      /^\/api\/v1\/(?:projects|areas|loops|task-time|task-activity|timesheets)\/[^/]+\/(?:list|summary|settings|entries)$/.test(
+        c.req.path,
+      ));
   const project = c.req.path.match(
     /^\/api\/v1\/projects\/[^/]+\/(list|assign)$/,
   );
   if (
+    !readPanel &&
+    !(readMeta && req.method === "POST") &&
     (!meta || req.method !== "POST") &&
     (!project ||
       (project[1] === "list" ? req.method !== "GET" : req.method !== "POST"))
   )
     return c.json({ error: "Unsupported local development route" }, 404);
-  const response = await fetch(config.tencentUrl + c.req.path, {
-    method: req.method,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Tdai-Service-Id": config.instance,
-      "X-Tdai-User-Key": ownerKey,
+  const response = await fetch(
+    config.tencentUrl + c.req.path + new URL(c.req.url).search,
+    {
+      method: req.method,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Tdai-Service-Id": config.instance,
+        "X-Tdai-User-Key": ownerKey,
+      },
+      ...(req.method === "GET" ? {} : { body: await req.text() }),
+      signal: AbortSignal.timeout(20000),
     },
-    ...(req.method === "GET" ? {} : { body: await req.text() }),
-    signal: AbortSignal.timeout(20000),
-  });
+  );
+  if (!response.headers.get("content-type")?.includes("application/json")) {
+    return c.json(
+      {
+        error:
+          response.status === 404
+            ? "This feature is not available on the connected Tencent backend yet. Deploy the Workbench branch backend with the frontend."
+            : "The connected Tencent backend returned an unexpected response.",
+      },
+      502,
+    );
+  }
   return new Response(response.body, {
     status: response.status,
     headers: {

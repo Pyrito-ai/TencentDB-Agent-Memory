@@ -8,6 +8,9 @@ import path from "node:path";
 import { registerWorkbenchRoutes } from "../src/panel/http/routes/workbench.js";
 import type { PanelDeps } from "../src/panel/panel-deps.js";
 let app: Hono, close: () => void, root: string, active: boolean;
+let wikiAllowed = true;
+let profilePrompt = "Use clear acceptance criteria.";
+let profileActive = true;
 const launch = vi.fn(),
   read = vi.fn(),
   plan = vi.fn(),
@@ -16,6 +19,9 @@ beforeEach(async () => {
   vi.resetAllMocks();
   root = await mkdtemp(path.join(tmpdir(), "workbench-"));
   active = true;
+  wikiAllowed = true;
+  profilePrompt = "Use clear acceptance criteria.";
+  profileActive = true;
   const board = new DatabaseSync(path.join(root, "time.sqlite"));
   board.exec(
     "CREATE TABLE projects(id,instance,team,created_by,archived);CREATE TABLE task_projects(instance,team,task,project_id);INSERT INTO projects VALUES('p','default','team','alice',0);INSERT INTO task_projects VALUES('default','team','task','p');",
@@ -54,34 +60,87 @@ beforeEach(async () => {
       invoke: async (action: string, b: any) => ({
         code: 0,
         data:
-          action === "auth/verify"
-            ? { valid: b.user_key !== "invalid", user: { user_id: b.user_key } }
-            : action === "team-member/get"
+          action === "agent/get"
+            ? {
+                agent_id: b.agent_id,
+                team_id: b.agent_id === "foreign" ? "other" : "team",
+                owner_user_id: b.agent_id === "private" ? "bob" : "alice",
+                visibility: "private",
+                status: profileActive ? "active" : "inactive",
+                name: "Designer",
+                prompt: profilePrompt,
+                updated_at: "v1",
+              }
+            : action === "agent/list"
               ? {
-                  status:
-                    active && b.user_id !== "outsider" ? "active" : "removed",
-                }
-              : action === "task/board-state"
-                ? {
-                    task: {
-                      task_id: b.task_id,
+                  items: [
+                    {
+                      agent_id: "designer",
                       team_id: "team",
-                      creator_user_id: "alice",
-                      title: "Task",
-                      description: "Acceptance",
-                      metadata: { project_board: { status: "ready" } },
+                      owner_user_id: "alice",
+                      status: "active",
+                      name: "Designer",
+                      prompt: profilePrompt,
                     },
-                    revision: "1",
+                  ],
+                }
+              : action === "auth/verify"
+                ? {
+                    valid: b.user_key !== "invalid",
+                    user: { user_id: b.user_key },
                   }
-                : action === "task/get"
+                : action === "team-member/get"
                   ? {
-                      team_id: b.task_id === "foreign" ? "other" : "team",
-                      title: "Task",
-                      description: "Acceptance",
+                      status:
+                        active && b.user_id !== "outsider"
+                          ? "active"
+                          : "removed",
                     }
-                  : null,
+                  : action === "task/board-state"
+                    ? {
+                        task: {
+                          task_id: b.task_id,
+                          team_id: "team",
+                          creator_user_id: "alice",
+                          title: "Task",
+                          description: "Acceptance",
+                          metadata: { project_board: { status: "ready" } },
+                        },
+                        revision: "1",
+                      }
+                    : action === "task/get"
+                      ? {
+                          task_id: b.task_id,
+                          team_id: b.task_id === "foreign" ? "other" : "team",
+                          creator_user_id:
+                            b.task_id === "not-owned" ? "bob" : "alice",
+                          title: "Task",
+                          description: "Acceptance",
+                        }
+                      : action === "asset/get"
+                        ? {
+                            asset_id: b.asset_id,
+                            team_id: "team",
+                            asset_type: "llm_wiki",
+                          }
+                        : action === "acl/check"
+                          ? { allowed: wikiAllowed }
+                          : null,
       }),
     },
+    knowledgeClientFactory: () => ({
+      wikiGet: async (id: string) => ({
+        wiki_id: id,
+        team_id: "team",
+        version: "v1",
+      }),
+      wikiPageRead: async (_id: string, refs: string[]) => ({
+        items: refs.map((ref) => ({
+          ref,
+          content: "Verified Wiki context " + ref,
+        })),
+      }),
+    }),
   } as unknown as PanelDeps;
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
@@ -260,6 +319,19 @@ test("persistent conversation accepts follow-ups without launching or duplicatin
                 : { status: "active" },
       }),
     },
+    knowledgeClientFactory: () => ({
+      wikiGet: async (id: string) => ({
+        wiki_id: id,
+        team_id: "team",
+        version: "v1",
+      }),
+      wikiPageRead: async (_id: string, refs: string[]) => ({
+        items: refs.map((ref) => ({
+          ref,
+          content: "Verified Wiki context " + ref,
+        })),
+      }),
+    }),
   } as unknown as PanelDeps;
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
@@ -357,6 +429,19 @@ test("workspace inspection and review decisions remain owner-scoped and reject s
                 : { status: "active" },
       }),
     },
+    knowledgeClientFactory: () => ({
+      wikiGet: async (id: string) => ({
+        wiki_id: id,
+        team_id: "team",
+        version: "v1",
+      }),
+      wikiPageRead: async (_id: string, refs: string[]) => ({
+        items: refs.map((ref) => ({
+          ref,
+          content: "Verified Wiki context " + ref,
+        })),
+      }),
+    }),
   } as unknown as PanelDeps;
   app = new Hono();
   close = registerWorkbenchRoutes(app, deps, {
@@ -458,6 +543,19 @@ test("managed projects require owner scope and confirmation before selecting or 
                 : { status: "active" },
       }),
     },
+    knowledgeClientFactory: () => ({
+      wikiGet: async (id: string) => ({
+        wiki_id: id,
+        team_id: "team",
+        version: "v1",
+      }),
+      wikiPageRead: async (_id: string, refs: string[]) => ({
+        items: refs.map((ref) => ({
+          ref,
+          content: "Verified Wiki context " + ref,
+        })),
+      }),
+    }),
   } as unknown as PanelDeps;
   const projects = vi
     .fn()
@@ -519,4 +617,202 @@ test("managed projects require owner scope and confirmation before selecting or 
       )
     ).status,
   ).toBe(403);
+});
+
+test("direct handoff launches once without coordinator and reuses saved receipt", async () => {
+  const input = { taskId: "task", binding: "r1", agent: "codex" };
+  const first = await req("handoff-launch", input);
+  expect(first.status).toBe(200);
+  const saved = (await first.json()).handoff;
+  expect(saved.receipt.id).toBe(saved.id);
+  expect(launch).toHaveBeenCalledTimes(1);
+  expect(launch.mock.calls[0][3]).toContain("Task\n\nAcceptance");
+  expect(launch.mock.calls[0][3]).toContain("Do not merge, push or deploy");
+  expect(plan).not.toHaveBeenCalled();
+  await req("handoff-launch", input);
+  expect(launch).toHaveBeenCalledTimes(1);
+  expect(
+    (await (await req("handoff-get", { taskId: "task" })).json()).handoff.id,
+  ).toBe(saved.id);
+  expect(
+    (await req("handoff-launch", { ...input, agent: "claude" })).status,
+  ).toBe(409);
+});
+test("uncertain direct launch retries the same id and exact instructions", async () => {
+  launch.mockRejectedValueOnce(Error("timeout"));
+  const input = { taskId: "task", binding: "r1", agent: "claude" };
+  const first = (await (await req("handoff-launch", input)).json()).handoff;
+  expect(first.error).toBeTruthy();
+  await req("handoff-launch", input);
+  expect(launch.mock.calls[0]).toEqual(launch.mock.calls[1]);
+});
+test("direct handoff enforces creator, team membership and configured project", async () => {
+  for (const taskId of ["foreign", "not-owned"]) {
+    expect(
+      (await req("handoff-launch", { taskId, binding: "r1", agent: "codex" }))
+        .status,
+    ).toBe(403);
+  }
+  expect(
+    (
+      await req("handoff-launch", {
+        taskId: "task",
+        binding: "unknown",
+        agent: "codex",
+      })
+    ).status,
+  ).toBe(400);
+  active = false;
+  expect((await req("handoff-get", { taskId: "task" })).status).toBe(403);
+  expect(launch).not.toHaveBeenCalled();
+});
+test("direct handoff rejects mismatched worker evidence", async () => {
+  launch.mockResolvedValue({ id: "another-worker", state: "running" });
+  const saved = (
+    await (
+      await req("handoff-launch", {
+        taskId: "task",
+        binding: "r1",
+        agent: "codex",
+      })
+    ).json()
+  ).handoff;
+  expect(saved.receipt).toBeUndefined();
+  expect(saved.error).toBeTruthy();
+});
+
+test("direct handoff includes inherited and task Wiki pages and refuses revoked sources", async () => {
+  const ref = (path: string) => ({
+    kind: "wiki_page",
+    wikiId: "wiki",
+    ref: path,
+  });
+  expect(
+    (
+      await req("context-save", {
+        kind: "project",
+        id: "p",
+        revision: 0,
+        references: [ref("project.md")],
+      })
+    ).status,
+  ).toBe(200);
+  expect(
+    (
+      await req("context-save", {
+        kind: "task",
+        id: "task",
+        revision: 0,
+        references: [ref("task.md")],
+      })
+    ).status,
+  ).toBe(200);
+  wikiAllowed = false;
+  expect(
+    (
+      await req("handoff-launch", {
+        taskId: "task",
+        binding: "r1",
+        agent: "claude",
+      })
+    ).status,
+  ).toBe(409);
+  expect(launch).not.toHaveBeenCalled();
+  wikiAllowed = true;
+  const response = await req("handoff-launch", {
+    taskId: "task",
+    binding: "r1",
+    agent: "claude",
+  });
+  expect(response.status).toBe(200);
+  const handoff = (await response.json()).handoff;
+  expect(launch.mock.calls[0][3]).toContain("Verified Wiki context project.md");
+  expect(launch.mock.calls[0][3]).toContain("Verified Wiki context task.md");
+  expect(handoff.context.references).toHaveLength(2);
+  expect(handoff.context.hash).toHaveLength(64);
+  wikiAllowed = false;
+  expect((await req("handoff-get", { taskId: "task" })).status).toBe(409);
+  expect(
+    (
+      await req("handoff-launch", {
+        taskId: "task",
+        binding: "r1",
+        agent: "claude",
+      })
+    ).status,
+  ).toBe(409);
+  expect(launch).toHaveBeenCalledTimes(1);
+  expect(plan).not.toHaveBeenCalled();
+});
+
+test("direct handoff snapshots the selected profile and preserves it on retry", async () => {
+  launch.mockRejectedValueOnce(Error("unconfirmed"));
+  const first = await req("handoff-launch", {
+    taskId: "task",
+    binding: "r1",
+    agent: "codex",
+    profileId: "designer",
+  });
+  expect(first.status).toBe(200);
+  const saved = (await first.json()).handoff;
+  expect(saved.profile.id).toBe("designer");
+  expect(launch.mock.calls[0][3]).toContain("Use clear acceptance criteria.");
+  profilePrompt = "Changed later";
+  const retry = await req("handoff-launch", {
+    taskId: "task",
+    binding: "r1",
+    agent: "codex",
+    profileId: "designer",
+  });
+  expect(retry.status).toBe(200);
+  expect(launch.mock.calls[1][3]).toBe(saved.spec);
+  expect(
+    (
+      await req("handoff-launch", {
+        taskId: "task",
+        binding: "r1",
+        agent: "codex",
+      })
+    ).status,
+  ).toBe(409);
+  profileActive = false;
+  expect((await req("handoff-get", { taskId: "task" })).status).toBe(409);
+});
+test("direct handoff refuses foreign and private profiles before launch", async () => {
+  for (const profileId of ["foreign", "private"]) {
+    expect(
+      (
+        await req("handoff-launch", {
+          taskId: "task",
+          binding: "r1",
+          agent: "codex",
+          profileId,
+        })
+      ).status,
+    ).toBe(409);
+  }
+  expect(launch).not.toHaveBeenCalled();
+});
+test("profile catalog requires active membership and returns profile instructions", async () => {
+  const response = await req("handoff-profiles");
+  expect(response.status).toBe(200);
+  expect((await response.json()).items[0]).toMatchObject({
+    id: "designer",
+    prompt: "Use clear acceptance criteria.",
+  });
+  expect((await req("handoff-profiles", undefined, "outsider")).status).toBe(
+    403,
+  );
+  profileActive = false;
+  expect(
+    (
+      await req("handoff-launch", {
+        taskId: "task",
+        binding: "r1",
+        agent: "codex",
+        profileId: "designer",
+      })
+    ).status,
+  ).toBe(409);
+  expect(launch).not.toHaveBeenCalled();
 });

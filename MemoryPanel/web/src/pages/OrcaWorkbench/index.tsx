@@ -15,6 +15,9 @@ import { TaskExecution } from './TaskExecution';
 import { TaskPicker } from './TaskPicker';
 import { WorkerQuestions } from './WorkerQuestions';
 
+// Keep the coordinator available in source while the simpler board-to-Orca flow is trialled.
+const SHOW_COORDINATOR = false;
+
 type Worker = {
   receipt?: WorkerReceipt;
   id: string;
@@ -282,449 +285,461 @@ export function Workspace({ team }: { team: string }) {
     })();
   return (
     <div className="native-workbench">
-      <section
-        className={`coordinator-band ${expanded ? 'expanded' : ''} ${collapsed ? 'collapsed' : ''}`}
-        aria-label="Coordinator conversation"
-      >
-        <header className="coordinator-heading">
-          <div className="coordinator-title">
-            <Bot size={16} />
-            <strong>Coordinator</strong>
-            <span>Workbench</span>
-            {(run?.taskId || taskId) && (
-              <a href={boardTaskUrl(run?.taskId || taskId)}>Back to task</a>
-            )}
-          </div>
-          <div className="coordinator-controls">
-            <select
-              aria-label="Conversation"
-              value={selected}
-              disabled={busy}
-              onChange={(e) => {
-                setSelected(e.target.value);
-                setDraft('');
-                setError('');
-              }}
-            >
-              <option value="">New conversation</option>
-              {runs.map((r) => (
-                <option value={r.id} key={r.id}>
-                  {r.objective}
-                </option>
-              ))}
-            </select>
-            <button
-              title="New conversation"
-              aria-label="New conversation"
-              disabled={busy}
-              onClick={() => {
-                setSelected('');
-                setDraft('');
-                setError('');
-                setCollapsed(false);
-              }}
-            >
-              <Plus size={15} />
-            </button>
-            <button
-              aria-expanded={contextOpen}
-              onClick={() => {
-                setContextOpen(!contextOpen);
-                setCollapsed(false);
-              }}
-            >
-              Context
-            </button>
-            <button
-              aria-label={expanded ? 'Compact coordinator' : 'Expand coordinator'}
-              onClick={() => {
-                setExpanded(!expanded);
-                setCollapsed(false);
-              }}
-            >
-              {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-            </button>
-            <button
-              aria-label={collapsed ? 'Show coordinator' : 'Collapse coordinator'}
-              onClick={() => setCollapsed(!collapsed)}
-            >
-              {collapsed ? 'Show' : 'Hide'}
-            </button>
-          </div>
-        </header>
-        {!collapsed && (
-          <>
-            {error && (
-              <div className="coordinator-error" role="alert">
-                {error}
-              </div>
-            )}
-            {approvalNotice && (
-              <p className="coordinator-approval-notice" role="status">
-                {approvalNotice}
-              </p>
-            )}
-            {contextOpen && (
-              <div className="coordinator-context">
-                {run ? (
-                  <p>{run.context || 'No additional context attached.'}</p>
-                ) : (
-                  <>
-                    <input
-                      aria-label="Tencent task ID"
-                      value={taskId}
-                      onChange={(e) => setTaskId(e.target.value)}
-                      placeholder="Tencent task ID (optional)"
-                    />
-                    <label>
-                      Wiki asset ID
-                      <input
-                        value={wikiId}
-                        onChange={(e) => setWikiId(e.target.value)}
-                        placeholder="Optional authorized Wiki asset"
-                      />
-                    </label>
-                    <label>
-                      Wiki page reference
-                      <input
-                        value={wikiRef}
-                        onChange={(e) => setWikiRef(e.target.value)}
-                        placeholder="Exact page reference"
-                      />
-                    </label>
-                    <textarea
-                      aria-label="Project context"
-                      value={context}
-                      maxLength={20000}
-                      onChange={(e) => setContext(e.target.value)}
-                      placeholder="Memory, Wiki excerpts, and constraints"
-                    />
-                  </>
-                )}
-              </div>
-            )}
-            {!run && (
-              <TaskPicker team={team} taskId={taskId} disabled={busy} onSelect={chooseTask} />
-            )}
-            {(run?.taskId || taskId) && (
-              <details className="coordinator-task-settings">
-                <summary>Task execution settings · {run?.taskId || taskId}</summary>
-                <TaskExecution
-                  key={`${run?.taskId || taskId}:${executionVersion}`}
-                  team={team}
-                  poll={!hasStartedWorkers}
-                  taskId={run?.taskId || taskId}
-                  onBinding={(next) => {
-                    if (!run) setBinding(next);
-                  }}
-                />
-              </details>
-            )}
-            <div className="coordinator-projects">
-              <span>Project</span>
+      {SHOW_COORDINATOR && (
+        <section
+          className={`coordinator-band ${expanded ? 'expanded' : ''} ${collapsed ? 'collapsed' : ''}`}
+          aria-label="Coordinator conversation"
+        >
+          <header className="coordinator-heading">
+            <div className="coordinator-title">
+              <Bot size={16} />
+              <strong>Coordinator</strong>
+              <span>Workbench</span>
+              {(run?.taskId || taskId) && (
+                <a href={boardTaskUrl(run?.taskId || taskId)}>Back to task</a>
+              )}
+            </div>
+            <div className="coordinator-controls">
               <select
-                aria-label="Target Orca project"
-                disabled={busy || !!run}
-                value={run?.binding || binding}
-                onChange={(e) => setBinding(e.target.value)}
+                aria-label="Conversation"
+                value={selected}
+                disabled={busy}
+                onChange={(e) => {
+                  setSelected(e.target.value);
+                  setDraft('');
+                  setError('');
+                }}
               >
-                <option value="">Choose an Orca project</option>
-                {options?.bindings.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.label}
+                <option value="">New conversation</option>
+                {runs.map((r) => (
+                  <option value={r.id} key={r.id}>
+                    {r.objective}
                   </option>
                 ))}
               </select>
-              {!!options?.projectRuntimes?.length && (
-                <button disabled={busy} onClick={() => setCreatingProject(!creatingProject)}>
-                  New project
-                </button>
-              )}
-              {run && <small>Start a new conversation to change projects.</small>}
-              {creatingProject && (
-                <>
-                  <input
-                    aria-label="New project name"
-                    placeholder="New project name"
-                    value={newProject}
-                    maxLength={60}
-                    onChange={(e) => setNewProject(e.target.value)}
-                  />
-                  <button
-                    disabled={busy || newProject.trim().length < 2}
-                    onClick={() => void createProject()}
-                  >
-                    Create in Orca
-                  </button>
-                </>
-              )}
-            </div>
-            <div className="coordinator-body">
-              <div
-                className="coordinator-history"
-                ref={history}
-                role="log"
-                aria-label="Coordinator messages"
+              <button
+                title="New conversation"
+                aria-label="New conversation"
+                disabled={busy}
+                onClick={() => {
+                  setSelected('');
+                  setDraft('');
+                  setError('');
+                  setCollapsed(false);
+                }}
               >
-                {!messages.length && (
-                  <div className="coordinator-welcome">
-                    <strong>What should we work on?</strong>
-                    <p>Plan here. Delegate to workers in the Orca workspace below.</p>
-                  </div>
+                <Plus size={15} />
+              </button>
+              <button
+                aria-expanded={contextOpen}
+                onClick={() => {
+                  setContextOpen(!contextOpen);
+                  setCollapsed(false);
+                }}
+              >
+                Context
+              </button>
+              <button
+                aria-label={expanded ? 'Compact coordinator' : 'Expand coordinator'}
+                onClick={() => {
+                  setExpanded(!expanded);
+                  setCollapsed(false);
+                }}
+              >
+                {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+              </button>
+              <button
+                aria-label={collapsed ? 'Show coordinator' : 'Collapse coordinator'}
+                onClick={() => setCollapsed(!collapsed)}
+              >
+                {collapsed ? 'Show' : 'Hide'}
+              </button>
+            </div>
+          </header>
+          {!collapsed && (
+            <>
+              {error && (
+                <div className="coordinator-error" role="alert">
+                  {error}
+                </div>
+              )}
+              {approvalNotice && (
+                <p className="coordinator-approval-notice" role="status">
+                  {approvalNotice}
+                </p>
+              )}
+              {contextOpen && (
+                <div className="coordinator-context">
+                  {run ? (
+                    <p>{run.context || 'No additional context attached.'}</p>
+                  ) : (
+                    <>
+                      <input
+                        aria-label="Tencent task ID"
+                        value={taskId}
+                        onChange={(e) => setTaskId(e.target.value)}
+                        placeholder="Tencent task ID (optional)"
+                      />
+                      <label>
+                        Wiki asset ID
+                        <input
+                          value={wikiId}
+                          onChange={(e) => setWikiId(e.target.value)}
+                          placeholder="Optional authorized Wiki asset"
+                        />
+                      </label>
+                      <label>
+                        Wiki page reference
+                        <input
+                          value={wikiRef}
+                          onChange={(e) => setWikiRef(e.target.value)}
+                          placeholder="Exact page reference"
+                        />
+                      </label>
+                      <textarea
+                        aria-label="Project context"
+                        value={context}
+                        maxLength={20000}
+                        onChange={(e) => setContext(e.target.value)}
+                        placeholder="Memory, Wiki excerpts, and constraints"
+                      />
+                    </>
+                  )}
+                </div>
+              )}
+              {!run && (
+                <TaskPicker team={team} taskId={taskId} disabled={busy} onSelect={chooseTask} />
+              )}
+              {(run?.taskId || taskId) && (
+                <details className="coordinator-task-settings">
+                  <summary>Task execution settings · {run?.taskId || taskId}</summary>
+                  <TaskExecution
+                    key={`${run?.taskId || taskId}:${executionVersion}`}
+                    team={team}
+                    poll={!hasStartedWorkers}
+                    taskId={run?.taskId || taskId}
+                    onBinding={(next) => {
+                      if (!run) setBinding(next);
+                    }}
+                  />
+                </details>
+              )}
+              <div className="coordinator-projects">
+                <span>Project</span>
+                <select
+                  aria-label="Target Orca project"
+                  disabled={busy || !!run}
+                  value={run?.binding || binding}
+                  onChange={(e) => setBinding(e.target.value)}
+                >
+                  <option value="">Choose an Orca project</option>
+                  {options?.bindings.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.label}
+                    </option>
+                  ))}
+                </select>
+                {!!options?.projectRuntimes?.length && (
+                  <button disabled={busy} onClick={() => setCreatingProject(!creatingProject)}>
+                    New project
+                  </button>
                 )}
-                {messages.map((m) => (
-                  <div className={`coordinator-message ${m.role}`} key={m.id}>
-                    <span>
-                      {m.role === 'user'
-                        ? 'You'
-                        : m.role === 'assistant'
-                          ? 'Coordinator'
-                          : 'Activity'}
-                    </span>
-                    <p>{m.text}</p>
-                  </div>
-                ))}
-                {run?.projectProposal && (
-                  <div className="coordinator-proposal">
-                    <span>
-                      {run.projectProposal.action === 'create' ? 'Create project' : 'Use project'}:{' '}
-                      {run.projectProposal.name ||
-                        options?.bindings.find((b) => b.id === run.projectProposal?.binding)
-                          ?.label ||
-                        run.projectProposal.binding}
-                    </span>
+                {run && <small>Start a new conversation to change projects.</small>}
+                {creatingProject && (
+                  <>
+                    <input
+                      aria-label="New project name"
+                      placeholder="New project name"
+                      value={newProject}
+                      maxLength={60}
+                      onChange={(e) => setNewProject(e.target.value)}
+                    />
                     <button
-                      disabled={busy}
-                      onClick={() => void act('project-apply', { id: run.id })}
+                      disabled={busy || newProject.trim().length < 2}
+                      onClick={() => void createProject()}
                     >
-                      Confirm project
+                      Create in Orca
                     </button>
-                  </div>
+                  </>
                 )}
-                {run?.workers
-                  .filter((w) => w.state === 'proposed')
-                  .map((w) => (
-                    <div className="coordinator-proposal" key={w.id}>
-                      <details>
-                        <summary>
-                          {w.title} <small>{w.agent}</small>
-                        </summary>
-                        <p>{w.spec}</p>
-                      </details>
-                      <button disabled={busy || !run.taskId} onClick={() => void approveWorker(w)}>
-                        Approve these instructions
-                      </button>
-                      <button
-                        disabled={busy || !run.taskId}
-                        title={
-                          !run.taskId
-                            ? 'Attach a Task Board task and approve execution first'
-                            : undefined
-                        }
-                        onClick={() => void act('dispatch', { id: run.id, workerId: w.id })}
-                      >
-                        Launch approved task
-                      </button>
+              </div>
+              <div className="coordinator-body">
+                <div
+                  className="coordinator-history"
+                  ref={history}
+                  role="log"
+                  aria-label="Coordinator messages"
+                >
+                  {!messages.length && (
+                    <div className="coordinator-welcome">
+                      <strong>What should we work on?</strong>
+                      <p>Plan here. Delegate to workers in the Orca workspace below.</p>
+                    </div>
+                  )}
+                  {messages.map((m) => (
+                    <div className={`coordinator-message ${m.role}`} key={m.id}>
+                      <span>
+                        {m.role === 'user'
+                          ? 'You'
+                          : m.role === 'assistant'
+                            ? 'Coordinator'
+                            : 'Activity'}
+                      </span>
+                      <p>{m.text}</p>
                     </div>
                   ))}
-                {!!run?.workers.some((w) => w.state !== 'proposed') && (
-                  <div className="coordinator-receipts">
-                    {run.workers
-                      .filter((w) => w.state !== 'proposed')
-                      .map((w) => (
-                        <div key={w.id}>
-                          <strong>{w.title}</strong> · {w.agent} ·{' '}
-                          {executionLabel(w.receipt?.lifecycle || w.state)}
-                          <WorkerQuestions
-                            receipt={w.receipt}
-                            busy={busy || w.receipt?.lastOperation?.status === 'unknown'}
-                            onReply={(replyTo, text) =>
-                              act('send', { id: run.id, workerId: w.id, text, replyTo })
-                            }
-                          />
-                          {w.receipt?.notice && <p role="status">{w.receipt.notice}</p>}
-                          {w.receipt?.native && (
-                            <small className="worker-identifiers">
-                              Run: {w.receipt.native.runId || '—'} · Task:{' '}
-                              {w.receipt.native.taskId || '—'} · Dispatch:{' '}
-                              {w.receipt.native.dispatchId || '—'}
-                            </small>
-                          )}
-                          {w.receipt?.worktree && (
-                            <small style={{ display: 'block' }}>
-                              Worktree: {w.receipt.worktree.split('/').pop()}
-                            </small>
-                          )}
-                          <form
-                            className="worker-followup"
-                            onSubmit={(e) => {
-                              e.preventDefault();
-                              const text = followups[w.id]?.trim();
-                              if (text)
-                                void act('send', { id: run.id, workerId: w.id, text }).then(
-                                  (ok) => {
-                                    if (ok) setFollowups((prev) => ({ ...prev, [w.id]: '' }));
-                                  },
-                                );
-                            }}
-                          >
-                            <label htmlFor={`followup-${w.id}`}>Message {w.title}</label>
-                            <textarea
-                              id={`followup-${w.id}`}
-                              disabled={w.receipt?.lastOperation?.status === 'unknown'}
-                              value={followups[w.id] || ''}
-                              maxLength={8000}
-                              onChange={(e) =>
-                                setFollowups((prev) => ({ ...prev, [w.id]: e.target.value }))
+                  {run?.projectProposal && (
+                    <div className="coordinator-proposal">
+                      <span>
+                        {run.projectProposal.action === 'create' ? 'Create project' : 'Use project'}
+                        :{' '}
+                        {run.projectProposal.name ||
+                          options?.bindings.find((b) => b.id === run.projectProposal?.binding)
+                            ?.label ||
+                          run.projectProposal.binding}
+                      </span>
+                      <button
+                        disabled={busy}
+                        onClick={() => void act('project-apply', { id: run.id })}
+                      >
+                        Confirm project
+                      </button>
+                    </div>
+                  )}
+                  {run?.workers
+                    .filter((w) => w.state === 'proposed')
+                    .map((w) => (
+                      <div className="coordinator-proposal" key={w.id}>
+                        <details>
+                          <summary>
+                            {w.title} <small>{w.agent}</small>
+                          </summary>
+                          <p>{w.spec}</p>
+                        </details>
+                        <button
+                          disabled={busy || !run.taskId}
+                          onClick={() => void approveWorker(w)}
+                        >
+                          Approve these instructions
+                        </button>
+                        <button
+                          disabled={busy || !run.taskId}
+                          title={
+                            !run.taskId
+                              ? 'Attach a Task Board task and approve execution first'
+                              : undefined
+                          }
+                          onClick={() => void act('dispatch', { id: run.id, workerId: w.id })}
+                        >
+                          Launch approved task
+                        </button>
+                      </div>
+                    ))}
+                  {!!run?.workers.some((w) => w.state !== 'proposed') && (
+                    <div className="coordinator-receipts">
+                      {run.workers
+                        .filter((w) => w.state !== 'proposed')
+                        .map((w) => (
+                          <div key={w.id}>
+                            <strong>{w.title}</strong> · {w.agent} ·{' '}
+                            {executionLabel(w.receipt?.lifecycle || w.state)}
+                            <WorkerQuestions
+                              receipt={w.receipt}
+                              busy={busy || w.receipt?.lastOperation?.status === 'unknown'}
+                              onReply={(replyTo, text) =>
+                                act('send', { id: run.id, workerId: w.id, text, replyTo })
                               }
-                              placeholder="Send instructions to this existing worker…"
                             />
-                            <button
-                              disabled={
-                                busy ||
-                                workerSettled(w.receipt, w.state) ||
-                                !followups[w.id]?.trim()
-                              }
+                            {w.receipt?.notice && <p role="status">{w.receipt.notice}</p>}
+                            {w.receipt?.native && (
+                              <small className="worker-identifiers">
+                                Run: {w.receipt.native.runId || '—'} · Task:{' '}
+                                {w.receipt.native.taskId || '—'} · Dispatch:{' '}
+                                {w.receipt.native.dispatchId || '—'}
+                              </small>
+                            )}
+                            {w.receipt?.worktree && (
+                              <small style={{ display: 'block' }}>
+                                Worktree: {w.receipt.worktree.split('/').pop()}
+                              </small>
+                            )}
+                            <form
+                              className="worker-followup"
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                const text = followups[w.id]?.trim();
+                                if (text)
+                                  void act('send', { id: run.id, workerId: w.id, text }).then(
+                                    (ok) => {
+                                      if (ok) setFollowups((prev) => ({ ...prev, [w.id]: '' }));
+                                    },
+                                  );
+                              }}
                             >
-                              Send to worker
-                            </button>
-                            <small>
-                              Submission does not confirm the worker has acted on the message.
-                            </small>
-                          </form>
-                          {w.receipt?.lastOperation?.status === 'unknown' && (
-                            <small>
-                              Submission outcome uncertain. Retry the saved operation in Task
-                              execution settings.
-                            </small>
-                          )}
-                          {workerSettled(w.receipt, w.state) && (
-                            <small>
-                              This attempt has ended. Use Task execution settings to approve a
-                              revision.
-                            </small>
-                          )}
-                          {w.receipt?.output && (
-                            <details>
-                              <summary>Worker output / startup prompts</summary>
-                              <pre
-                                style={{ whiteSpace: 'pre-wrap', maxHeight: 200, overflow: 'auto' }}
+                              <label htmlFor={`followup-${w.id}`}>Message {w.title}</label>
+                              <textarea
+                                id={`followup-${w.id}`}
+                                disabled={w.receipt?.lastOperation?.status === 'unknown'}
+                                value={followups[w.id] || ''}
+                                maxLength={8000}
+                                onChange={(e) =>
+                                  setFollowups((prev) => ({ ...prev, [w.id]: e.target.value }))
+                                }
+                                placeholder="Send instructions to this existing worker…"
+                              />
+                              <button
+                                disabled={
+                                  busy ||
+                                  workerSettled(w.receipt, w.state) ||
+                                  !followups[w.id]?.trim()
+                                }
                               >
-                                {w.receipt.output}
-                              </pre>
-                            </details>
+                                Send to worker
+                              </button>
+                              <small>
+                                Submission does not confirm the worker has acted on the message.
+                              </small>
+                            </form>
+                            {w.receipt?.lastOperation?.status === 'unknown' && (
+                              <small>
+                                Submission outcome uncertain. Retry the saved operation in Task
+                                execution settings.
+                              </small>
+                            )}
+                            {workerSettled(w.receipt, w.state) && (
+                              <small>
+                                This attempt has ended. Use Task execution settings to approve a
+                                revision.
+                              </small>
+                            )}
+                            {w.receipt?.output && (
+                              <details>
+                                <summary>Worker output / startup prompts</summary>
+                                <pre
+                                  style={{
+                                    whiteSpace: 'pre-wrap',
+                                    maxHeight: 200,
+                                    overflow: 'auto',
+                                  }}
+                                >
+                                  {w.receipt.output}
+                                </pre>
+                              </details>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                  {run?.pendingActions?.map((action) => {
+                    const target = run.workers.find((worker) => worker.id === action.workerId);
+                    const proposed = !action.status || action.status === 'proposed';
+                    return (
+                      <div className="coordinator-proposal" key={action.id}>
+                        <div>
+                          <strong>
+                            {proposed
+                              ? 'Proposed message'
+                              : action.status === 'submitted'
+                                ? 'Message submitted'
+                                : 'Submission outcome uncertain'}{' '}
+                            to {target?.title || action.workerId}
+                          </strong>
+                          <p>{action.text}</p>
+                          {!proposed && (
+                            <small>
+                              {action.status === 'submitted'
+                                ? 'Submission does not confirm the worker has acted.'
+                                : 'Refresh worker evidence before sending this instruction again.'}
+                            </small>
                           )}
                         </div>
-                      ))}
-                  </div>
-                )}
-                {run?.pendingActions?.map((action) => {
-                  const target = run.workers.find((worker) => worker.id === action.workerId);
-                  const proposed = !action.status || action.status === 'proposed';
-                  return (
-                    <div className="coordinator-proposal" key={action.id}>
-                      <div>
-                        <strong>
-                          {proposed
-                            ? 'Proposed message'
-                            : action.status === 'submitted'
-                              ? 'Message submitted'
-                              : 'Submission outcome uncertain'}{' '}
-                          to {target?.title || action.workerId}
-                        </strong>
-                        <p>{action.text}</p>
-                        {!proposed && (
+                        {proposed && (
+                          <button
+                            disabled={
+                              busy ||
+                              !target ||
+                              target.receipt?.lastOperation?.status === 'unknown' ||
+                              workerSettled(target.receipt, target.state)
+                            }
+                            onClick={() =>
+                              void act('send', {
+                                id: run.id,
+                                actionId: action.id,
+                                workerId: action.workerId,
+                                text: action.text,
+                              })
+                            }
+                          >
+                            Send to worker
+                          </button>
+                        )}
+                        {proposed && target && workerSettled(target.receipt, target.state) && (
                           <small>
-                            {action.status === 'submitted'
-                              ? 'Submission does not confirm the worker has acted.'
-                              : 'Refresh worker evidence before sending this instruction again.'}
+                            This attempt has ended. Approve a revision in Task execution settings.
                           </small>
                         )}
                       </div>
-                      {proposed && (
-                        <button
-                          disabled={
-                            busy ||
-                            !target ||
-                            target.receipt?.lastOperation?.status === 'unknown' ||
-                            workerSettled(target.receipt, target.state)
-                          }
-                          onClick={() =>
-                            void act('send', {
-                              id: run.id,
-                              actionId: action.id,
-                              workerId: action.workerId,
-                              text: action.text,
-                            })
-                          }
-                        >
-                          Send to worker
-                        </button>
-                      )}
-                      {proposed && target && workerSettled(target.receipt, target.state) && (
-                        <small>
-                          This attempt has ended. Approve a revision in Task execution settings.
-                        </small>
-                      )}
-                    </div>
-                  );
-                })}
-                {busy && (
-                  <p className="coordinator-pending" role="status">
-                    Working…
-                  </p>
-                )}
-              </div>
-              <form
-                className="coordinator-composer"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  void send();
-                }}
-              >
-                <textarea
-                  aria-label="Message coordinator"
-                  value={draft}
-                  maxLength={8000}
-                  onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Ask, plan, or delegate…"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                      e.preventDefault();
-                      void send();
-                    }
-                  }}
-                />
-                <div className="coordinator-send">
-                  <small>
-                    {options && !options.coordinatorReady
-                      ? 'Configure coordinator model to chat'
-                      : 'Coordinator · API billing'}
-                  </small>
-                  <button
-                    aria-label="Send message to coordinator"
-                    disabled={
-                      busy ||
-                      !connection ||
-                      !options?.coordinatorReady ||
-                      draft.trim().length < (run ? 1 : 10)
-                    }
-                  >
-                    <ArrowUp size={16} />
-                  </button>
+                    );
+                  })}
+                  {busy && (
+                    <p className="coordinator-pending" role="status">
+                      Working…
+                    </p>
+                  )}
                 </div>
-              </form>
-            </div>
-          </>
-        )}
-      </section>
+                <form
+                  className="coordinator-composer"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void send();
+                  }}
+                >
+                  <textarea
+                    aria-label="Message coordinator"
+                    value={draft}
+                    maxLength={8000}
+                    onChange={(e) => setDraft(e.target.value)}
+                    placeholder="Ask, plan, or delegate…"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault();
+                        void send();
+                      }
+                    }}
+                  />
+                  <div className="coordinator-send">
+                    <small>
+                      {options && !options.coordinatorReady
+                        ? 'Configure coordinator model to chat'
+                        : 'Coordinator · API billing'}
+                    </small>
+                    <button
+                      aria-label="Send message to coordinator"
+                      disabled={
+                        busy ||
+                        !connection ||
+                        !options?.coordinatorReady ||
+                        draft.trim().length < (run ? 1 : 10)
+                      }
+                    >
+                      <ArrowUp size={16} />
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </>
+          )}
+        </section>
+      )}
       <section className="native-orca" aria-label="Orca workspace">
         <header className="native-orca-toolbar">
-          <strong>Workspace</strong>
-          <span>{connection?.label || 'No runtime selected'}</span>
+          <strong>Workbench</strong>
+          {(run?.taskId || taskId) && (
+            <a href={boardTaskUrl(run?.taskId || taskId)}>Back to task</a>
+          )}
           <div />
-          {lastSynced && <span aria-live="polite">{lastSynced}</span>}
-          {run && (
+          {SHOW_COORDINATOR && lastSynced && <span aria-live="polite">{lastSynced}</span>}
+          {SHOW_COORDINATOR && run && (
             <button
               disabled={busy}
               title="Refresh coordinator worker receipts"
@@ -764,10 +779,7 @@ export function Workspace({ team }: { team: string }) {
           <div className="orca-connection-empty">
             <strong>Connect the Orca interface</strong>
             <p>Configure this runtime’s browser-client URL to load Orca’s own workspace here.</p>
-            <p>
-              The coordinator and Orca must use the same runtime. Pair directly inside Orca when
-              prompted.
-            </p>
+            <p>Pair directly inside Orca when prompted.</p>
           </div>
         )}
       </section>

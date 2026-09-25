@@ -41,6 +41,44 @@ deps.kernelHttp.postEnvelope = async <T>(
     request_id: string;
   };
 };
+// The local host reads Wiki pages through the upstream authenticated Panel, never its private service port.
+const originalKnowledgeFactory = deps.knowledgeClientFactory;
+deps.knowledgeClientFactory = (instanceId) => {
+  const original = originalKnowledgeFactory(instanceId);
+  const invoke = async (action: string, body: unknown) => {
+    const response = await fetch(
+      config.tencentUrl + "/api/v1/knowledge/wiki/" + action,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Tdai-Service-Id": instanceId,
+          "X-Tdai-User-Key": ownerKey,
+        },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(20000),
+      },
+    );
+    if (!response.ok) throw Error("Wiki service unavailable");
+    const result = (await response.json()) as any;
+    if (result.code !== 0 || !result.data)
+      throw Error("Wiki access unavailable");
+    return result.data;
+  };
+  return new Proxy(original, {
+    get(target, property) {
+      if (property === "wikiGet")
+        return (wikiId: string) => invoke("get", { wiki_id: wikiId });
+      if (property === "wikiPageLs")
+        return (wikiId: string) => invoke("page/ls", { wiki_id: wikiId });
+      if (property === "wikiPageRead")
+        return (wikiId: string, refs: string[]) =>
+          invoke("page/read", { wiki_id: wikiId, refs });
+      const value = Reflect.get(target, property);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+};
 const upstreamContext = {
   instanceId: config.instance,
   gatewayEndpoint: config.tencentUrl,
@@ -163,7 +201,7 @@ app.use("/api/v1/*", async (c, next) => {
         c.req.path,
       ));
   const project = c.req.path.match(
-    /^\/api\/v1\/projects\/[^/]+\/(list|assign)$/,
+    /^\/api\/v1\/projects\/[^/]+\/(list|assign|create|update|archive)$/,
   );
   if (
     !readPanel &&
@@ -235,7 +273,9 @@ registerWorkbenchRoutes(routes, deps, {
       const id = data.assignments.find(
         (x: any) => x.task === taskId,
       )?.project_id;
-      return data.items.find((x: any) => x.id === id && !x.archived);
+      if (id && !data.items.some((x: any) => x.id === id))
+        throw Error("Assigned project unavailable");
+      return data.items.find((x: any) => x.id === id);
     },
     async byId(scope, projectId) {
       const data = await boardRead(scope, "projects");

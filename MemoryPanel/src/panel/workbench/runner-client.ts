@@ -1,3 +1,4 @@
+import { request as httpRequest } from "node:http";
 import type { WorkspaceSnapshot, FileContent } from "./types.js";
 import { readFileSync } from "node:fs";
 import { z } from "zod";
@@ -10,6 +11,7 @@ const bindingSchema = z.object({
   repo: z.string().min(1),
   url: z.string().url(),
   token: z.string().min(32),
+  socketPath: z.string().startsWith("/").optional(),
   webUrl: z.string().url().optional(),
   manageProjects: z.boolean().optional(),
 });
@@ -102,6 +104,12 @@ export interface Runner {
     agent: "codex" | "claude",
     spec: string,
   ): Promise<Receipt>;
+  launchDirect?(
+    binding: Binding,
+    id: string,
+    agent: "codex" | "claude",
+    spec: string,
+  ): Promise<Receipt>;
   read(binding: Binding, id: string): Promise<Receipt>;
   workspace(binding: Binding, id: string): Promise<WorkspaceSnapshot>;
   file(binding: Binding, id: string, path: string): Promise<FileContent>;
@@ -126,6 +134,47 @@ export function createRunner(): Runner {
     path: string,
     body?: unknown,
   ): Promise<unknown> {
+    if (b.socketPath) {
+      return new Promise((resolve, reject) => {
+        const r = httpRequest(
+          {
+            socketPath: b.socketPath,
+            path,
+            method: body ? "POST" : "GET",
+            headers: {
+              Authorization: `Bearer ${b.token}`,
+              "Content-Type": "application/json",
+            },
+          },
+          (response) => {
+            let data = "";
+            response.setEncoding("utf8");
+            response.on("data", (chunk) => {
+              data += chunk;
+              if (data.length > 2000000)
+                r.destroy(Error("Runner response too large"));
+            });
+            response.on("error", reject);
+            response.on("end", () => {
+              if (
+                !response.statusCode ||
+                response.statusCode < 200 ||
+                response.statusCode >= 300
+              )
+                return reject(Error("Runner unavailable or request rejected."));
+              try {
+                resolve(JSON.parse(data));
+              } catch {
+                reject(Error("Invalid runner response."));
+              }
+            });
+          },
+        );
+        r.setTimeout(110000, () => r.destroy(Error("Runner timed out")));
+        r.on("error", reject);
+        r.end(body ? JSON.stringify(body) : undefined);
+      });
+    }
     const r = await fetch(b.url.replace(/\/$/, "") + path, {
       method: body ? "POST" : "GET",
       redirect: "error",
@@ -219,6 +268,14 @@ export function createRunner(): Runner {
       request(b, "/projects", { name }).then((data) =>
         z.object({ id: z.string(), name: z.string() }).parse(data),
       ),
+    launchDirect: (b, id, agent, spec) =>
+      request(b, "/jobs", {
+        id,
+        repo: b.repo,
+        agent,
+        spec,
+        mode: "direct",
+      }).then(receipt),
     launch: (b, id, agent, spec) =>
       request(b, "/jobs", { id, repo: b.repo, agent, spec }).then(receipt),
     read: (b, id) =>

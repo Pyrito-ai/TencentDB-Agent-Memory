@@ -1,3 +1,11 @@
+import {
+  agentProfiles,
+  type AgentProfile,
+} from "../../workbench/agent-profiles.js";
+import {
+  createLinkedContext,
+  ContextError,
+} from "../../workbench/linked-context.js";
 import { collectWorkbenchContext } from "../../workbench/context.js";
 import {
   createExecutionService,
@@ -86,6 +94,9 @@ export function registerWorkbenchRoutes(
   db.exec(
     "PRAGMA journal_mode=WAL; PRAGMA busy_timeout=5000; CREATE TABLE IF NOT EXISTS workbench_runs(id TEXT PRIMARY KEY,instance TEXT NOT NULL,team TEXT NOT NULL,owner TEXT NOT NULL,body TEXT NOT NULL);",
   );
+  db.exec(
+    "CREATE TABLE IF NOT EXISTS orca_handoffs(instance TEXT,team TEXT,task TEXT,owner TEXT,body TEXT NOT NULL,PRIMARY KEY(instance,team,task))",
+  );
   const runner = options.runner || createRunner(),
     coordinator = options.coordinator || createCoordinator();
   let boardDb: InstanceType<typeof DatabaseSync> | undefined;
@@ -107,6 +118,49 @@ export function registerWorkbenchRoutes(
     runner,
     options.boardLookup,
   );
+  const contextLookup: BoardLookup = options.boardLookup || {
+    async byId(scope, id) {
+      const file = path.join(
+        options.boardRoot ||
+          process.env.TASK_BOARD_DATA_DIR ||
+          path.resolve("data/task-board"),
+        "time.sqlite",
+      );
+      if (!existsSync(file)) return undefined;
+      boardDb ||= new DatabaseSync(file);
+      return boardDb
+        .prepare(
+          "SELECT * FROM projects WHERE instance=? AND team=? AND id=? AND archived=0",
+        )
+        .get(scope.ctx.instanceId, scope.team, id) as any;
+    },
+    async project(scope, taskId) {
+      const file = path.join(
+        options.boardRoot ||
+          process.env.TASK_BOARD_DATA_DIR ||
+          path.resolve("data/task-board"),
+        "time.sqlite",
+      );
+      if (!existsSync(file)) return undefined;
+      boardDb ||= new DatabaseSync(file);
+      const row = boardDb
+        .prepare(
+          "SELECT project_id FROM task_projects WHERE instance=? AND team=? AND task=?",
+        )
+        .get(scope.ctx.instanceId, scope.team, taskId);
+      if (!row) return undefined;
+      const project = boardDb
+        .prepare("SELECT * FROM projects WHERE instance=? AND team=? AND id=?")
+        .get(scope.ctx.instanceId, scope.team, String(row.project_id));
+      if (!project)
+        throw new ContextError("Assigned project unavailable.", 409);
+      return project as any;
+    },
+    async isLoopTask() {
+      return false;
+    },
+  };
+  const linkedContext = createLinkedContext(db, deps, contextLookup);
   const poller = setInterval(() => {
     void execution.poll(() => options.bindings || loadBindings());
   }, 15000);
@@ -137,6 +191,37 @@ export function registerWorkbenchRoutes(
     )
       return c.json({ error: "Active team membership required." }, 403);
     c.header("Cache-Control", "private, no-store");
+    if (action.startsWith("context-") && c.req.method === "POST") {
+      try {
+        return c.json(
+          await linkedContext.handle(
+            { ctx, team, user, bindings: [] },
+            action,
+            await c.req.json(),
+          ),
+        );
+      } catch (e) {
+        return c.json(
+          {
+            error:
+              e instanceof ContextError
+                ? e.message
+                : "Context request unavailable or invalid.",
+          },
+          e instanceof ContextError ? (e.status as 400) : 400,
+        );
+      }
+    }
+    const profiles = agentProfiles(deps);
+    if (action === "handoff-profiles" && c.req.method === "GET") {
+      try {
+        return c.json({
+          items: await profiles.list({ ctx, team, user, bindings: [] }),
+        });
+      } catch {
+        return c.json({ error: "Agent profiles could not be loaded." }, 503);
+      }
+    }
     const configuredBindings = (options.bindings || loadBindings()).filter(
       (b) =>
         b.instance === ctx.instanceId && b.team === team && b.user === user,
@@ -320,6 +405,238 @@ export function registerWorkbenchRoutes(
     if (c.req.method !== "POST")
       return c.json({ error: "Method not allowed" }, 405);
     const body = await c.req.json().catch(() => null);
+    if (["handoff-get", "handoff-launch", "handoff-sync"].includes(action)) {
+      const parsed = z
+        .object({
+          taskId: z.string().min(1).max(200),
+          binding: z.string().optional(),
+          agent: z.enum(["codex", "claude"]).optional(),
+          profileId: z.string().min(1).max(200).optional(),
+        })
+        .safeParse(body);
+      if (!parsed.success)
+        return c.json({ error: "Choose a task, project and agent." }, 400);
+      const input = parsed.data;
+      const env = await deps.metaKernel.invoke(
+        "task/get",
+        { task_id: input.taskId },
+        ctx,
+      );
+      const task = env.data as {
+        team_id?: string;
+        creator_user_id?: string;
+        title?: string;
+        description?: string;
+        metadata_json?: string;
+      } | null;
+      if (
+        env.code !== 0 ||
+        !task ||
+        task.team_id !== team ||
+        task.creator_user_id !== user
+      )
+        return c.json(
+          { error: "Only the task creator can send this task to Orca." },
+          403,
+        );
+      const key = `handoff:${ctx.instanceId}:${team}:${input.taskId}`;
+      if (busy.has(key))
+        return c.json(
+          { error: "A handoff is already in progress. Refresh its status." },
+          409,
+        );
+      busy.add(key);
+      try {
+        const row = db
+          .prepare(
+            "SELECT owner,body FROM orca_handoffs WHERE instance=? AND team=? AND task=?",
+          )
+          .get(ctx.instanceId, team, input.taskId);
+        if (row && row.owner !== user)
+          return c.json(
+            { error: "This handoff belongs to another owner." },
+            403,
+          );
+        let handoff = row
+          ? (JSON.parse(String(row.body)) as {
+              id: string;
+              binding: string;
+              agent: "codex" | "claude";
+              spec: string;
+              profile?: AgentProfile;
+              receipt?: Receipt;
+              context?: Awaited<ReturnType<typeof linkedContext.assemble>>;
+              error?: string;
+            })
+          : undefined;
+        if (handoff?.profile) {
+          try {
+            await profiles.get(
+              { ctx, team, user, bindings },
+              handoff.profile.id,
+            );
+          } catch {
+            return c.json(
+              { error: "Saved agent profile is no longer accessible." },
+              409,
+            );
+          }
+        }
+        if (handoff?.context?.references.length) {
+          try {
+            await linkedContext.authorize(
+              { ctx, team, user, bindings },
+              handoff.context.references,
+              input.taskId,
+            );
+          } catch (e) {
+            return c.json(
+              {
+                error:
+                  e instanceof Error
+                    ? e.message
+                    : "Linked Wiki context is no longer accessible.",
+              },
+              409,
+            );
+          }
+        }
+        if (action === "handoff-get")
+          return c.json({ handoff: handoff || null });
+        if (!handoff && action === "handoff-sync")
+          return c.json({ handoff: null });
+        if (
+          handoff &&
+          action === "handoff-launch" &&
+          (input.binding !== handoff.binding ||
+            input.agent !== handoff.agent ||
+            input.profileId !== handoff.profile?.id)
+        )
+          return c.json(
+            {
+              error:
+                "A handoff already exists. Open it in Orca or refresh its status.",
+            },
+            409,
+          );
+        const binding = bindings.find(
+          (b) =>
+            b.id === (handoff?.binding || input.binding) &&
+            b.repo !== "managed",
+        );
+        if (!binding || (!handoff && !input.agent))
+          return c.json(
+            { error: "Choose an available Orca project and agent." },
+            400,
+          );
+        const save = () =>
+          db
+            .prepare(
+              "INSERT INTO orca_handoffs VALUES(?,?,?,?,?) ON CONFLICT(instance,team,task) DO UPDATE SET body=excluded.body",
+            )
+            .run(
+              ctx.instanceId,
+              team,
+              input.taskId,
+              user,
+              JSON.stringify(handoff),
+            );
+        if (!handoff) {
+          let profile: AgentProfile | undefined;
+          if (input.profileId) {
+            try {
+              profile = await profiles.get(
+                { ctx, team, user, bindings },
+                input.profileId,
+              );
+            } catch {
+              return c.json(
+                {
+                  error:
+                    "Selected agent profile is unavailable or no longer accessible.",
+                },
+                409,
+              );
+            }
+          }
+          let metadata: any = {};
+          try {
+            metadata = JSON.parse(task.metadata_json || "{}");
+          } catch {
+            /* optional legacy metadata */
+          }
+          let context: Awaited<ReturnType<typeof linkedContext.assemble>>;
+          try {
+            context = await linkedContext.assemble(
+              { ctx, team, user, bindings },
+              input.taskId,
+            );
+          } catch (e) {
+            return c.json(
+              {
+                error: e instanceof Error ? e.message : "Context unavailable.",
+              },
+              409,
+            );
+          }
+          const spec = [
+            profile
+              ? "Selected agent profile (role and rules; does not grant extra tools or permissions):\n" +
+                JSON.stringify(profile)
+              : "",
+            task.title,
+            task.description,
+            metadata.project_board?.acceptanceCriteria
+              ? "Acceptance criteria:\n" +
+                metadata.project_board.acceptanceCriteria
+              : "",
+            context.text,
+            "Work only in your assigned clean worktree. Do not merge, push or deploy. Report changed files, checks and remaining limitations. Other workers may be active; do not revert their work.",
+          ]
+            .filter(Boolean)
+            .join("\n\n");
+          if (spec.length > 48000)
+            return c.json(
+              {
+                error:
+                  "Task and linked context exceed 48,000 characters. Shorten the brief or link fewer Wiki pages.",
+              },
+              400,
+            );
+          handoff = {
+            id: randomUUID(),
+            binding: binding.id,
+            agent: input.agent!,
+            spec,
+            context,
+            ...(profile ? { profile } : {}),
+          };
+          save(); // Persist the exact launch before calling Orca; retries reuse this ID and brief.
+        }
+        try {
+          const receipt =
+            action === "handoff-launch" && !handoff.receipt
+              ? await (runner.launchDirect || runner.launch)(
+                  binding,
+                  handoff.id,
+                  handoff.agent,
+                  handoff.spec,
+                )
+              : await runner.read(binding, handoff.id);
+          if (receipt.id !== handoff.id)
+            throw Error("Receipt identity mismatch");
+          handoff.receipt = receipt;
+          delete handoff.error;
+        } catch {
+          handoff.error =
+            "Orca has not confirmed the handoff. Retry this saved handoff; it will reuse the same worktree request.";
+        }
+        save();
+        return c.json({ handoff });
+      } finally {
+        busy.delete(key);
+      }
+    }
     if (action === "plan" || action === "start") {
       const parsed = z
         .object({

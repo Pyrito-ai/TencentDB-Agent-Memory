@@ -384,3 +384,44 @@ test("continuation accepts full approved task context up to launch specification
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test("direct mode uses worktree CLI even with native orchestration enabled", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "orca-direct-"));
+  const calls = [];
+  const server = await createBridge({
+    token: "x".repeat(32),
+    root,
+    repos: ["id:repo"],
+    command: async (args) => {
+      calls.push(args);
+      return { worktree: { id: "fresh" }, agentTerminalHandle: "agent" };
+    },
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  const url = `http://127.0.0.1:${server.address().port}/jobs`;
+  const body = {
+    id: randomUUID(),
+    repo: "id:repo",
+    agent: "claude",
+    spec: "Approved task",
+    mode: "direct",
+  };
+  const send = (b) =>
+    fetch(url, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + "x".repeat(32) },
+      body: JSON.stringify(b),
+    });
+  try {
+    assert.equal((await send(body)).status, 200);
+    assert.equal((await send(body)).status, 200);
+    assert.equal(calls.length, 1);
+    assert.deepEqual(calls[0].slice(0, 2), ["worktree", "create"]);
+    assert.ok(calls[0].includes("--no-parent"));
+    assert.ok(calls[0].includes("Approved task"));
+    assert.equal((await send({ ...body, mode: undefined })).status, 409);
+  } finally {
+    await new Promise((r) => server.close(r));
+    await rm(root, { recursive: true, force: true });
+  }
+});

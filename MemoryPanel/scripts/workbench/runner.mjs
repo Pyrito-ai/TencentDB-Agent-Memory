@@ -416,8 +416,9 @@ export async function createBridge({
       } catch {
         return reply(400, { error: "Invalid JSON" });
       }
-      const { id, repo, agent, spec } = input;
+      const { id, repo, agent, spec, mode } = input;
       if (
+        (mode !== undefined && mode !== "direct") ||
         typeof id !== "string" ||
         !/^[0-9a-f-]{36}$/.test(id) ||
         !repos.includes(repo) ||
@@ -434,7 +435,7 @@ export async function createBridge({
         });
       try {
         const fingerprint = createHash("sha256")
-          .update(JSON.stringify({ repo, agent, spec }))
+          .update(JSON.stringify({ repo, agent, spec, ...(mode ? { mode } : {}) }))
           .digest("hex");
         let existing;
         try {
@@ -469,7 +470,7 @@ export async function createBridge({
         const job = { id, repo, agent, fingerprint, state: "launching" };
         await persist(job);
         try {
-          if (native) {
+          if (native && mode !== "direct") {
             await nativeRunner.launch(job, spec);
           } else {
             const result = await command([

@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
 import {
   mkdtemp,
   mkdir,
@@ -221,6 +222,19 @@ async function fixture(t, options = {}) {
   };
   let bridge = await createCdesktopBridge(config),
     url = await listen(bridge);
+  const responseLocks = [];
+  const observeResponseLocks = (server) => {
+    // Inspect the exact response boundary rather than racing a client retry
+    // against asynchronous lock removal.
+    server.prependListener("request", (_req, res) => {
+      const end = res.end;
+      res.end = function (...args) {
+        responseLocks.push(existsSync(path.join(root, input.id + ".lock")));
+        return end.apply(this, args);
+      };
+    });
+  };
+  observeResponseLocks(bridge);
   const request = (route, body, headers = {}) =>
     fetch(url + route, {
       method: body === undefined ? "GET" : "POST",
@@ -230,6 +244,7 @@ async function fixture(t, options = {}) {
   const restart = async () => {
     await close(bridge);
     bridge = await createCdesktopBridge(config);
+    observeResponseLocks(bridge);
     url = await listen(bridge);
   };
   t.after(async () => {
@@ -242,6 +257,7 @@ async function fixture(t, options = {}) {
     input,
     config,
     calls,
+    responseLocks,
     root,
     source,
     container,
@@ -335,7 +351,12 @@ test("staged launch uses one isolated worktree, exact prompt, explicit permissio
 
 test("same job is not replayed across retries or restarts, and changed requests conflict", async (t) => {
   const f = await fixture(t);
-  await f.request("/jobs", f.input);
+  assert.equal((await f.request("/jobs", f.input)).status, 200);
+  assert.equal(
+    f.responseLocks.at(-1),
+    false,
+    "release the job lock before acknowledging launch",
+  );
   const mutations = () => f.calls.filter((call) => call.method === "POST");
   assert.equal(mutations().length, 5);
   assert.equal((await f.request("/jobs", f.input)).status, 200);
@@ -346,6 +367,8 @@ test("same job is not replayed across retries or restarts, and changed requests 
     409,
   );
   assert.equal(mutations().length, 5);
+  assert.equal((await f.request(`/jobs/${f.input.id}`)).status, 200);
+  assert.deepEqual(f.responseLocks, [false, false, false, false, false]);
 });
 
 test("concurrent same-id launches submit only one execution", async (t) => {

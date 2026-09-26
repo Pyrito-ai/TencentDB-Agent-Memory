@@ -238,7 +238,7 @@ export function TaskExecution({
             Refresh eligibility
           </button>
           {!execution.projectId && (
-            <p>Assign this task to a Tencent project before configuring execution.</p>
+            <p>Assign this task to a project before configuring execution.</p>
           )}
           <label>
             Orca repository / runtime

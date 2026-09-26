@@ -3,7 +3,7 @@
  *
  * 精简版：列表只展示 4 个核心字段——key_id / user_id / key_prefix / 创建时间，
  * 不再展示「名称」「过期时间」两列（对应地，新建弹窗也不再要求填写名称）。
- * Tea 组件：列表用 Table + autotip，头部用 Justify + H3，
+ * Tea 组件：列表用 Table + autotip + scrollable，头部保留独立页面标题与操作，
  * 破坏性操作统一走 Modal.confirm 二次确认，新建弹窗复用全站统一的 Modal 外壳。
  *
  * 后端链路：新面板（stateless）走 meta action `user-key/list|create|revoke`，
@@ -22,27 +22,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Moment } from 'moment';
 import moment from 'moment';
-import {
-  Table,
-  Card,
-  Button,
-  Alert,
-  Copy,
-  Text,
-  DatePicker,
-  Justify,
-  H3,
-  Form,
-  Modal,
-} from 'tea-component';
+import { Table, Card, Button, Alert, Copy, Text, DatePicker, Form, Modal } from 'tea-component';
 import { AddIcon } from 'tea-icons-react';
 import { userKeysApi, metaInstancesApi, type UserKey } from '@/lib/teamApi';
 import { useCurrentRole } from '@/services/useCurrentRole';
 import { useAuthStore } from '@/stores/auth';
 import { tea } from '@/lib/tea-bridge';
+import { PageHeading } from '@/components/baren';
 import '../styles/api-key-panel.css';
 
-const { autotip } = Table.addons;
+const { autotip, scrollable } = Table.addons;
 
 export default function ApiKeyPanel() {
   const { t } = useTranslation();
@@ -146,6 +135,26 @@ export default function ApiKeyPanel() {
   };
   return (
     <div className="_memory-apikey-body">
+      <PageHeading
+        eyebrow={t('menu.group.organization')}
+        title={t('apiKey.title')}
+        description={t('apiKey.desc')}
+        actions={
+          role !== 'admin' && (
+            <Button
+              type="primary"
+              onClick={() => {
+                setShowCreate(true);
+                setNewExpiresAt(null);
+              }}
+              data-guide="create-key"
+            >
+              <AddIcon size={14} />
+              {t('apiKey.create')}
+            </Button>
+          )
+        }
+      />
       {/* ===== 刚创建的 Key 提示（仅展示一次） ===== */}
       {freshKey && (
         <Alert type="success" onClose={() => setFreshKey(null)}>
@@ -167,35 +176,8 @@ export default function ApiKeyPanel() {
         </Alert>
       )}
 
-      {/* ===== 页面头部（Justify 左右布局） ===== */}
-      <Justify
-        left={
-          <div>
-            <H3>{t('apiKey.title')}</H3>
-            <Text theme="text" parent="div" style={{ marginTop: 4 }}>
-              {t('apiKey.desc')}
-            </Text>
-          </div>
-        }
-        right={
-          role !== 'admin' ? (
-            <Button
-              type="primary"
-              onClick={() => {
-                setShowCreate(true);
-                setNewExpiresAt(null);
-              }}
-              data-guide="create-key"
-            >
-              <AddIcon size={14} />
-              {t('apiKey.create')}
-            </Button>
-          ) : null
-        }
-      />
-
       {/* ===== Key 列表：key_id / key_prefix / 创建时间 + 操作 ===== */}
-      <Card>
+      <Card className="_memory-apikey-table">
         <Table
           verticalTop
           records={keys}
@@ -265,12 +247,15 @@ export default function ApiKeyPanel() {
             },
           ]}
           addons={[
+            scrollable({ minWidth: 760 }),
             autotip({
               isLoading: loading,
               emptyText: (
                 <div className="_memory-apikey-empty">
                   <div className="_memory-apikey-empty-title">{t('apiKey.empty.title')}</div>
-                  <div className="_memory-apikey-empty-desc">{t('apiKey.empty.desc')}</div>
+                  {role !== 'admin' && (
+                    <div className="_memory-apikey-empty-desc">{t('apiKey.empty.desc')}</div>
+                  )}
                 </div>
               ),
               onRetry: () => void refresh(),
@@ -288,7 +273,9 @@ export default function ApiKeyPanel() {
       <Card>
         <Card.Body title={t('apiKey.endpoint.title')}>
           {auth?.instance_name && (
-            <div style={{ marginBottom: 8, fontSize: 11, color: 'var(--tea-color-text-secondary)' }}>
+            <div
+              style={{ marginBottom: 8, fontSize: 11, color: 'var(--tea-color-text-secondary)' }}
+            >
               {t('apiKey.endpoint.current')}
               <code>{auth.instance_name}</code>
               <span style={{ opacity: 0.6, marginLeft: 6 }}>({auth.instance_id})</span>

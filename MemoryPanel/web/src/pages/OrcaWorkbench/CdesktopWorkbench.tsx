@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { RefreshCw } from 'lucide-react';
+import { PanelsTopLeft, RefreshCw } from 'lucide-react';
 import { boardTaskUrl, requestedTask } from './api';
 import {
   CdesktopTaskHandoff,
@@ -109,6 +109,7 @@ function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
           />
         ) : (
           <div className="orca-connection-empty">
+            <PanelsTopLeft size={28} aria-hidden="true" />
             <strong>
               {handoff?.receipt ? 'cdesktop session saved' : 'Try a task in cdesktop'}
             </strong>

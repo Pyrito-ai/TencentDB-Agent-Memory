@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { projectBoardLocation } from '@/constants/navigation';
 import { useEffect, useState } from 'react';
 import { request } from './api';
 import './workbench.css';
@@ -129,7 +131,7 @@ export function WikiConnections({
       {data?.project && kind === 'task' && (
         <p>
           Project context:{' '}
-          <a href={`/#/projects?id=${encodeURIComponent(data.project.id)}`}>{data.project.name}</a>
+          <Link to={projectBoardLocation(data.project.id)}>{data.project.name}</Link>
           {data.project.description && ` — ${data.project.description}`}
         </p>
       )}

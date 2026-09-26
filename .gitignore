@@ -142,3 +142,6 @@ z_config/
 
 # Task notes and private uploaded files
 **/data/task-board/
+
+# Isolated GUI preview: local reports, secrets, and generated QA artifacts
+MemoryPanel/web/.qa/

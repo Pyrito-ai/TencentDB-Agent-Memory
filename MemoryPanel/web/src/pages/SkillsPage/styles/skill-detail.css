@@ -88,7 +88,7 @@
 }
 
 /* 窄屏堆叠布局下（AssetSplitLayout 取消高度限制），卡片回归文档流高度 */
-@media (max-width: 960px) {
+@container resource-page (max-width: 720px) {
   ._memory-skill-detail-card {
     height: auto;
   }
@@ -132,7 +132,9 @@
 
 /* 操作栏：编辑 / 新建文件 / 历史版本，靠右不换行 */
 ._memory-skill-detail-actions {
-  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -142,7 +144,7 @@
 
 ._memory-skill-detail-name {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--tea-color-text-primary);
   word-break: break-all;
@@ -316,4 +318,51 @@
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--tea-color-text-secondary);
+}
+
+._memory-skill-detail-card {
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 10px;
+  box-shadow: none;
+}
+._memory-skill-detail-head-main {
+  flex-wrap: wrap;
+  gap: 14px;
+}
+._memory-skill-detail-head-info {
+  flex: 1 1 220px;
+}
+._memory-skill-detail-actions {
+  justify-content: flex-start;
+}
+._memory-skill-detail-scroll {
+  padding-top: 20px;
+}
+@container resource-page (max-width: 720px) {
+  ._memory-skill-detail-card {
+    --card-body-padding: 18px;
+  }
+  ._memory-skill-detail-empty {
+    min-height: 280px;
+  }
+}
+
+/* A short viewport uses page scrolling so the fixed heading and file footer
+   cannot squeeze the skill body or its editing actions out of view. */
+@media (max-height: 650px) {
+  ._memory-skill-detail-card {
+    height: auto;
+  }
+  ._memory-skill-detail-card > .tea-card__body,
+  ._memory-skill-detail-body,
+  ._memory-skill-detail-body > .tea-card__content {
+    overflow: visible;
+  }
+  ._memory-skill-detail-scroll {
+    overflow-y: visible;
+  }
+  ._memory-skill-files-box--footer {
+    max-height: none;
+    overflow-y: visible;
+  }
 }

@@ -5,14 +5,17 @@
 ._memory-team-mgmt {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
+  min-width: 0;
+  container-type: inline-size;
 }
 
 ._memory-panel-card {
+  min-width: 0;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 4px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
-  padding: 12px;
+  padding: 20px;
 }
 
 /* ===== Header ===== */
@@ -32,14 +35,15 @@
 
 ._memory-team-header-avatar {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  background: var(--tea-color-bg-brand-default);
-  color: var(--tea-color-text-on-bg-brand-default);
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 8px;
+  background: var(--tea-color-bg-secondary-default);
+  color: var(--tea-color-text-brand-default);
   display: grid;
   place-items: center;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -69,13 +73,11 @@
 }
 
 ._memory-team-header-desc {
-  margin-top: 2px;
+  margin-top: 4px;
   font-size: 12px;
+  line-height: 1.5;
   color: var(--tea-color-text-tertiary);
-  max-width: 480px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 ._memory-team-header-empty-hint {
@@ -95,9 +97,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  padding-bottom: 18px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
 }
 
 ._memory-section-header-info {
@@ -112,8 +116,10 @@
 }
 
 ._memory-section-title {
-  font-size: 13px;
+  font-size: 18px;
+  line-height: 1.4;
   font-weight: 600;
+  letter-spacing: -0.025em;
   color: var(--tea-color-text-primary);
 }
 
@@ -330,37 +336,18 @@
 
 /* ===== Members ===== */
 ._memory-member-grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 8px;
-}
-@media (min-width: 640px) {
-  ._memory-member-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (min-width: 1024px) {
-  ._memory-member-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (min-width: 1280px) {
-  ._memory-member-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 ._memory-member-card {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 4px;
-  background: var(--tea-color-bg-primary-default);
-  padding: 8px 12px;
-  transition:
-    background-color 0.15s,
-    border-color 0.15s;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
+  background: transparent;
 }
 
 ._memory-member-card--clickable {
@@ -373,9 +360,9 @@
 
 ._memory-member-avatar {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   display: grid;
   place-items: center;
   font-size: 12px;
@@ -395,8 +382,9 @@
 }
 
 ._memory-member-id {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 600;
   color: var(--tea-color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -955,25 +943,29 @@
 
 /* ===== Agents 管理页：与 Memory项目的 Tea Card / ActionPanel 版式对齐 ===== */
 ._memory-agents-panel {
-  border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 4px;
-  background: var(--tea-color-bg-primary-default);
-  padding: 16px;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
 }
 
 ._memory-agents-section-head {
   display: flex;
   align-items: center;
-  min-height: 32px;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
 ._memory-agents-section-title {
   margin: 0;
   color: var(--tea-color-text-primary);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
-  line-height: 22px;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
 }
 
 ._memory-agents-section-subtitle {
@@ -986,9 +978,12 @@
 ._memory-agents-toolbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
+  padding: 14px 0;
+  margin-bottom: 18px;
+  border-top: 1px solid var(--tea-color-border-primary-default);
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
 }
 
 /* Agent 列表工具栏内的 SearchBox：英文 placeholder（"Search agent name / description / ID"）
@@ -996,7 +991,7 @@
    tea-component 实际类名：外层 .tea-form--search、内层 .tea-search。 */
 ._memory-agents-toolbar .tea-form--search,
 ._memory-agents-toolbar .tea-search {
-  min-width: 280px;
+  min-width: min(280px, 100%);
   max-width: 100%;
 }
 
@@ -1011,22 +1006,20 @@
 
 ._memory-agents-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   gap: 12px;
 }
 
 ._memory-agents-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
-  padding: 12px;
+  padding: 20px;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 4px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
-  transition:
-    background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out;
 }
 
 ._memory-agents-card--editable:hover {
@@ -1063,8 +1056,9 @@
   overflow: hidden;
   flex: 1 1 auto;
   color: var(--tea-color-text-primary);
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
+  letter-spacing: -0.025em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1173,7 +1167,7 @@
    浅灰底 + shimmer 横扫动画。 */
 ._memory-agents-skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   gap: 12px;
 }
 
@@ -1314,8 +1308,12 @@
 }
 
 @keyframes _memory-agents-skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ============================================================
@@ -1403,4 +1401,156 @@
   line-height: 18px;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+/* Baren administration: one page heading, compact context, clear working rows. */
+._memory-team-context {
+  padding: 16px 18px;
+}
+
+._memory-member-card:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+._memory-member-access {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+._memory-member-access ._memory-member-role {
+  padding: 3px 9px;
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+._memory-member-owner {
+  color: var(--tea-color-text-tertiary);
+  font-size: 11px;
+}
+
+._memory-member-actions {
+  min-width: 32px;
+}
+
+._memory-member-remove-btn {
+  min-width: 32px;
+  min-height: 32px;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+._memory-agents-card-id {
+  overflow-wrap: anywhere;
+  font-size: 10px;
+}
+
+._memory-agents-stats {
+  gap: 0;
+  margin-top: 8px;
+  border-top: 1px solid var(--tea-color-border-primary-default);
+}
+
+._memory-agents-stats ._memory-mounted-chip {
+  padding: 10px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+._memory-agents-stats ._memory-mounted-chip:nth-child(odd) {
+  padding-right: 16px;
+}
+
+._memory-agents-stats ._memory-mounted-chip-label {
+  font-size: 10px;
+}
+
+._memory-agents-skeleton-card {
+  padding: 20px;
+  border-radius: 10px;
+}
+
+._memory-team-mgmt ._memory-default-agent-section {
+  background: var(--tea-color-bg-secondary-default);
+}
+
+@container (max-width: 560px) {
+  ._memory-panel-card {
+    padding: 16px;
+  }
+
+  ._memory-member-card {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 32px;
+    gap: 8px 12px;
+  }
+
+  ._memory-member-access {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  ._memory-member-actions {
+    grid-column: 3;
+    grid-row: 1 / 3;
+  }
+
+  ._memory-team-header-ops {
+    margin-left: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ._memory-agents-skeleton-card,
+  ._memory-agents-skeleton-line,
+  ._memory-collapse-group-title-skeleton,
+  ._memory-collapse-group-count--loading {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+._memory-team-mgmt > .baren-heading {
+  margin-bottom: 0;
+  padding: 4px 0 8px;
+}
+
+@media (max-width: 600px) {
+  ._memory-target-team-row,
+  ._memory-template-box-title-row,
+  ._memory-asset-toolbar,
+  ._memory-modal-footer-split,
+  ._memory-collapse-group-header {
+    flex-wrap: wrap;
+  }
+
+  ._memory-target-team-hint {
+    flex-basis: 100%;
+    text-align: left;
+  }
+
+  ._memory-template-box-title-row {
+    gap: 4px;
+  }
+
+  ._memory-modal-footer-actions {
+    flex-wrap: wrap;
+  }
+
+  ._memory-asset-check-item-row {
+    flex-wrap: wrap;
+  }
+
+  ._memory-asset-check-item-slug {
+    margin-left: 0;
+    overflow-wrap: anywhere;
+  }
 }

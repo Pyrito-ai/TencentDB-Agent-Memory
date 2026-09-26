@@ -85,7 +85,7 @@ export default function LoopInsights({
   }
   return (
     <div className="loop-insights">
-      <div className="loop-metrics">
+      <div className="loop-metrics loop-insight-metrics">
         <article>
           <span>Current streak</span>
           <strong>{l.stats.currentStreak}</strong>
@@ -118,7 +118,8 @@ export default function LoopInsights({
           <small>Cumulative completions</small>
         </article>
       </div>
-      <section className="loop-calendar-panel">
+      <section className="loop-calendar-panel work-surface">
+        <span className="work-eyebrow">Activity & rhythm</span>
         <h3>Last 90 days</h3>
         <p className="loop-help">
           {l.mode === 'scheduled'

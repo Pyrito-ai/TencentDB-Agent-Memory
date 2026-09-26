@@ -4,13 +4,39 @@
  * 展示小组件 / 常量工具 / 共享 Markdown 分别独立收口。
  */
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Form, Input, Justify, MetricsBoard, Modal, SearchBox, Segment, Select, StatusTip, Table, Text } from 'tea-component';
-import { BooksIcon, ChevronRightIcon, UsergroupIcon, ViewListIcon, ViewModuleIcon } from 'tea-icons-react';
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Justify,
+  MetricsBoard,
+  Modal,
+  SearchBox,
+  Segment,
+  Select,
+  StatusTip,
+  Table,
+  Text,
+} from 'tea-component';
+import {
+  BooksIcon,
+  ChevronRightIcon,
+  UsergroupIcon,
+  ViewListIcon,
+  ViewModuleIcon,
+} from 'tea-icons-react';
 import { knowledgeApi } from '@/lib/api/knowledge-api';
 import { tea } from '@/lib/tea-bridge';
 import AllocateAssetDialog from '@/components/asset/AllocateAssetDialog';
 import { AssetPageHeader } from '@/components/asset/AssetPageHeader';
-import { formatShortTime, SCOPE_LABEL_KEYS, type StatusFilter, type ViewMode, type WikiScopeTab } from '../constants/wiki-constants';
+import {
+  formatShortTime,
+  SCOPE_LABEL_KEYS,
+  type StatusFilter,
+  type ViewMode,
+  type WikiScopeTab,
+} from '../constants/wiki-constants';
 import { WikiOwnerLabel, WikiStatusBadge } from './wiki-ui';
 import { WikiActions } from './wiki-detail-components';
 import { useWikiSources } from '../hooks/useWikiSources';
@@ -77,11 +103,9 @@ export default function WikiSourcesPanel() {
       <AssetPageHeader
         title={t('wiki.title')}
         subtitle={
-          <Text theme="label">
-            {activeTeam
-              ? t('wiki.subtitle.team', { name: activeTeam.name, count: stats.total })
-              : t('wiki.subtitle.global', { count: stats.total })}
-          </Text>
+          activeTeam
+            ? t('wiki.subtitle.team', { name: activeTeam.name, count: stats.total })
+            : t('wiki.subtitle.global', { count: stats.total })
         }
         scope={
           <Segment
@@ -150,8 +174,24 @@ export default function WikiSourcesPanel() {
                     value={viewMode}
                     onChange={(value) => setViewMode(value as ViewMode)}
                     options={[
-                      { value: 'card', text: <ViewModuleIcon /> },
-                      { value: 'list', text: <ViewListIcon /> },
+                      {
+                        value: 'card',
+                        text: (
+                          <>
+                            <ViewModuleIcon aria-hidden="true" />
+                            <span className="sr-only">{t('asset.view.card')}</span>
+                          </>
+                        ),
+                      },
+                      {
+                        value: 'list',
+                        text: (
+                          <>
+                            <ViewListIcon aria-hidden="true" />
+                            <span className="sr-only">{t('asset.view.list')}</span>
+                          </>
+                        ),
+                      },
                     ]}
                   />
                 </div>
@@ -176,7 +216,7 @@ export default function WikiSourcesPanel() {
                 <div className="_asset-wiki-empty">
                   <BooksIcon size="large" />
                   <Text>{t('wiki.empty.title')}</Text>
-                  <Text theme="label">{t('wiki.empty.desc')}</Text>
+                  {scopeTab !== 'fixed' && <Text theme="label">{t('wiki.empty.desc')}</Text>}
                 </div>
               }
             />
@@ -188,7 +228,16 @@ export default function WikiSourcesPanel() {
                 <div
                   key={source.wiki_id}
                   className="_asset-wiki-card"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => openDetail(source.wiki_id)}
+                  onKeyDown={(event) => {
+                    if (event.target !== event.currentTarget) return;
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      openDetail(source.wiki_id);
+                    }
+                  }}
                 >
                   <div className="_asset-wiki-card-head">
                     <BooksIcon size={16} />
@@ -200,7 +249,10 @@ export default function WikiSourcesPanel() {
                   <div className="_asset-wiki-card-meta">
                     <WikiStatusBadge status={source.status} />
                     <span>
-                      {t('wiki.card.pagesAndTime', { pages: source.page_count ?? 0, time: formatShortTime(source.last_sync_at) })}
+                      {t('wiki.card.pagesAndTime', {
+                        pages: source.page_count ?? 0,
+                        time: formatShortTime(source.last_sync_at),
+                      })}
                     </span>
                   </div>
                   <div className="_asset-wiki-card-owner">
@@ -213,7 +265,9 @@ export default function WikiSourcesPanel() {
                       t('wiki.teamPool')
                     )}
                   </div>
-                  <div className="_asset-wiki-card-id">{t('wiki.card.id', { id: source.wiki_id })}</div>
+                  <div className="_asset-wiki-card-id">
+                    {t('wiki.card.id', { id: source.wiki_id })}
+                  </div>
                   <WikiActions
                     source={source}
                     scopeTab={scopeTab}
@@ -229,89 +283,89 @@ export default function WikiSourcesPanel() {
             </div>
           ) : (
             <div className="_view-swap">
-            <Table
-              records={filteredSources}
-              recordKey="wiki_id"
-              addons={[scrollable({ minWidth: 1040 })]}
-              columns={[
-                {
-                  key: 'name',
-                  header: t('wiki.table.name'),
-                  width: 240,
-                  render: (source) => (
-                    <button
-                      type="button"
-                      className="_asset-wiki-row-name"
-                      onClick={() => openDetail(source.wiki_id)}
-                    >
-                      <BooksIcon size={14} />
-                      <span>{source.name}</span>
-                      <ChevronRightIcon size={12} />
-                    </button>
-                  ),
-                },
-                {
-                  key: 'status',
-                  header: t('wiki.table.status'),
-                  width: 100,
-                  render: (source) => <WikiStatusBadge status={source.status} />,
-                },
-                {
-                  key: 'page_count',
-                  header: t('wiki.table.pageCount'),
-                  width: 80,
-                  render: (source) => source.page_count ?? 0,
-                },
-                {
-                  key: 'owner',
-                  header: t('wiki.table.owner'),
-                  width: 180,
-                  render: (source) =>
-                    scopeTab === 'fixed' ? (
-                      <span className="_asset-wiki-inline-icon">
-                        <UsergroupIcon size={12} />
-                        {agentFilter || t('wiki.noAgent')}
-                      </span>
-                    ) : source.owner_user_id ? (
-                      <WikiOwnerLabel userId={source.owner_user_id} currentUserId={currentUser} />
-                    ) : (
-                      <Text theme="label">{t('wiki.teamPool.short')}</Text>
+              <Table
+                records={filteredSources}
+                recordKey="wiki_id"
+                addons={[scrollable({ minWidth: 1040 })]}
+                columns={[
+                  {
+                    key: 'name',
+                    header: t('wiki.table.name'),
+                    width: 240,
+                    render: (source) => (
+                      <button
+                        type="button"
+                        className="_asset-wiki-row-name"
+                        onClick={() => openDetail(source.wiki_id)}
+                      >
+                        <BooksIcon size={14} />
+                        <span>{source.name}</span>
+                        <ChevronRightIcon size={12} />
+                      </button>
                     ),
-                },
-                {
-                  key: 'last_sync_at',
-                  header: t('wiki.table.lastSync'),
-                  width: 140,
-                  render: (source) => (
-                    <Text theme="label">{formatShortTime(source.last_sync_at)}</Text>
-                  ),
-                },
-                {
-                  key: 'wiki_id',
-                  header: t('wiki.table.wikiId'),
-                  width: 220,
-                  render: (source) => <span className="_asset-wiki-id">{source.wiki_id}</span>,
-                },
-                {
-                  key: 'actions',
-                  header: t('wiki.table.actions'),
-                  width: 240,
-                  fixed: 'right',
-                  render: (source) => (
-                    <WikiActions
-                      source={source}
-                      scopeTab={scopeTab}
-                      ingestBusy={ingestBusy}
-                      isCurrentIngesting={runningWikiIds.has(source.wiki_id)}
-                      onIngest={handleIngest}
-                      onAllocate={setAllocateTarget}
-                      onUnbind={handleUnbindWiki}
-                      onDelete={handleDelete}
-                    />
-                  ),
-                },
-              ]}
-            />
+                  },
+                  {
+                    key: 'status',
+                    header: t('wiki.table.status'),
+                    width: 100,
+                    render: (source) => <WikiStatusBadge status={source.status} />,
+                  },
+                  {
+                    key: 'page_count',
+                    header: t('wiki.table.pageCount'),
+                    width: 80,
+                    render: (source) => source.page_count ?? 0,
+                  },
+                  {
+                    key: 'owner',
+                    header: t('wiki.table.owner'),
+                    width: 180,
+                    render: (source) =>
+                      scopeTab === 'fixed' ? (
+                        <span className="_asset-wiki-inline-icon">
+                          <UsergroupIcon size={12} />
+                          {agentFilter || t('wiki.noAgent')}
+                        </span>
+                      ) : source.owner_user_id ? (
+                        <WikiOwnerLabel userId={source.owner_user_id} currentUserId={currentUser} />
+                      ) : (
+                        <Text theme="label">{t('wiki.teamPool.short')}</Text>
+                      ),
+                  },
+                  {
+                    key: 'last_sync_at',
+                    header: t('wiki.table.lastSync'),
+                    width: 140,
+                    render: (source) => (
+                      <Text theme="label">{formatShortTime(source.last_sync_at)}</Text>
+                    ),
+                  },
+                  {
+                    key: 'wiki_id',
+                    header: t('wiki.table.wikiId'),
+                    width: 220,
+                    render: (source) => <span className="_asset-wiki-id">{source.wiki_id}</span>,
+                  },
+                  {
+                    key: 'actions',
+                    header: t('wiki.table.actions'),
+                    width: 240,
+                    fixed: 'right',
+                    render: (source) => (
+                      <WikiActions
+                        source={source}
+                        scopeTab={scopeTab}
+                        ingestBusy={ingestBusy}
+                        isCurrentIngesting={runningWikiIds.has(source.wiki_id)}
+                        onIngest={handleIngest}
+                        onAllocate={setAllocateTarget}
+                        onUnbind={handleUnbindWiki}
+                        onDelete={handleDelete}
+                      />
+                    ),
+                  },
+                ]}
+              />
             </div>
           )}
         </Card.Body>

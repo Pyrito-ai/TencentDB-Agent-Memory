@@ -42,6 +42,7 @@ import { knowledgeApi } from '@/lib/api/knowledge-api';
 import { useDisplayNameResolver } from '@/services/user-profile-store';
 import { tea } from '@/lib/tea-bridge';
 import { getErrorMessage } from '@/lib/error-message';
+import { PageHeading } from '@/components/baren';
 import './team-management-panel.css';
 
 import { MAX_IMPORTED_CHAT_MEMORIES, importedChatMemoryIds, type AgentCard } from './types';
@@ -172,7 +173,14 @@ export default function TeamManagementPanel({
       )
     ) {
       tea.notify.error(
-        t('team.deleteAgent.noPermission', { name: agent.name, id: agent.agent_id, teamName: activeTeam.name, owner: agent.owner_user_id ? resolveUserName(agent.owner_user_id) : t('team.deleteAgent.ownerUnset') }),
+        t('team.deleteAgent.noPermission', {
+          name: agent.name,
+          id: agent.agent_id,
+          teamName: activeTeam.name,
+          owner: agent.owner_user_id
+            ? resolveUserName(agent.owner_user_id)
+            : t('team.deleteAgent.ownerUnset'),
+        }),
       );
       return;
     }
@@ -190,9 +198,7 @@ export default function TeamManagementPanel({
       // —— 明确告诉用户去 skill 面板处理后重试，别只给一句技术错误码
       const raw = err instanceof Error ? err.message : String(err);
       if (raw.includes('SKILL_DELETE_FAILED')) {
-        tea.notify.error(
-          t('team.deleteAgent.skillFailed', { name: agent.name, raw }),
-        );
+        tea.notify.error(t('team.deleteAgent.skillFailed', { name: agent.name, raw }));
       } else {
         tea.notify.error(errMsg(err));
       }
@@ -215,6 +221,11 @@ export default function TeamManagementPanel({
 
   return (
     <div className="_memory-team-mgmt">
+      <PageHeading
+        eyebrow={t('menu.group.organization')}
+        title={t(section === 'members' ? 'menu.team_members' : 'menu.team_agents')}
+        description={t(section === 'members' ? 'menu.desc.team_members' : 'menu.desc.team_agents')}
+      />
       {/* === Header: 当前 team 概览 + ops ===
         切 team 的入口只在左上角全局 TeamSwitcher（App.tsx），这里不再提供
         平铺 chips 的切换入口，避免跟全局切换器形成两个语义重叠的控件。
@@ -258,9 +269,7 @@ export default function TeamManagementPanel({
       ) : (
         <div className="_memory-panel-card">
           <div className="_memory-team-header-row">
-            <div className="_memory-team-header-empty-hint">
-              {t('team.empty.hint')}
-            </div>
+            <div className="_memory-team-header-empty-hint">{t('team.empty.hint')}</div>
           </div>
         </div>
       )}
@@ -273,9 +282,7 @@ export default function TeamManagementPanel({
           {t('team.loading')}
         </div>
       ) : !activeTeam ? (
-        <EmptyTeamState
-          onCreateTeam={_isAdmin ? () => setShowCreateTeam(true) : undefined}
-        />
+        <EmptyTeamState onCreateTeam={_isAdmin ? () => setShowCreateTeam(true) : undefined} />
       ) : (
         <>
           {/* === Members === */}
@@ -290,10 +297,7 @@ export default function TeamManagementPanel({
 
           {/* === 默认 Agent 模板（仅全局 admin 可见）=== */}
           {showAgents && _isAdmin && (
-            <DefaultAgentTemplateSection
-              teamId={activeTeam.team_id}
-              teamName={activeTeam.name}
-            />
+            <DefaultAgentTemplateSection teamId={activeTeam.team_id} teamName={activeTeam.name} />
           )}
 
           {/* === Agent grid === */}
@@ -348,10 +352,7 @@ export default function TeamManagementPanel({
         />
       )}
       {editingAgent && activeTeam && (
-        <AgentEditDialog
-          agent={editingAgent}
-          onClose={() => setEditingAgent(null)}
-        />
+        <AgentEditDialog agent={editingAgent} onClose={() => setEditingAgent(null)} />
       )}
     </div>
   );

@@ -19,6 +19,7 @@ import { ConfigProvider } from 'tea-component';
 import LoginGate from '@/components/LoginGate';
 import { useAuthStore } from '@/stores/auth';
 import { router } from '@/routes';
+import { DialogAccessibility } from '@/components/baren/DialogAccessibility';
 
 /** react-i18next 语言 → tea-component locale 映射 */
 function toTeaLocale(lang: string): 'zh' | 'en' {
@@ -49,8 +50,9 @@ export default function App() {
   const content = (() => {
     if (auth === null) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#0f172a]">
-          <div className="text-sm text-slate-500 dark:text-slate-400">{t('app.checkingSession')}</div>
+        <div className="baren-session-check" role="status">
+          <img src="/baren-logo.svg" alt="Baren" />
+          <p>{t('app.checkingSession')}</p>
         </div>
       );
     }
@@ -64,6 +66,7 @@ export default function App() {
 
   return (
     <ConfigProvider locale={teaLocale}>
+      <DialogAccessibility />
       {content}
     </ConfigProvider>
   );

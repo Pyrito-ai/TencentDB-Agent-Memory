@@ -1,0 +1,216 @@
+.baren-shell {
+  height: 100dvh;
+  width: 100%;
+  background: var(--background-deep);
+}
+.baren-shell,
+.baren-shell *,
+.baren-shell *::before,
+.baren-shell *::after {
+  box-sizing: border-box;
+}
+.baren-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+}
+.baren-workspace.with-coordinator {
+  grid-template-columns: minmax(0, 1fr) clamp(320px, 32vw, 390px);
+}
+.baren-work-area {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  container: workspace / inline-size;
+}
+.baren-page-scroll {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+  scroll-padding-bottom: 150px;
+}
+.baren-shell .baren-page-frame {
+  min-height: 100%;
+  padding: 36px 38px 156px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: none;
+  outline: none;
+}
+.baren-page-frame > * {
+  min-width: 0;
+}
+.baren-page-frame > .runtime-workbench {
+  flex: 1;
+}
+.baren-shell .baren-page-frame:has(._asset-split),
+.baren-shell .baren-page-frame:has(.runtime-workbench) {
+  height: 100%;
+  min-height: 0;
+}
+.baren-shell ._memory-global-header {
+  height: 72px;
+  padding: 0 28px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.baren-shell ._memory-global-header-left {
+  gap: 24px;
+  flex: 1;
+}
+.baren-shell ._memory-global-header-logo {
+  width: 115px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 0;
+}
+.baren-shell ._memory-global-header-right {
+  gap: 12px;
+}
+.baren-shell ._memory-global-header-avatar {
+  width: 32px;
+  height: 32px;
+}
+.baren-shell ._memory-global-header-icon-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.baren-shell ._memory-global-header-user-btn {
+  padding: 4px;
+  gap: 8px;
+}
+.baren-shell ._memory-global-header-username {
+  display: none;
+}
+.baren-shell ._memory-team-switcher-trigger {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: transparent;
+  height: 38px;
+}
+.baren-breadcrumb {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  min-width: 0;
+}
+.baren-breadcrumb strong {
+  color: var(--foreground);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.baren-coordinator-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  min-height: 36px;
+  padding: 7px 10px;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  background: var(--card);
+  font-size: 12px;
+  cursor: pointer;
+}
+.baren-skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 10000;
+  background: var(--primary);
+  color: var(--card);
+  padding: 12px 18px;
+  border-radius: 8px;
+}
+.baren-skip-link:focus {
+  top: 12px;
+}
+@media (max-width: 799px) {
+  .baren-workspace.with-coordinator {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 55fr) minmax(0, 45fr);
+  }
+}
+@media (max-width: 900px) {
+  .baren-breadcrumb > span,
+  .baren-breadcrumb > svg {
+    display: none;
+  }
+  .baren-shell ._memory-global-header-left {
+    gap: 16px;
+  }
+  .baren-shell ._memory-global-header {
+    padding: 0 18px;
+  }
+  .baren-shell .baren-page-frame {
+    padding: 28px 24px 144px;
+  }
+}
+@media (max-width: 639px) {
+  .baren-shell ._memory-global-header {
+    height: 64px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .baren-shell ._memory-global-header-logo {
+    width: 89px;
+    height: 30px;
+  }
+  .baren-shell ._memory-global-header-left {
+    gap: 12px;
+  }
+  .baren-shell ._memory-global-header-right {
+    gap: 5px;
+  }
+  .baren-shell ._memory-global-header-guide-btn,
+  .baren-breadcrumb,
+  .baren-coordinator-toggle span {
+    display: none;
+  }
+  .baren-coordinator-toggle {
+    padding: 8px;
+  }
+  .baren-shell .baren-page-frame {
+    padding: 24px 16px 112px;
+  }
+  .baren-shell ._memory-global-header-left ._memory-team-switcher-trigger {
+    max-width: 100px;
+  }
+}
+@container workspace (max-width: 720px) {
+  .baren-shell .baren-page-frame:has(._asset-split) {
+    height: auto;
+    min-height: 100%;
+  }
+}
+
+/* At browser zoom or in a short window, keep dock clearance after the content
+   instead of letting minimum-height panels overflow a viewport-sized frame. */
+@media (max-height: 650px) {
+  .baren-shell .baren-page-frame:has(._asset-split),
+  .baren-shell .baren-page-frame:has(.runtime-workbench) {
+    height: auto;
+    min-height: 100%;
+  }
+}
+
+@container workspace (max-width: 639px) {
+  .baren-shell .baren-page-frame {
+    padding: 24px 16px 112px;
+  }
+}

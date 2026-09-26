@@ -44,16 +44,22 @@ export default function OccurrenceDetail({
   }
   const brief = `Loop: ${loop.name}\nOccurrence: ${o.id}\nTeam: ${teamId}\nArea: ${o.area_name}\nOwner: ${o.owner_id}\nDue: ${o.due_day || 'Flexible period'}\nProject: ${o.project_id ? `${o.project_name} (${o.project_id})` : 'No project'}\nTask ID: ${o.task_id}\nAgent ID: ${o.agent_id || 'Human work'}\n\n${o.brief}\n\nUse the task ID above in the Tencent session context. Record findings and work links on the task. Do not mark the loop complete; a human must review and accept the result.`;
   return (
-    <section className="loop-occurrence">
-      <h3>{loop.name} — occurrence</h3>
-      <p>
-        {o.area_name} · {o.project_name || 'No project'} · {o.state}
-        {o.due_day && ` · Due ${o.due_day}`}
-      </p>
+    <section className="loop-occurrence work-surface">
+      <div className="loop-section-heading">
+        <span className="work-eyebrow">Selected occurrence</span>
+        <h3>{loop.name}</h3>
+        <p>
+          {o.area_name} · {o.project_name || 'No project'}
+          {o.due_day && ` · Due ${o.due_day}`}
+        </p>
+        <span className="loop-state-badge">{o.state}</span>
+      </div>
       {error && <p role="alert">{error}</p>}
       {o.task_id ? (
         <>
-          <button onClick={() => onOpenTask(o.task_id!)}>Open linked task</button>
+          <button className="work-primary" onClick={() => onOpenTask(o.task_id!)}>
+            Open linked task
+          </button>
           <details open={!!o.agent_id}>
             <summary>{o.agent_id ? 'Manual agent handoff' : 'Occurrence brief'}</summary>
             <pre>{brief}</pre>
@@ -152,7 +158,9 @@ export default function OccurrenceDetail({
                   timesheet entries; it does not add time again.
                 </p>
               </fieldset>
-              <button disabled={busy}>Accept work & complete occurrence</button>
+              <button className="work-primary" disabled={busy}>
+                Accept work & complete occurrence
+              </button>
               <p className="loop-help">
                 {o.due_day
                   ? 'Completion stays attached to this deadline, even when late.'

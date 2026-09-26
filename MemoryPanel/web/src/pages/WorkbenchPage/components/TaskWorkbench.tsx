@@ -14,7 +14,7 @@ import Agenda from './Agenda';
  *
  * 数据走后端链路 A（services/backendStore.ts，内部调用 @/lib/teamApi 的 meta 接口）。
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Text } from 'tea-component';
 import {
@@ -29,6 +29,7 @@ import {
 import { tea } from '@/lib/tea-bridge';
 import TaskCreateDialog, { type TaskDraft } from './TaskCreateDialog';
 import BoardView from './BoardView';
+import { projectRequest, projectsChanged, type Project } from '../hooks/useProjects';
 import Timesheets from './Timesheets';
 import { useTeamParticipation } from '../hooks/useTeamParticipation';
 import { errMsg, type AgentOption, type WorkbenchTab } from '../utils/workbench-utils';
@@ -39,7 +40,9 @@ function EmptyTeam() {
   return (
     <Card>
       <Card.Body className="_memory-workbench-empty-card">
-        <Text theme="strong" className="_memory-workbench-empty-title">{t('task.emptyTeam.title')}</Text>
+        <Text theme="strong" className="_memory-workbench-empty-title">
+          {t('task.emptyTeam.title')}
+        </Text>
         <Text theme="weak" className="_memory-workbench-empty-desc">
           {t('task.emptyTeam.desc')}
         </Text>
@@ -68,27 +71,50 @@ export default function TaskWorkbench(props: {
   // 后端分页：useTasks 根据 page + pageSize 调 Panel 聚合接口，内核只返回当前页
   const PAGE_SIZE = 0; // The board loads all pages so columns and filters are complete.
   const currentPage = 1;
-  const { tasks, loading: tasksLoading } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
+  const {
+    tasks,
+    loading: tasksLoading,
+    error: tasksError,
+    retry: retryTasks,
+  } = useTasks(activeTeamId, currentPage, PAGE_SIZE);
   const { teams, activeTeam } = useTeams();
   const participationByTask = useTeamParticipation(activeTeamId);
   const [showCreate, setShowCreate] = useState(false);
+  const [createProject, setCreateProject] = useState<Project | undefined>();
+  const previousTeam = useRef(activeTeamId);
+  useEffect(() => {
+    if (!activeTeamId) return;
+    const changedTeam = previousTeam.current && previousTeam.current !== activeTeamId;
+    previousTeam.current = activeTeamId;
+    if (!changedTeam) return;
+    setShowCreate(false);
+    setCreateProject(undefined);
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        for (const key of ['project', 'projectDetails', 'manageProjects', 'task']) next.delete(key);
+        return next;
+      },
+      { replace: true },
+    );
+  }, [activeTeamId, setSearchParams]);
   const selectedId = searchParams.get('task');
   const setSelectedId = (id: string | null) => {
     const next = new URLSearchParams(searchParams);
-    if (id) next.set('task', id); else next.delete('task');
+    if (id) next.set('task', id);
+    else next.delete('task');
     setSearchParams(next, { replace: true });
   };
 
   // 切换 team 时重置到第 1 页
-
 
   const sortedTasks = useMemo(() => {
     return [...tasks].sort((a, b) => b.updated_at_ms - a.updated_at_ms);
   }, [tasks]);
 
   const selected = useMemo(
-    () => (selectedId ? tasks.find((t) => t.task_id === selectedId) ?? null : null),
-    [selectedId, tasks]
+    () => (selectedId ? (tasks.find((t) => t.task_id === selectedId) ?? null) : null),
+    [selectedId, tasks],
   );
 
   /**
@@ -99,24 +125,36 @@ export default function TaskWorkbench(props: {
     // 谁点击「创建 Task」，谁就是 creator_user_id。
     const team = teams.find((t) => t.team_id === draft.team_id);
     if (!team) {
-      tea.notify.error(`team "${draft.team_id}" ${t('task.emptyTeam.title')}`);
-      return;
+      throw new Error(t('task.emptyTeam.title'));
     }
-    try {
-      const task = await createTask({
-        team_id: draft.team_id,
-        creator_user_id: currentUser,
-        title: draft.title,
-        description: draft.description,
-        source_type: draft.source_type,
-        source_url: draft.source_url,
-        linked_agents: draft.linked_agents
-      });
-      setSelectedId(task.task_id);
-      setShowCreate(false);
-    } catch (err) {
-      tea.notify.error(errMsg(err));
+    // The creation dialog owns its retryable error state.
+    const task = await createTask({
+      team_id: draft.team_id,
+      creator_user_id: currentUser,
+      title: draft.title,
+      description: draft.description,
+      source_type: draft.source_type,
+      source_url: draft.source_url,
+      linked_agents: draft.linked_agents,
+    });
+    if (view === 'board' && createProject) {
+      try {
+        await projectRequest(draft.team_id, 'assign', {
+          task: task.task_id,
+          projectId: createProject.id,
+        });
+        projectsChanged();
+      } catch (error) {
+        // Creation succeeded. Open that task instead of offering a duplicate creation retry.
+        tea.notify.warning(
+          `Task created, but its project could not be assigned: ${errMsg(error)}. You can assign it in task details.`,
+        );
+      }
     }
+    setShowCreate(false);
+    setCreateProject(undefined);
+    if (view === 'board') setSelectedId(task.task_id);
+    else navigate('/?task=' + encodeURIComponent(task.task_id));
   }
 
   return (
@@ -126,55 +164,106 @@ export default function TaskWorkbench(props: {
       ) : (
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
-          {view==='areas'?<Areas key={activeTeamId} teamId={activeTeamId}/>:view==='today'||view==='upcoming' ? <Agenda key={activeTeamId} view={view} teamId={activeTeamId} tasks={tasks} loading={tasksLoading} currentUser={currentUser} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))} onOpenLoops={(id,due)=>navigate('/loops'+(id?'?loop='+encodeURIComponent(id)+(due?'&due='+encodeURIComponent(due):''):''))}/> : view==='loops' ? <Loops initialLoop={searchParams.get('loop')||''} initialDue={searchParams.get('due')||''} key={activeTeamId} members={activeTeam?.members} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
-          tasks={sortedTasks}
-          tasksLoading={tasksLoading}
-          selected={selected}
-          onSelect={(id) => setSelectedId(id)}
-          onCreate={() => setShowCreate(true)}
-          onDelete={async (task) => {
-            // 权限：删除 task 仅创建者 / team admin / 全局 admin
-            const team = teams.find((t) => t.team_id === task.team_id) ?? null;
-            if (!canDeleteTask(task, team, currentUser)) {
-              tea.notify.warning(
-                t('task.delete.noPermission', { title: task.title, creator: task.creator_user_id })
-              );
-              return;
-            }
-            const ok = await tea.confirm({
-              message: t('task.delete.confirm', { title: task.title }),
-              description: t('task.delete.description', { id: task.task_id }),
-              okText: t('task.delete.okText'),
-              cancelText: t('task.delete.cancelText'),
-            });
-            if (ok) {
-              try {
-                await deleteTask(task.task_id);
-                if (selectedId === task.task_id) setSelectedId(null);
-              } catch (err) {
-                tea.notify.error(errMsg(err));
+          {view === 'areas' ? (
+            <Areas key={activeTeamId} teamId={activeTeamId} />
+          ) : view === 'today' || view === 'upcoming' ? (
+            <Agenda
+              key={activeTeamId}
+              view={view}
+              teamId={activeTeamId}
+              tasks={tasks}
+              loading={tasksLoading}
+              error={tasksError}
+              onRetry={retryTasks}
+              currentUser={currentUser}
+              onCreate={() => setShowCreate(true)}
+              onOpenBoard={() => navigate('/')}
+              onOpenTask={(id) => navigate('/?task=' + encodeURIComponent(id))}
+              onOpenLoops={(id, due) =>
+                navigate(
+                  '/loops' +
+                    (id
+                      ? '?loop=' +
+                        encodeURIComponent(id) +
+                        (due ? '&due=' + encodeURIComponent(due) : '')
+                      : ''),
+                )
               }
-            }
-          }}
-          onUpdateTask={async (task, patch) => {
-            const team = teams.find(t => t.team_id === task.team_id);
-            if (!canEditTask(task, team, currentUser)) {
-              tea.notify.warning(t('task.noPermissionEdit'));
-              return false;
-            }
-            try {
-              await updateTask(task.task_id, patch, currentUser);
-              return true;
-            } catch (err) {
-              tea.notify.error(errMsg(err));
-              return false;
-            }
-          }}
-          agents={agents}
-          teams={teams}
-          currentUser={currentUser}
-          participationByTask={participationByTask}
-          />}
+            />
+          ) : view === 'loops' ? (
+            <Loops
+              initialLoop={searchParams.get('loop') || ''}
+              initialDue={searchParams.get('due') || ''}
+              key={activeTeamId}
+              members={activeTeam?.members}
+              teamId={activeTeamId}
+              currentUser={currentUser}
+              agents={agents}
+              onOpenTask={(id) => navigate('/?task=' + encodeURIComponent(id))}
+            />
+          ) : view === 'timesheets' ? (
+            <Timesheets key={activeTeamId} teamId={activeTeamId} />
+          ) : (
+            <BoardView
+              key={activeTeamId}
+              teamId={activeTeamId}
+              tasks={sortedTasks}
+              tasksLoading={tasksLoading}
+              tasksError={tasksError}
+              onRetryTasks={retryTasks}
+              selected={selected}
+              onSelect={(id) => setSelectedId(id)}
+              onCreate={(project) => {
+                setCreateProject(project);
+                setShowCreate(true);
+              }}
+              onDelete={async (task) => {
+                // 权限：删除 task 仅创建者 / team admin / 全局 admin
+                const team = teams.find((t) => t.team_id === task.team_id) ?? null;
+                if (!canDeleteTask(task, team, currentUser)) {
+                  tea.notify.warning(
+                    t('task.delete.noPermission', {
+                      title: task.title,
+                      creator: task.creator_user_id,
+                    }),
+                  );
+                  return;
+                }
+                const ok = await tea.confirm({
+                  message: t('task.delete.confirm', { title: task.title }),
+                  description: t('task.delete.description', { id: task.task_id }),
+                  okText: t('task.delete.okText'),
+                  cancelText: t('task.delete.cancelText'),
+                });
+                if (ok) {
+                  try {
+                    await deleteTask(task.task_id);
+                    if (selectedId === task.task_id) setSelectedId(null);
+                  } catch (err) {
+                    tea.notify.error(errMsg(err));
+                  }
+                }
+              }}
+              onUpdateTask={async (task, patch) => {
+                const team = teams.find((t) => t.team_id === task.team_id);
+                if (!canEditTask(task, team, currentUser)) {
+                  tea.notify.warning(t('task.noPermissionEdit'));
+                  return false;
+                }
+                try {
+                  await updateTask(task.task_id, patch, currentUser);
+                  return true;
+                } catch (err) {
+                  tea.notify.error(errMsg(err));
+                  return false;
+                }
+              }}
+              agents={agents}
+              teams={teams}
+              currentUser={currentUser}
+              participationByTask={participationByTask}
+            />
+          )}
         </>
       )}
 
@@ -183,7 +272,11 @@ export default function TaskWorkbench(props: {
         // 这里 activeTeam 必为非空，因为上面 !activeTeamId 分支已经走 EmptyTeam 了
         <TaskCreateDialog
           team={{ team_id: activeTeam.team_id, name: activeTeam.name }}
-          onClose={() => setShowCreate(false)}
+          projectName={createProject?.name}
+          onClose={() => {
+            setShowCreate(false);
+            setCreateProject(undefined);
+          }}
           onCreate={handleCreate}
         />
       )}

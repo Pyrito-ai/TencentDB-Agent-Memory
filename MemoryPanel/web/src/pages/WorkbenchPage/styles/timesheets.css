@@ -1,1 +1,292 @@
-.timesheets{padding:24px;background:var(--tea-color-bg-container,#fff);border:1px solid #dce2e9;border-radius:12px;color:var(--tea-color-text-primary,#182230)}.timesheets header{display:flex;justify-content:space-between;gap:20px}.timesheets h2{font-size:22px;margin:0 0 8px}.timesheets p{margin:10px 0;line-height:1.5}.timesheets button,.timesheets input,.timesheets select,.workbench-view-switch button{font:inherit;border:1px solid #cbd5e1;border-radius:6px;padding:8px 12px;background:var(--tea-color-bg-container,#fff);color:inherit}.timesheets button{cursor:pointer}.timesheets button:disabled{opacity:.45;cursor:default}.timesheet-filters,.timesheet-actions{display:flex;align-items:end;gap:12px;flex-wrap:wrap;margin:20px 0}.timesheets label{display:flex;flex-direction:column;gap:6px}.timesheet-hint{color:#64748b;font-size:13px}.timesheet-totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0}.timesheet-totals>div{border:1px solid #dce2e9;border-radius:8px;padding:16px}.timesheet-totals strong,.timesheet-totals span{display:block}.timesheet-totals strong{font-size:20px;margin-top:8px}.timesheet-table-wrap{overflow:auto;margin-top:20px}.timesheets table{width:100%;border-collapse:collapse;text-align:left;min-width:820px}.timesheets th,.timesheets td{padding:12px;border-bottom:1px solid #dce2e9;vertical-align:top}.timesheets small{display:block;color:#64748b;margin-top:5px}.timesheet-note{white-space:pre-wrap;overflow-wrap:anywhere;max-width:320px}.timesheet-payment{padding:20px;border:1px solid #93c5fd;border-radius:8px;background:#eff6ff;color:#182230}.timesheet-payment input{max-width:420px}.timesheet-payment button{margin:12px 8px 0 0}.workbench-view-switch{display:flex;gap:8px;margin-bottom:16px}.workbench-view-switch button[aria-pressed=true]{background:#1d4ed8;color:white;border-color:#1d4ed8}
+.timesheets {
+  min-width: 0;
+  color: var(--foreground);
+}
+.timesheets p {
+  margin: 10px 0;
+  line-height: 1.65;
+}
+.timesheets button,
+.timesheets input,
+.timesheets select,
+.workbench-view-switch button {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--card);
+  color: inherit;
+  font: inherit;
+}
+.timesheets button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+.timesheets button:hover:not(:disabled) {
+  border-color: var(--chart-3);
+  background: var(--background);
+}
+.timesheets button.work-primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.timesheets button.work-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 88%, var(--foreground));
+}
+.timesheets button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.timesheets :is(button, input, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--chart-3);
+  outline-offset: 3px;
+}
+.timesheet-filters,
+.timesheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  margin: 24px 0;
+}
+.timesheets label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+}
+.timesheet-filters label {
+  flex: 1 1 150px;
+  max-width: 240px;
+}
+.timesheets input,
+.timesheets select {
+  max-width: 100%;
+  color: var(--foreground);
+}
+.timesheets input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+}
+.timesheet-hint {
+  max-width: 980px;
+  color: var(--muted-foreground);
+  font-size: 11px;
+}
+.timesheet-totals.work-summary {
+  margin: 24px 0;
+}
+.timesheet-totals.work-summary > article {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 18px 16px;
+}
+.timesheet-totals.work-summary strong {
+  font-size: 18px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.timesheet-daily {
+  margin: 24px 0;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+.timesheet-daily summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+.timesheet-zone {
+  margin-left: 8px;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 400;
+}
+.timesheet-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 0 24px;
+  padding-top: 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.timesheet-daily-grid p {
+  margin: 0;
+  padding: 10px 0;
+  border-top: 1px solid var(--muted);
+}
+.timesheet-actions {
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.timesheet-actions > span {
+  margin-right: auto;
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+.timesheet-actions.has-selection > span {
+  color: var(--primary);
+  font-weight: 600;
+}
+.timesheet-payment {
+  margin: 20px 0;
+  padding: 24px;
+  border: 1px solid var(--chart-3);
+  border-radius: 12px;
+  background: var(--accent);
+  color: var(--foreground);
+}
+.timesheet-payment > strong {
+  font-size: 16px;
+}
+.timesheet-payment p {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.timesheet-payment input {
+  max-width: 420px;
+}
+.timesheet-payment button {
+  margin: 16px 8px 0 0;
+}
+.timesheet-table-wrap {
+  width: 100%;
+  overflow: auto;
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+}
+.timesheets table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.timesheets th,
+.timesheets td {
+  padding: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 70%, var(--card));
+  vertical-align: top;
+}
+.timesheets th {
+  padding-top: 13px;
+  padding-bottom: 13px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.timesheets tr:last-child td {
+  border-bottom: 0;
+}
+.timesheets tr.is-selected td {
+  background: var(--accent);
+}
+.timesheets td > strong {
+  font-weight: 600;
+}
+.timesheets small {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted-foreground);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.timesheet-date,
+.timesheet-duration {
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.timesheet-note {
+  max-width: 320px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.timesheets .timesheet-state {
+  display: inline-flex;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-family: var(--font-mono, monospace);
+  font-size: 9px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.timesheets .timesheet-state.is-approved {
+  background: var(--accent);
+  color: var(--primary);
+}
+.timesheets .timesheet-state.is-paid {
+  background: var(--tea-color-bg-success-lighten-default);
+  color: var(--tea-color-text-success-default);
+}
+.timesheets .timesheet-state.is-running {
+  background: var(--tea-color-bg-warning-lighten-default);
+  color: var(--tea-color-text-warning-default);
+}
+.workbench-view-switch {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.workbench-view-switch button[aria-pressed='true'] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+@container workbench (max-width: 720px) {
+  .timesheet-totals.work-summary {
+    flex-wrap: wrap;
+  }
+  .timesheet-totals.work-summary > article {
+    flex: 1 1 140px;
+  }
+  .timesheet-actions > span {
+    flex-basis: 100%;
+  }
+}
+@container workbench (max-width: 420px) {
+  .timesheet-filters label {
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .timesheet-payment {
+    padding: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .timesheets button {
+    transition: none;
+  }
+}

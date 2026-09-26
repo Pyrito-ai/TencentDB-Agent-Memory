@@ -27,7 +27,6 @@ import {
   canEditTask,
 } from '@/services';
 import { tea } from '@/lib/tea-bridge';
-import { TeamHeaderCard } from '@/components/team/TeamHeaderCard';
 import TaskCreateDialog, { type TaskDraft } from './TaskCreateDialog';
 import BoardView from './BoardView';
 import Timesheets from './Timesheets';
@@ -127,7 +126,6 @@ export default function TaskWorkbench(props: {
       ) : (
         <>
           {/* 当前 team 概览（与 team 管理页同一组件） */}
-          {activeTeam && <TeamHeaderCard team={activeTeam} />}
           {view==='areas'?<Areas key={activeTeamId} teamId={activeTeamId}/>:view==='today'||view==='upcoming' ? <Agenda key={activeTeamId} view={view} teamId={activeTeamId} tasks={tasks} loading={tasksLoading} currentUser={currentUser} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))} onOpenLoops={(id,due)=>navigate('/loops'+(id?'?loop='+encodeURIComponent(id)+(due?'&due='+encodeURIComponent(due):''):''))}/> : view==='loops' ? <Loops initialLoop={searchParams.get('loop')||''} initialDue={searchParams.get('due')||''} key={activeTeamId} members={activeTeam?.members} teamId={activeTeamId} currentUser={currentUser} agents={agents} onOpenTask={id=>navigate('/?task='+encodeURIComponent(id))}/> : view==='timesheets' ? <Timesheets key={activeTeamId} teamId={activeTeamId}/> : <BoardView key={activeTeamId} teamId={activeTeamId}
           tasks={sortedTasks}
           tasksLoading={tasksLoading}

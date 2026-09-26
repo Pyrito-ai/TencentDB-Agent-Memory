@@ -1,3 +1,4 @@
+import { registerCoordinatorRoutes } from "../../src/panel/http/routes/coordinator.js";
 /** Single-owner loopback development host. Uses real Tencent auth and routes. */
 import { readFileSync } from "node:fs";
 import { randomBytes, timingSafeEqual } from "node:crypto";
@@ -186,7 +187,10 @@ app.use("/api/v1/*", async (c, next) => {
   const headers = new Headers(req.headers);
   headers.set("X-Tdai-Service-Id", config.instance);
   headers.set("X-Tdai-User-Key", ownerKey);
-  if (c.req.path.startsWith("/api/v1/workbench/"))
+  if (
+    c.req.path.startsWith("/api/v1/workbench/") ||
+    c.req.path.startsWith("/api/v1/coordinator/")
+  )
     return api.fetch(new Request(req, { headers }));
   const meta = c.req.path.match(
     /^\/api\/v1\/meta\/(task\/(?:list|create|board-state|board-transition|update))$/,
@@ -285,6 +289,15 @@ registerWorkbenchRoutes(routes, deps, {
       const data = await boardRead(scope, "loops");
       return data.history.some((x: any) => x.task_id === taskId);
     },
+  },
+});
+registerCoordinatorRoutes(routes, deps, {
+  dispatch: async (route, init) => {
+    if (route.startsWith("/workbench/")) return routes.request(route, init);
+    return fetch(config.tencentUrl + "/api/v1" + route, {
+      ...init,
+      signal: AbortSignal.timeout(30000),
+    });
   },
 });
 api.route("/api/v1", routes);

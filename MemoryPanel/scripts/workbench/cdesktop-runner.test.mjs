@@ -1,9 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import http from "node:http";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import {
+  chmod,
+  lstat,
+  readdir,
   mkdtemp,
   mkdir,
   readFile,
@@ -182,6 +185,7 @@ async function fixture(t, options = {}) {
       if (session && req.url === `/api/sessions/${session.id}`)
         return reply(session);
       if (session && req.url === `/api/sessions/${session.id}/follow-up`) {
+        if (options.inspectPrompt) await options.inspectPrompt(body.prompt);
         process = {
           id: randomUUID(),
           session_id: session.id,
@@ -250,6 +254,15 @@ async function fixture(t, options = {}) {
   t.after(async () => {
     await close(bridge);
     await close(upstream);
+    async function writable(directory) {
+      const stat = await lstat(directory);
+      if (stat.isDirectory() && !stat.isSymbolicLink()) {
+        await chmod(directory, 0o700);
+        for (const entry of await readdir(directory))
+          await writable(path.join(directory, entry));
+      }
+    }
+    await writable(base);
     await rm(base, { recursive: true, force: true });
     assert.deepEqual(errors, []);
   });
@@ -531,4 +544,89 @@ test("malformed execution identity is never reported as running", async (t) => {
   const receipt = await (await f.request("/jobs", f.input)).json();
   assert.equal(receipt.state, "unknown");
   assert.equal(receipt.executionProcessId, undefined);
+});
+
+function bundleFixture(
+  content = "# SEO Audit\nprivate-skill-marker " + "x".repeat(110000),
+) {
+  const digest = (value) => createHash("sha256").update(value).digest("hex");
+  const files = [
+    {
+      path: "manifest.json",
+      content: '{"schema":"tencent.agent-bundle.v1"}',
+      sha256: digest('{"schema":"tencent.agent-bundle.v1"}'),
+      executable: false,
+    },
+    {
+      path: "skills/seo-audit/SKILL.md",
+      content,
+      sha256: digest(content),
+      executable: false,
+    },
+  ];
+  return {
+    schema: "tencent.agent-bundle.v1",
+    digest: digest(JSON.stringify(files)),
+    files,
+  };
+}
+
+test("cdesktop stages a private Agent snapshot before execution and binds retries to it", async (t) => {
+  let f;
+  f = await fixture(t, {
+    inspectPrompt: async (prompt) => {
+      const directory = path.join(f.root, f.input.id + ".bundle");
+      assert.ok(prompt.includes(directory));
+      assert.ok(prompt.includes("skills/seo-audit/SKILL.md"));
+      assert.equal(
+        await readFile(
+          path.join(directory, "skills/seo-audit/SKILL.md"),
+          "utf8",
+        ),
+        f.input.bundle.files.find(
+          (file) => file.path === "skills/seo-audit/SKILL.md",
+        ).content,
+      );
+      assert.equal((await lstat(directory)).mode & 0o777, 0o500);
+    },
+  });
+  f.input.bundle = bundleFixture();
+  const launched = await f.request("/jobs", f.input);
+  assert.equal(launched.status, 200);
+  const receipt = await launched.text();
+  assert.equal(JSON.parse(receipt).state, "running");
+  assert.ok(!receipt.includes("private-skill-marker"));
+  assert.ok(!receipt.includes(f.input.bundle.digest));
+  assert.ok(!receipt.includes(".bundle"));
+  await f.restart();
+  assert.equal((await f.request("/jobs", f.input)).status, 200);
+  assert.equal(
+    (await f.request("/jobs", { ...f.input, bundle: bundleFixture("updated") }))
+      .status,
+    409,
+  );
+  assert.equal(
+    f.calls.filter((call) => call.url.endsWith("/follow-up")).length,
+    1,
+  );
+  const file = path.join(
+    f.root,
+    f.input.id + ".bundle/skills/seo-audit/SKILL.md",
+  );
+  await chmod(file, 0o600);
+  await writeFile(file, "tampered");
+  await chmod(file, 0o400);
+  assert.equal((await f.request("/jobs", f.input)).status, 409);
+  assert.equal(
+    f.calls.filter((call) => call.url.endsWith("/follow-up")).length,
+    1,
+  );
+});
+
+test("cdesktop rejects corrupted Agent bundle before any upstream operation", async (t) => {
+  const f = await fixture(t);
+  const bundle = bundleFixture();
+  bundle.files[0].content += "tamper";
+  assert.equal((await f.request("/jobs", { ...f.input, bundle })).status, 400);
+  assert.equal(f.calls.length, 0);
 });

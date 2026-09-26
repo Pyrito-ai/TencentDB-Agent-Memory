@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "package": "seo-audit",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "skillPath": "skills/seo-audit",
+    "skillVersion": "2.0.1",
+    "license": "MIT"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "README.md": {
+      "sha256": "f2999a59fa7e5c97034aa1169a8c51cf254a3db2e2deacfececd373546cc38e1",
+      "bytes": 4820,
+      "origin": "local",
+      "executable": false
+    },
+    "agent.json": {
+      "sha256": "a63513e91fdfaa32832f86dc8046fd3559087a0ddf452a5f894b4e3ba97adacd",
+      "bytes": 2555,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/SKILL.md": {
+      "sha256": "9420a6c1ffcf7212766bcb618c28766ecb084631bed8045f3115d42b1230d368",
+      "bytes": 16610,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/seo-audit/SKILL.md"
+    },
+    "skill/references/ai-writing-detection.md": {
+      "sha256": "f1e273f56ce7e2215ff218bf903680ddcec0fd026ab90c3ebfb3439ed0edfaa4",
+      "bytes": 6528,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/seo-audit/references/ai-writing-detection.md"
+    },
+    "skill/references/international-seo.md": {
+      "sha256": "d2fc76f40eccc422ae0f1d7e5b770095e89a045f38e1d0370811203da57996ff",
+      "bytes": 14258,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/seo-audit/references/international-seo.md"
+    },
+    "skill/scripts/inspect-html.mjs": {
+      "sha256": "d4f3d05c2d07003f855837f8ec1767699c4b6de37fb498a3f7b68f57fcc80cdd",
+      "bytes": 7532,
+      "origin": "local",
+      "executable": true
+    }
+  }
+}

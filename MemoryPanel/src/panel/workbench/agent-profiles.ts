@@ -1,11 +1,13 @@
 import type { PanelDeps } from "../panel-deps.js";
 import type { ExecutionScope } from "./execution.js";
+import { agentBundleConfigSchema, type AgentBundleConfig } from "./agent-bundles.js";
 export type AgentProfile = {
   id: string;
   name: string;
   description: string;
   prompt: string;
   updatedAt: string;
+  bundle?: AgentBundleConfig;
 };
 // The launcher supports owned profiles and profiles explicitly shared with the team.
 function visible(a: any, s: ExecutionScope) {
@@ -17,12 +19,23 @@ function visible(a: any, s: ExecutionScope) {
   );
 }
 function snapshot(a: any): AgentProfile {
+  let metadata: any = {};
+  try {
+    metadata = a.metadata_json?.trim() ? JSON.parse(a.metadata_json) : {};
+    if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) throw Error();
+  } catch {
+    // Invalid persisted metadata cannot silently downgrade an Agent to prompt-only.
+    throw Error("Agent profile metadata is invalid. Repair it before launching.");
+  }
+  const bundle = metadata?.workbench_bundle === undefined ? undefined
+    : agentBundleConfigSchema.parse(metadata.workbench_bundle);
   return {
     id: a.agent_id,
     name: a.name,
     description: a.description || "",
     prompt: a.prompt || "",
     updatedAt: a.updated_at || "",
+    ...(bundle ? { bundle } : {}),
   };
 }
 export function agentProfiles(deps: PanelDeps) {
@@ -40,7 +53,10 @@ export function agentProfiles(deps: PanelDeps) {
         const page = Array.isArray(data) ? data : data?.items;
         if (!Array.isArray(page))
           throw Error("Agent profiles could not be loaded.");
-        items.push(...page.filter((a) => visible(a, s)).map(snapshot));
+        for (const agent of page.filter((a) => visible(a, s))) {
+          try { items.push(snapshot(agent)); }
+          catch { /* One invalid profile must not hide every usable profile. get() still fails closed. */ }
+        }
         if (page.length < 100) return items;
       }
       throw Error("Too many agent profiles to load.");

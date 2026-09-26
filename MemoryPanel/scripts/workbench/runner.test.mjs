@@ -1,10 +1,19 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { createBridge } from "./runner.mjs";
 test("private runner enforces allowlist, persists idempotency, and reads the Orca envelope", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "orca-bridge-"));
@@ -444,4 +453,126 @@ test("direct mode uses worktree CLI even with native orchestration enabled", asy
     await new Promise((r) => server.close(r));
     await rm(root, { recursive: true, force: true });
   }
+});
+
+test("Orca stages a private local Agent snapshot before create, rejects remote hosts and tampering", async (t) => {
+  const base = await mkdtemp(path.join(tmpdir(), "orca-bundle-"));
+  const root = path.join(base, "state"),
+    source = path.join(base, "source");
+  await mkdir(source);
+  const token = "x".repeat(32),
+    calls = [];
+  let host = "ssh:remote";
+  const digest = (value) => createHash("sha256").update(value).digest("hex");
+  const content = "# SEO Audit\nprivate-orca-skill-marker é";
+  const files = [
+    {
+      path: "manifest.json",
+      content: '{"schema":"tencent.agent-bundle.v1"}',
+      sha256: digest('{"schema":"tencent.agent-bundle.v1"}'),
+      executable: false,
+    },
+    {
+      path: "skills/seo-audit/SKILL.md",
+      content,
+      sha256: digest(content),
+      executable: false,
+    },
+  ];
+  const bundle = {
+    schema: "tencent.agent-bundle.v1",
+    digest: digest(JSON.stringify(files)),
+    files,
+  };
+  const input = {
+    id: randomUUID(),
+    repo: "id:repo",
+    agent: "codex",
+    spec: "Audit it",
+    mode: "direct",
+    bundle,
+  };
+  const command = async (args) => {
+    calls.push(args);
+    if (args[0] === "repo") return { repo: { id: "repo", path: source } };
+    if (args[1] === "list")
+      return {
+        worktrees: [
+          {
+            id: "primary",
+            repoId: "repo",
+            isMainWorktree: true,
+            hostId: host,
+            path: source,
+          },
+        ],
+      };
+    if (args[0] === "worktree") {
+      const prompt = args[args.indexOf("--prompt") + 1];
+      assert.ok(prompt.includes(input.bundle.digest));
+      assert.ok(prompt.includes("skills/seo-audit/SKILL.md"));
+      assert.equal(
+        await readFile(
+          path.join(root, input.id + ".bundle/skills/seo-audit/SKILL.md"),
+          "utf8",
+        ),
+        content,
+      );
+      return { worktree: { id: "wt1" }, agentTerminalHandle: "term1" };
+    }
+    throw Error("unexpected command");
+  };
+  const server = await createBridge({
+    token,
+    root,
+    repos: ["id:repo"],
+    command,
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  t.after(async () => {
+    await new Promise((resolve) => server.close(resolve));
+    async function writable(directory) {
+      const stat = await lstat(directory);
+      if (stat.isDirectory() && !stat.isSymbolicLink()) {
+        await chmod(directory, 0o700);
+        for (const entry of await readdir(directory))
+          await writable(path.join(directory, entry));
+      }
+    }
+    await writable(base);
+    await rm(base, { recursive: true, force: true });
+  });
+  const post = (body) =>
+    fetch(`http://127.0.0.1:${server.address().port}/jobs`, {
+      method: "POST",
+      headers: { Authorization: "Bearer " + token },
+      body: JSON.stringify(body),
+    });
+  assert.equal((await post(input)).status, 409);
+  assert.equal(calls.filter((args) => args[1] === "create").length, 0);
+  host = "local";
+  const response = await post(input);
+  assert.equal(response.status, 200);
+  const receipt = await response.text();
+  assert.equal(JSON.parse(receipt).state, "running");
+  assert.ok(!receipt.includes("private-orca-skill-marker"));
+  assert.ok(!receipt.includes(bundle.digest));
+  assert.ok(!receipt.includes(".bundle"));
+  assert.equal((await post(input)).status, 200);
+  const replacement = {
+    ...bundle,
+    files: files.map((file) =>
+      file.path === "skills/seo-audit/SKILL.md"
+        ? { ...file, content: "changed", sha256: digest("changed") }
+        : file,
+    ),
+  };
+  replacement.digest = digest(JSON.stringify(replacement.files));
+  assert.equal((await post({ ...input, bundle: replacement })).status, 409);
+  const file = path.join(root, input.id + ".bundle/skills/seo-audit/SKILL.md");
+  await chmod(file, 0o600);
+  await writeFile(file, "tampered");
+  await chmod(file, 0o400);
+  assert.equal((await post(input)).status, 409);
+  assert.equal(calls.filter((args) => args[1] === "create").length, 1);
 });

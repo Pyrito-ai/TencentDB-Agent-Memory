@@ -1,0 +1,21 @@
+{
+  "fixture": true,
+  "fixtureId": "seo-audit-memory-v1",
+  "agentId": "fixture-seo-audit",
+  "scope": "synthetic-agent-memory",
+  "entries": [
+    {
+      "id": "fixture-memory-report-style",
+      "content": "The fixture reviewer prefers evidence-linked findings with observed fact, implication, recommended next action, and missing validation separated. Do not calculate an invented SEO score.",
+      "source": "synthetic test review note",
+      "status": "test-only"
+    },
+    {
+      "id": "fixture-memory-noindex",
+      "content": "A previous fixture audit incorrectly treated staging noindex as an immediate production emergency. Check the supplied Wiki context before assigning severity.",
+      "source": "synthetic test lesson",
+      "status": "test-only"
+    }
+  ],
+  "writePolicy": "read-only fixture; do not persist this file as real customer or Agent memory"
+}

@@ -1,9 +1,11 @@
 # SEO Audit Agent delivery pilot
 
-Status: implemented and tested locally on `workbench`, 2026-09-26. Not deployed or
-imported into the live Tencent account. A real Codex worker in cdesktop completed
-the synthetic audit; Orca delivery has automated bridge coverage, not a live
-worker trial for this package.
+Status, 2026-09-26: package support is merged and deployed to the live Tencent
+Hub; the private SEO Audit Agent and pinned native Skill are imported and visible
+in the live library. Real Codex workers in the local cdesktop runtime completed
+both the synthetic pilot and the Red Barn public-site trial. No new production
+worker was launched during activation. Orca delivery has automated bridge
+coverage, not a live worker trial for this package.
 
 ## What the Agent carries
 
@@ -86,6 +88,29 @@ MCP gateway, remote-host file transfer and scheduled/coordinator execution paths
 are outside this change. The local single-owner proxy is not a substitute for the
 matching deployed backend when testing native Skill/memory access.
 
+## Live activation — 2026-09-26
+
+Feature code is merged through PRs #9 and #10 with passing CI. Live Hub revision
+`b96b465` and Core revision `96d0884` were healthy when the authenticated importer
+completed. In `default-team` (`team-xu1jlqpnh8`), it created private Agent
+`agt-9x4jj9njy5` (**SEO Audit**) and Skill `skl-kXxo25MBApwQ` (**seo-audit**),
+pinned to native version **1**. A refreshed live `/#/skills` view showed the Agent
+and private Skill. The verified import package hash is
+`c402ad3dd487d491acf28dce12ede491486b8303bdc715809127eaf3faacbf7b`.
+
+Read-only verification using the deployed Hub's actual package assembler passed
+against native production Core data. It checked Agent/team access, source asset
+attachments and ACLs, read all nine package files, preserved the inspector's
+executable flag, and matched every Skill/resource hash to vendored provenance.
+The new Agent's native L3 memory was readable and empty. The verification used no
+Wiki pages, saved no handoff and launched no worker.
+
+This records deployment, import, library visibility and production assembly. The local trials below
+provide worker-delivery evidence; activation did not launch a new production
+worker or verify a production Wiki fetch. The import package hash identifies the
+vendored source package; each task's assembled context produces a separate
+handoff digest.
+
 ## Verification
 
 Automated coverage includes actual native SQLite metadata/Skill stores and
@@ -112,17 +137,19 @@ The package UI components were also rendered with the real saved pilot package
 and checked in the browser: collapsed selection summary, saved receipt,
 provenance, read-only memory label and executable file inventory.
 
-A repeat live pilot requires the existing local cdesktop runtime and consumes the
-configured worker account's usage. It creates a separate repository/worktree and
-isolated native Tencent data, and refuses an existing output directory:
+A repeat synthetic pilot requires the existing local cdesktop runtime and
+consumes the configured worker account's usage. It creates a separate
+repository/worktree and isolated native Tencent data, and refuses an existing
+output directory:
 
 ```sh
 node --import tsx scripts/workbench/seo-audit-live-pilot.ts --live \
   /absolute/new/pilot-directory http://127.0.0.1:8131 http://127.0.0.1:5190
 ```
 
-The completed 2026-09-26 trial used Codex `gpt-5.6-sol` through cdesktop's existing
-Workbench profile with workspace-write/on-request permissions. The transcript
+The completed 2026-09-26 synthetic trial used Codex `gpt-5.6-sol` through
+cdesktop's existing Workbench profile with workspace-write/on-request permissions.
+The transcript
 shows the worker reading the full Skill, manifest, Wiki and memory, running the
 packaged inspector, and creating only `SEO-AUDIT.md`. It identified empty title
 and description plus the old HTTP canonical, treated staging `noindex` as
@@ -142,3 +169,40 @@ without calling those tools. The runtime attempted its normal MCP startup networ
 connections; the audit commands themselves made no network requests. This pilot
 does not prove a clean global runtime configuration, a production Wiki fetch, a
 live-site crawl, rendered schema, CWV, search rankings or Search Console coverage.
+
+## Red Barn public-site trial — 2026-09-26
+
+A real Codex worker in the existing local cdesktop runtime completed a report
+for the authorized public site, `https://www.redbarninvestmentcounsel.ca/`, using
+the delivered Skill and inspection script. The supplied evidence covered 12 HTML
+pages, robots.txt, a 37-URL sitemap, two domain redirect probes, and rendered
+browser checks on Home, About and Start Here, including mobile navigation and
+layout. Public captures and browser observations were collected before dispatch.
+The Wiki adapter supplied a public-site brief, not customer production Wiki
+content. No real client memory was supplied; synthetic pilot memory was excluded.
+
+The transcript records reading the package, Skill and context, and running the
+packaged inspector. Home inspection succeeded. The About HTML was 1,115,676 bytes
+and exceeded the inspector's 1 MiB cap; the worker reported the refusal and used
+the supplied raw, extracted and browser evidence. The limit was not bypassed.
+
+The worker made 11 command calls and created only `RED-BARN-SEO-AUDIT.md`.
+Tracked source and evidence remained unchanged, `git diff --check` passed, and
+the worktree retained its baseline commit. A reviewed copy of the report received
+evidence corrections; the original worker report was preserved. No website edits,
+form submissions, paid SEO API calls, memory writes, worker commits, pushes or
+deployments occurred.
+
+Local evidence root: `../work/redbarn-seo-trial-20260926` relative to the repository
+root. `TRIAL-RESULT.md`, `verification.json`, `receipt.json` and the reviewed
+`RED-BARN-SEO-AUDIT.md` record the result and review. Captures and private runtime
+records remain local and are not committed application data. The handoff digest
+was `cdb0e0bd4f75a5b009b83832c07d8eb4b99613d944e4eac80e870f08e555823d`.
+
+This trial validates local Agent package delivery and analysis of supplied live
+evidence. It does not establish independent worker browser/connector operation,
+production Wiki access, or a production Agent launch. It does not measure
+rankings, traffic, backlinks, CWV, Search Console indexation, rich-result
+eligibility, form delivery or financial credentials. Twenty-five sitemap URLs
+were outside the fetched sample. Normal preconfigured MCP startup connections
+could occur; the worker's audit did not invoke those tools.

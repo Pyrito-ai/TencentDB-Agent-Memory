@@ -66,7 +66,9 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: MemoryPanel/package-lock.json
+          cache-dependency-path: |
+            MemoryPanel/package-lock.json
+            MemoryPanel/web/package-lock.json
       # Panel tests import schemas from Core, which resolve Core's dependencies.
       - name: Restore Core dependencies
         uses: actions/cache@v4
@@ -74,6 +76,8 @@ jobs:
           path: MemoryCore/node_modules
           key: deps-npm11.19.1-${{ runner.os }}-${{ hashFiles('MemoryCore/package.json') }}
       - run: npm ci
+      # Panel regression tests also import the web task store (including Zustand).
+      - run: npm ci --prefix web
       - run: npm run typecheck
       - run: npm test
 

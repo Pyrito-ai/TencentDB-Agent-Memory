@@ -1,0 +1,35 @@
+{
+  "name": "Baren \u2014 Coordinator Workspace",
+  "sources": {
+    "penpot": "https://penpot.pyrito.com/#/workspace?team-id=418b2f73-dc50-8085-8008-b148d916a769&file-id=418b2f73-dc50-8085-8008-b148f87ce236&page-id=418b2f73-dc50-8085-8008-b148f87ce237",
+    "board": "cb03c92f-5600-80b1-8008-b25e96bba07c",
+    "dock": "https://21st.dev/@designali-in/components/dock-tabs",
+    "palette": "https://21st.dev/@serafimcloud/themes/meridian-blue",
+    "paletteId": "12b00883-ea08-4925-9f08-bc5daae42eb6"
+  },
+  "colors": {
+    "background": "#EEF0F3",
+    "surface": "#FFFFFF",
+    "ink": "#181B21",
+    "primary": "#3B608F",
+    "secondary": "#B8694A",
+    "muted": "#5A6072",
+    "accent": "#D8E2EE",
+    "destructive": "#B8332E",
+    "border": "#C9CFD8"
+  },
+  "fonts": {
+    "interface": "Manrope",
+    "utility": "IBM Plex Mono"
+  },
+  "decisions": [
+    "Redesign every Baren-owned page; preserve native runtime iframe internals.",
+    "Replace global sidebar and visited tabs with seven dock destinations plus grouped More.",
+    "Use the user-selected Meridian Blue palette with proximity magnification inspired by the supplied Dock Tabs reference.",
+    "Centre dock under work area, excluding the persistent 390px coordinator.",
+    "Use existing coordinator conversation and reviewed proposals; no new Plan backend.",
+    "Below 1200px coordinator becomes a state-preserving drawer; below 640px dock scrolls without magnification.",
+    "Keep all changes isolated on codex/baren-gui-dock. No merge or deployment.",
+    "Palette-only change: retain the approved Manrope and IBM Plex Mono fonts."
+  ]
+}

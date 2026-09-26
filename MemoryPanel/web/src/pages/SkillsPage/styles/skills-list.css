@@ -26,6 +26,7 @@
 }
 
 ._alp-item:hover ._memory-skill-item-delete,
+._alp-item:focus-within ._memory-skill-item-delete,
 ._alp-item--selected ._memory-skill-item-delete {
   visibility: visible;
   opacity: 1;

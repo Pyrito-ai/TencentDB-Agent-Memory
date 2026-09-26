@@ -68,7 +68,9 @@
   color: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
+  transition:
+    border-color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out;
 }
 
 ._memory-workbench-task-card:hover {
@@ -124,7 +126,10 @@
   flex-shrink: 0;
   color: var(--tea-color-text-tertiary);
   opacity: 0.6;
-  transition: color 0.15s ease-in-out, opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+  transition:
+    color 0.15s ease-in-out,
+    opacity 0.15s ease-in-out,
+    transform 0.15s ease-in-out;
 }
 
 /* 描述：2 行截断 */
@@ -308,17 +313,262 @@
   animation: _memory-workbench-skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
-._memory-workbench-skeleton-line--title { width: 50%; height: 16px; }
-._memory-workbench-skeleton-line--desc { width: 80%; }
-._memory-workbench-skeleton-line--meta { width: 60%; }
+._memory-workbench-skeleton-line--title {
+  width: 50%;
+  height: 16px;
+}
+._memory-workbench-skeleton-line--desc {
+  width: 80%;
+}
+._memory-workbench-skeleton-line--meta {
+  width: 60%;
+}
 
 @keyframes _memory-workbench-skeleton-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 ._memory-workbench-pagination {
   display: flex;
   justify-content: center;
   padding: 16px 0 8px;
+}
+
+/* Baren work surfaces. The app shell owns viewport height and dock clearance. */
+._memory-workbench-body,
+.baren-projects-page {
+  container-type: inline-size;
+  container-name: workbench;
+  min-width: 0;
+  color: var(--foreground);
+}
+.work-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.work-page-header h1,
+.work-page-header h2 {
+  margin: 4px 0 10px;
+  font-size: clamp(30px, 4.5cqi, 42px);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  color: var(--primary);
+  overflow-wrap: anywhere;
+}
+.work-page-header p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+.work-eyebrow,
+.work-page-header .work-eyebrow {
+  margin: 0 0 10px;
+  font: 10px/1.6 var(--font-mono, monospace);
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.work-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+._memory-workbench-body button,
+.baren-projects-page button {
+  font: inherit;
+  cursor: pointer;
+}
+._memory-workbench-body button:disabled,
+.baren-projects-page button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+._memory-workbench-body :is(input, select, textarea),
+.baren-projects-page :is(input, select, textarea) {
+  font: inherit;
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 11px;
+  min-width: 0;
+  max-width: 100%;
+}
+._memory-workbench-body :where(button:not(.tea-btn)),
+.baren-projects-page :where(button:not(.tea-btn)) {
+  color: var(--primary);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 12px;
+}
+._memory-workbench-body :where(button:not(.tea-btn)):hover:not(:disabled),
+.baren-projects-page :where(button:not(.tea-btn)):hover:not(:disabled) {
+  border-color: var(--chart-3);
+}
+._memory-workbench-body .work-primary,
+.baren-projects-page .work-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border: 1px solid var(--primary) !important;
+  border-radius: 7px;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+._memory-workbench-body button.work-icon-button,
+.baren-projects-page button.work-icon-button {
+  padding: 10px;
+  display: grid;
+  place-items: center;
+}
+._memory-workbench-body button.work-text-button,
+.baren-projects-page button.work-text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 0;
+  background: transparent;
+  border-color: transparent;
+  font-size: 11px;
+  font-weight: 600;
+}
+._memory-workbench-body button.work-text-button:hover,
+.baren-projects-page button.work-text-button:hover {
+  color: var(--destructive);
+  border-color: transparent;
+}
+.work-empty {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  padding: 24px;
+}
+.work-surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 0;
+}
+.work-summary {
+  display: flex;
+  min-height: 72px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--card);
+  overflow: hidden;
+}
+.work-summary > article {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  min-width: 0;
+}
+.work-summary > article + article {
+  border-left: 1px solid var(--border);
+}
+.work-summary strong {
+  font: 500 25px/1 var(--font-mono, monospace);
+  color: var(--primary);
+}
+.work-summary span {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+}
+.work-summary .needs-attention strong {
+  color: var(--destructive);
+}
+.work-filterbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+}
+.work-avatar {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font: 9px var(--font-mono, monospace);
+}
+.work-load-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--destructive);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--foreground);
+}
+.work-load-error > div {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.work-load-error p {
+  margin: 5px 0 0;
+  color: var(--muted-foreground);
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+.work-load-error button {
+  flex: 0 0 auto;
+}
+._memory-workbench-body a,
+.baren-projects-page a {
+  color: var(--primary);
+}
+._memory-workbench-body :focus-visible,
+.baren-projects-page :focus-visible {
+  outline: 2px solid var(--destructive);
+  outline-offset: 3px;
+}
+@container workbench (max-width: 640px) {
+  .work-page-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .work-summary > article {
+    padding: 16px;
+    gap: 8px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .work-summary strong {
+    font-size: 22px;
+  }
 }

@@ -8,6 +8,7 @@ import 'tea-component/dist/themes/default-pack.css';
 import 'tea-component/dist/tea-themeable.css';
 import './index.css';
 import './tea-override.css';
+import './baren-theme.css';
 
 // WOA SSO 认证后会把授权码挂在站点地址上（?code=...&state=...）跳回。
 // 会话已由后端 Cookie 建立，前端无需该参数，登录完成后清理地址栏，避免 code 残留/被复制分享。
@@ -32,5 +33,5 @@ import './tea-override.css';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

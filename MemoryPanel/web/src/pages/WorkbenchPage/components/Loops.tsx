@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ArrowUpRight, Play, Plus, RotateCw } from 'lucide-react';
 import { useDisplayNameResolver } from '@/services/user-profile-store';
 import { useProjects } from '../hooks/useProjects';
 import { useAreas, workApi as api } from '../hooks/useAreas';
 import Areas from './Areas';
 import OccurrenceDetail from './OccurrenceDetail';
 import LoopInsights from './LoopInsights';
+import LoopPerformance from './LoopPerformance';
 import type { Loop, LoopData } from './loop-types';
 import '../styles/loops.css';
 const empty = {
@@ -36,6 +38,8 @@ export default function Loops({
   initialDue?: string;
   onOpenTask: (id: string) => void;
 }) {
+  const selectedOccurrenceRef = useRef<HTMLDivElement>(null);
+  const [period, setPeriod] = useState<7 | 30 | 90>(30);
   const name = useDisplayNameResolver(),
     projects = useProjects(teamId),
     areas = useAreas(teamId);
@@ -102,6 +106,10 @@ export default function Loops({
   const loop = data?.items.find((l) => l.id === detail),
     history = data?.history.filter((o) => o.loop_id === detail) || [],
     occurrence = history.find((o) => o.id === selected);
+  const occurrenceId = occurrence?.id;
+  useEffect(() => {
+    if (occurrenceId) selectedOccurrenceRef.current?.focus();
+  }, [occurrenceId]);
   function open(l: Loop) {
     setDetail(l.id);
     setSelected('');
@@ -117,8 +125,32 @@ export default function Loops({
     agentId = agent,
   ) {
     const result = await mutate('start', { loopId: l.id, requestId, agentId, dueDay: slot });
-    if (result?.occurrence) setSelected(result.occurrence.id);
-    else setVersion((v) => v + 1);
+    if (result?.occurrence) {
+      const started = { ...result.occurrence, time: result.occurrence.time || [] };
+      setData(
+        (current) =>
+          current && {
+            ...current,
+            history: [started, ...current.history.filter((item) => item.id !== started.id)],
+          },
+      );
+      setSelected(started.id);
+    } else setVersion((v) => v + 1);
+  }
+  function currentWork(l: Loop) {
+    return data?.history.find(
+      (item) =>
+        item.loop_id === l.id &&
+        (l.mode === 'scheduled'
+          ? item.due_day === l.nextDue
+          : item.author === currentUser && ['open', 'preparing'].includes(item.state)),
+    );
+  }
+  function startFromCard(l: Loop) {
+    const existing = currentWork(l);
+    open(l);
+    if (existing) setSelected(existing.id);
+    else void start(l, crypto.randomUUID(), l.mode === 'scheduled' ? l.nextDue : '', '');
   }
   function edit(l?: Loop) {
     setEditing(l?.id || '');
@@ -162,28 +194,30 @@ export default function Loops({
   const locked = !!editing && !!data?.history.some((o) => o.loop_id === editing);
   return (
     <section className="loops-view loop-dashboard">
-      <header>
+      <header className="work-page-header">
         <div>
           {detail && (
             <button
+              className="loop-back-link"
               onClick={() => {
                 setDetail('');
                 setForm(null);
               }}
             >
-              ← All Loops
+              <ArrowLeft size={15} aria-hidden="true" /> All Loops
             </button>
           )}
           <h2>{loop?.name || 'Loops'}</h2>
-          <p>
-            {loop
-              ? `${areaName(loop.area_id)} · Owner: ${name(loop.owner_id)}`
-              : 'Recurring responsibilities, with a clear owner and a home in an Area.'}
-          </p>
+          {loop && (
+            <p>
+              {areaName(loop.area_id)} · Owner: {name(loop.owner_id)}
+            </p>
+          )}
         </div>
-        <div className="loop-inline">
+        <div className="work-actions">
           <button onClick={() => setManageAreas((v) => !v)}>Manage Areas</button>
-          <button disabled={busy} onClick={() => edit()}>
+          <button className="work-primary" disabled={busy} onClick={() => edit()}>
+            <Plus size={16} aria-hidden="true" />
             New Loop
           </button>
           <button
@@ -193,6 +227,7 @@ export default function Loops({
               areas.reload();
             }}
           >
+            <RotateCw size={15} aria-hidden="true" />
             Refresh
           </button>
         </div>
@@ -203,7 +238,11 @@ export default function Loops({
           {error || areas.error || projects.error}
         </p>
       )}
-      {!data && !error && <p role="status">Loading Loops…</p>}
+      {!data && !error && (
+        <p className="work-empty" role="status">
+          Loading Loops…
+        </p>
+      )}
       {data && !data.items.length && data.canManageTimezone && (
         <form
           className="loop-inline"
@@ -228,7 +267,10 @@ export default function Loops({
               setForm(null);
           }}
         >
-          <h3>{editing ? 'Edit Loop' : 'New Loop'}</h3>
+          <div className="loop-section-heading">
+            <span className="work-eyebrow">Responsibility details</span>
+            <h3>{editing ? 'Edit Loop' : 'New Loop'}</h3>
+          </div>
           <label>
             Name
             <input
@@ -390,7 +432,9 @@ export default function Loops({
             ))}
           </fieldset>
           <div className="loop-inline">
-            <button disabled={busy || !form.areaId}>Save Loop</button>
+            <button className="work-primary" disabled={busy || !form.areaId}>
+              Save Loop
+            </button>
             <button type="button" disabled={busy} onClick={() => setForm(null)}>
               Cancel
             </button>
@@ -399,9 +443,15 @@ export default function Loops({
       )}
       {data && !loop && (
         <>
-          <div className="loop-filter-panel">
-            <h3>Dashboard filters</h3>
-            <div className="loop-inline">
+          <LoopPerformance data={data} period={period} onPeriodChange={setPeriod} />
+          <section className="loop-active-section" aria-labelledby="loop-active-title">
+            <div className="loop-active-heading">
+              <h3 id="loop-active-title">{showArchived ? 'All loops' : 'Active loops'}</h3>
+              <span>
+                {visible.length} {visible.length === 1 ? 'loop' : 'loops'}
+              </span>
+            </div>
+            <div className="loop-filter-panel work-filterbar" aria-label="Filter Loops">
               <label>
                 Owner
                 <select value={owner} onChange={(e) => setOwner(e.target.value)}>
@@ -441,73 +491,68 @@ export default function Loops({
                 Show archived
               </label>
             </div>
-          </div>
-          <div className="loop-metrics">
-            {[
-              ['Loops', visible.length],
-              ['Active streaks', visible.filter((l) => l.stats.currentStreak > 0).length],
-              ['Overdue deadlines', visible.reduce((n, l) => n + l.overdue, 0)],
-              ['Total completions', visible.reduce((n, l) => n + l.stats.total, 0)],
-            ].map(([label, value]) => (
-              <article key={label}>
-                <span>{label}</span>
-                <strong>{value}</strong>
-              </article>
-            ))}
-          </div>
-          <div className="loop-cards">
-            {visible.map((l) => (
-              <article key={l.id}>
-                <button className="loop-card-title" onClick={() => open(l)}>
-                  <h3>
-                    {l.name}
-                    {!!l.archived && ' · Archived'}
-                  </h3>
-                </button>
-                <p>
-                  {l.mode === 'scheduled'
-                    ? `Scheduled ${l.frequency} · Next unresolved: ${l.nextDue || 'None in next six weeks'}`
-                    : `${l.target} per ${l.frequency === 'daily' ? 'day' : l.frequency === 'weekly' ? 'week' : 'month'} · Flexible`}
-                </p>
-                <dl>
-                  <dt>Owner</dt>
-                  <dd>{name(l.owner_id)}</dd>
-                  <dt>Area</dt>
-                  <dd>{areaName(l.area_id)}</dd>
-                </dl>
-                <progress
-                  aria-label={`${l.name} period progress`}
-                  value={Math.min(l.stats.progress, l.target)}
-                  max={l.target}
-                />
-                <p>
-                  {l.stats.progress} / {l.target} this period
-                </p>
-                <LoopInsights
-                  loop={l}
-                  history={data.history.filter((o) => o.loop_id === l.id)}
-                  compact
-                />
-                <div className="loop-card-footer">
-                  <span>{l.stats.currentStreak} streak</span>
-                  <span>{l.stats.bestStreak} best</span>
-                  <span>{l.stats.total} done</span>
-                </div>
-                <button onClick={() => open(l)}>Open Loop</button>
-              </article>
-            ))}
-          </div>
-          {!visible.length && (
-            <p>
-              No Loops match these filters. Create an Area and its first recurring responsibility to
-              get started.
-            </p>
-          )}
+            <div className="loop-active-list">
+              {visible.map((l) => {
+                const existing = currentWork(l);
+                const action = existing
+                  ? existing.author === currentUser
+                    ? 'Continue'
+                    : 'View work'
+                  : 'Start loop';
+                return (
+                  <article
+                    className={`work-surface loop-active-row${l.archived ? ' is-archived' : ''}`}
+                    key={l.id}
+                  >
+                    <div className="loop-active-copy">
+                      <div className="loop-active-title">
+                        <button className="loop-card-title" onClick={() => open(l)}>
+                          <h3>{l.name}</h3>
+                        </button>
+                        {!!l.archived && <span className="loop-state-badge">Archived</span>}
+                      </div>
+                      <p className="loop-active-schedule">
+                        {l.mode === 'scheduled'
+                          ? `${l.frequency[0].toUpperCase()}${l.frequency.slice(1)} · ${l.nextDue ? `${l.nextDue < l.today ? 'Overdue' : l.nextDue === l.today ? 'Due today' : 'Next due'}: ${l.nextDue}` : 'No deadlines in the next six weeks'}`
+                          : `${l.target} per ${l.frequency === 'daily' ? 'day' : l.frequency === 'weekly' ? 'week' : 'month'} · ${l.stats.progress} completed this ${l.frequency === 'daily' ? 'day' : l.frequency === 'weekly' ? 'week' : 'month'}`}
+                      </p>
+                      <p className="loop-active-owner">
+                        {name(l.owner_id)} · {areaName(l.area_id)}
+                      </p>
+                    </div>
+                    <div className="loop-card-actions">
+                      <button className="loop-open-link" onClick={() => open(l)}>
+                        Details <ArrowUpRight size={15} aria-hidden="true" />
+                      </button>
+                      {!l.archived && (
+                        <button
+                          className="work-primary"
+                          disabled={busy || (l.mode === 'scheduled' && !l.nextDue)}
+                          onClick={() => startFromCard(l)}
+                          aria-label={`${existing ? action : 'Start'} ${l.name}`}
+                        >
+                          <Play size={14} aria-hidden="true" />
+                          {action}
+                        </button>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+            {!visible.length && (
+              <p className="work-empty">
+                {data.items.length
+                  ? 'No loops match these filters.'
+                  : 'No loops yet. Create a loop to start tracking recurring work.'}
+              </p>
+            )}
+          </section>
         </>
       )}
       {loop && (
         <>
-          <div className="loop-inline">
+          <div className="loop-inline loop-detail-toolbar">
             {loop.canManage && (
               <>
                 <button disabled={busy} onClick={() => edit(loop)}>
@@ -526,6 +571,28 @@ export default function Loops({
               {loop.frequency} · {loop.timezone}
             </span>
           </div>
+          {occurrence && (
+            <div
+              className="loop-selected-occurrence"
+              ref={selectedOccurrenceRef}
+              tabIndex={-1}
+              aria-label="Current occurrence"
+            >
+              <OccurrenceDetail
+                key={occurrence.id}
+                occurrence={occurrence}
+                loop={loop}
+                currentUser={currentUser}
+                teamId={teamId}
+                busy={busy}
+                mutate={mutate}
+                onOpenTask={onOpenTask}
+                onRetry={() =>
+                  void start(loop, occurrence.id, occurrence.due_day, occurrence.agent_id)
+                }
+              />
+            </div>
+          )}
           <LoopInsights
             loop={loop}
             history={history}
@@ -536,7 +603,8 @@ export default function Loops({
             }}
           />
           {!loop.archived && (
-            <section className="loop-form">
+            <section className="loop-form loop-work-panel">
+              <span className="work-eyebrow">Next action</span>
               <h3>Work on this Loop</h3>
               {loop.mode === 'scheduled' && (
                 <label>
@@ -570,6 +638,7 @@ export default function Loops({
                 </select>
               </label>
               <button
+                className="work-primary"
                 disabled={busy || (loop.mode === 'scheduled' && !dueDay)}
                 onClick={() => {
                   const o = history.find((o) => o.due_day === dueDay && dueDay);
@@ -620,43 +689,39 @@ export default function Loops({
               </p>
             </section>
           )}
-          <h3>Occurrence history</h3>
-          <div className="loop-history">
-            {history.map((o) => (
-              <button
-                className={selected === o.id ? 'is-selected' : ''}
-                key={o.id}
-                onClick={() => setSelected(o.id)}
-              >
-                <strong>
-                  {o.due_day ? `Due ${o.due_day}` : o.period} · {o.state}
-                </strong>
-                <span>
-                  Contributor: {name(o.author)} · Owner: {name(o.owner_id)} · {o.area_name}
-                </span>
-                <small>
-                  {o.completed_at
-                    ? new Date(o.completed_at).toLocaleString()
-                    : new Date(o.created_at).toLocaleString()}
-                </small>
-              </button>
-            ))}
-          </div>
-          {occurrence && (
-            <OccurrenceDetail
-              key={occurrence.id}
-              occurrence={occurrence}
-              loop={loop}
-              currentUser={currentUser}
-              teamId={teamId}
-              busy={busy}
-              mutate={mutate}
-              onOpenTask={onOpenTask}
-              onRetry={() =>
-                void start(loop, occurrence.id, occurrence.due_day, occurrence.agent_id)
-              }
-            />
-          )}
+          <section className="loop-history-panel work-surface">
+            <div className="loop-section-heading">
+              <span className="work-eyebrow">Work over time</span>
+              <h3>Occurrence history</h3>
+            </div>
+            <div className="loop-history">
+              {history.map((o) => (
+                <button
+                  className={selected === o.id ? 'is-selected' : ''}
+                  aria-pressed={selected === o.id}
+                  key={o.id}
+                  onClick={() => setSelected(o.id)}
+                >
+                  <strong>
+                    {o.due_day ? `Due ${o.due_day}` : o.period} · {o.state}
+                  </strong>
+                  <span>
+                    Contributor: {name(o.author)} · Owner: {name(o.owner_id)} · {o.area_name}
+                  </span>
+                  <small>
+                    {o.completed_at
+                      ? new Date(o.completed_at).toLocaleString()
+                      : new Date(o.created_at).toLocaleString()}
+                  </small>
+                </button>
+              ))}
+            </div>
+            {!history.length && (
+              <p className="loop-help">
+                No occurrences yet. Start work on this Loop to begin its history.
+              </p>
+            )}
+          </section>
         </>
       )}
     </section>

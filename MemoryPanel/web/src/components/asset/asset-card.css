@@ -15,12 +15,12 @@
 ._wiki-detail-root {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 24px;
 }
 
 ._asset-wiki-content-card,
 ._asset-code-content-card {
-  --card-body-padding: 16px;
+  --card-body-padding: 0;
 }
 
 /* ============================================================
@@ -87,14 +87,14 @@
 ._asset-wiki-grid,
 ._asset-wiki-skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 12px;
 }
 
 ._codelist-grid,
 ._codelist-skeleton-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 12px;
 }
 
@@ -123,7 +123,7 @@
 ._asset-wiki-skeleton-line,
 ._codelist-skeleton-line {
   height: 12px;
-  border-radius: 4px;
+  border-radius: 10px;
   background: linear-gradient(
     90deg,
     var(--tea-color-bg-secondary-default) 0%,
@@ -135,15 +135,26 @@
 }
 
 ._asset-wiki-skeleton-line--title,
-._codelist-skeleton-line--title { width: 50%; height: 16px; }
+._codelist-skeleton-line--title {
+  width: 50%;
+  height: 16px;
+}
 ._asset-wiki-skeleton-line--desc,
-._codelist-skeleton-line--desc { width: 80%; }
+._codelist-skeleton-line--desc {
+  width: 80%;
+}
 ._asset-wiki-skeleton-line--meta,
-._codelist-skeleton-line--meta { width: 60%; }
+._codelist-skeleton-line--meta {
+  width: 60%;
+}
 
 @keyframes _asset-card-shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* ============================================================
@@ -155,9 +166,9 @@
   min-width: 0;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
+  padding: 20px;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 4px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
   cursor: pointer;
   transition:
@@ -178,7 +189,7 @@
 ._codelist-card:hover {
   border-color: var(--tea-color-border-brand-default);
   background: var(--tea-color-bg-primary-hover);
-  box-shadow: var(--tea-shadow-sm);
+  box-shadow: none;
 }
 
 ._codelist-card.is-selected {
@@ -276,7 +287,7 @@
 ._asset-wiki-id,
 ._codelist-card-id,
 ._codelist-id {
-  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-family: var(--font-mono);
 }
 
 ._codelist-card-meta-you {
@@ -354,14 +365,14 @@
 /* ============================================================
    响应式（保持各页原有断点）
    ============================================================ */
-@media (max-width: 960px) {
+@container resource-page (max-width: 720px) {
   ._asset-wiki-stats,
   ._wiki-detail-overview-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 720px) {
+@container resource-page (max-width: 720px) {
   ._asset-code-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -371,7 +382,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@container resource-page (max-width: 540px) {
   ._asset-wiki-grid,
   ._asset-wiki-skeleton-grid,
   ._asset-wiki-stats,
@@ -386,7 +397,7 @@
   }
 }
 
-@media (max-width: 480px) {
+@container resource-page (max-width: 420px) {
   ._asset-code-stats {
     grid-template-columns: 1fr;
   }
@@ -395,4 +406,106 @@
   ._codelist-skeleton-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Quiet statistics ribbon separates the page context from the collection. */
+._asset-wiki-stats,
+._asset-code-stats {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 10px;
+  background: var(--tea-color-bg-primary-default);
+  margin-bottom: 20px;
+}
+._asset-wiki-stats > *,
+._asset-code-stats > * {
+  padding: 18px 20px;
+  min-width: 0;
+  border-right: 1px solid var(--tea-color-border-primary-default);
+}
+._asset-wiki-stats > :last-child,
+._asset-code-stats > :last-child {
+  border-right: 0;
+}
+._asset-wiki-toolbar,
+._asset-code-toolbar {
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 0 0 12px;
+}
+._asset-wiki-content-card .tea-justify-grid__col--right,
+._asset-code-content-card .tea-justify-grid__col--right {
+  float: none;
+  width: 100%;
+}
+._asset-wiki-card-head,
+._codelist-card-head {
+  min-height: 32px;
+  gap: 12px;
+}
+._asset-wiki-card-head > svg:first-child,
+._codelist-card-head > svg:first-child {
+  width: 20px;
+  height: 20px;
+}
+._asset-wiki-card-name,
+._codelist-card-name {
+  font-size: 15px;
+  line-height: 1.5;
+}
+._asset-wiki-card-id,
+._codelist-card-id {
+  font-size: 10px;
+  opacity: 0.8;
+}
+._asset-wiki-card:focus-visible {
+  outline: 2px solid var(--tea-color-border-brand-default);
+  outline-offset: 3px;
+}
+._asset-wiki-actions,
+._codelist-card-actions {
+  padding-top: 12px;
+  margin-top: 8px;
+}
+@container resource-page (max-width: 540px) {
+  ._asset-wiki-stats,
+  ._asset-code-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  ._asset-wiki-stats > *,
+  ._asset-code-stats > * {
+    padding: 14px;
+    border-bottom: 1px solid var(--tea-color-border-primary-default);
+  }
+  ._asset-wiki-toolbar .tea-form--search,
+  ._asset-code-toolbar .tea-form--search {
+    min-width: 0;
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ._asset-wiki-skeleton-line,
+  ._codelist-skeleton-line {
+    animation: none;
+  }
+}
+
+:is(._asset-wiki-stats, ._asset-code-stats) .tea-metrics-board__header-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--tea-color-text-secondary);
+}
+:is(._asset-wiki-stats, ._asset-code-stats) .tea-metrics-board__number {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.3;
+}
+._codelist-card:focus-visible {
+  outline: 2px solid var(--tea-color-border-brand-default);
+  outline-offset: 3px;
 }

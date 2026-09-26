@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Layers3, Plus } from 'lucide-react';
 import { useAreas, workApi } from '../hooks/useAreas';
 import '../styles/loops.css';
 export default function Areas({ teamId, onChanged }: { teamId: string; onChanged?: () => void }) {
@@ -22,22 +23,29 @@ export default function Areas({ teamId, onChanged }: { teamId: string; onChanged
     }
   }
   return (
-    <section className="loops-view">
-      <header>
+    <section className="loops-view areas-view">
+      <header className="work-page-header">
         <div>
+          <span className="work-eyebrow">A home for your work</span>
           <h2>Areas</h2>
           <p>Ongoing bodies of work for this team. Give recurring responsibilities a home.</p>
         </div>
         <button
+          className="work-primary"
           onClick={() => {
             setForm({ id: '', name: '', description: '' });
             setEditing(true);
           }}
         >
+          <Plus size={16} aria-hidden="true" />
           New Area
         </button>
       </header>
-      {(error || areas.error) && <p role="alert">{error || areas.error}</p>}
+      {(error || areas.error) && (
+        <p className="work-empty" role="alert">
+          {error || areas.error}
+        </p>
+      )}
       {editing && (
         <form
           className="loop-form"
@@ -46,6 +54,10 @@ export default function Areas({ teamId, onChanged }: { teamId: string; onChanged
             void save(form.id ? 'update' : 'create', form);
           }}
         >
+          <div className="loop-section-heading">
+            <span className="work-eyebrow">Area details</span>
+            <h3>{form.id ? 'Edit Area' : 'Create an Area'}</h3>
+          </div>
           <label>
             Area name
             <input
@@ -64,24 +76,34 @@ export default function Areas({ teamId, onChanged }: { teamId: string; onChanged
             />
           </label>
           <div className="loop-inline">
-            <button disabled={busy}>Save Area</button>
+            <button className="work-primary" disabled={busy}>
+              Save Area
+            </button>
             <button type="button" onClick={() => setEditing(false)}>
               Cancel
             </button>
           </div>
         </form>
       )}
-      {!areas.loaded && !areas.error && <p role="status">Loading Areas…</p>}
-      <div className="loop-cards">
+      {!areas.loaded && !areas.error && (
+        <p className="work-empty" role="status">
+          Loading Areas…
+        </p>
+      )}
+      <div className="loop-cards area-cards">
         {areas.items.map((a) => (
-          <article key={a.id}>
-            <h3>
-              {a.name}
-              {!!a.archived && ' · Archived'}
-            </h3>
-            <p>{a.description || 'No description yet.'}</p>
+          <article
+            className={`work-surface area-card${a.archived ? ' is-archived' : ''}`}
+            key={a.id}
+          >
+            <div className="loop-card-kicker">
+              <Layers3 size={18} aria-hidden="true" />
+              <span className="loop-state-badge">{a.archived ? 'Archived' : 'Area'}</span>
+            </div>
+            <h3>{a.name}</h3>
+            <p className="area-card-description">{a.description || 'No description yet.'}</p>
             {a.canManage && (
-              <div className="loop-inline">
+              <div className="loop-inline area-card-actions">
                 <button
                   disabled={busy}
                   onClick={() => {
@@ -103,7 +125,11 @@ export default function Areas({ teamId, onChanged }: { teamId: string; onChanged
         ))}
       </div>
       {areas.loaded && !areas.items.length && (
-        <p>Create an Area such as Paid advertising, Email marketing, or Social media.</p>
+        <div className="work-empty">
+          <Layers3 size={24} aria-hidden="true" />
+          <h3>Give ongoing work a home</h3>
+          <p>Create an Area such as Paid advertising, Email marketing, or Social media.</p>
+        </div>
       )}
     </section>
   );

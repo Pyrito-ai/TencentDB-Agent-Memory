@@ -133,6 +133,7 @@ export function DrillDownDrawer({
 
   return (
     <Drawer
+      className="_an-drill-drawer"
       visible={visible}
       size="l"
       title={title}

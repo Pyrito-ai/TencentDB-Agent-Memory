@@ -9,9 +9,8 @@
  *   4. 前端把 { instance_id, user_key, user } 缓存到 localStorage（见 lib/panelSession.ts），
  *      之后每个 meta 请求都从这里读出注入双 Header
  *
- * 设计：单列居中的明亮极简风格 —— 全屏点阵波纹动效背景（ParticleWaveBackground，
- * 纯 Canvas 零依赖，视觉参考 React Bits 的 Particles / DotGrid）+ 居中毛玻璃卡片，
- * 卡片内为「选实例 + 输入 user_key」表单。
+ * 展示使用 Baren 纸张色表面与品牌字标；所有登录方式、实例选择、
+ * 待绑定账号确认与一次性密钥展示仍使用同一登录状态流程。
  */
 
 import { useEffect, useState } from 'react';
@@ -27,7 +26,6 @@ import {
   type PublicUser,
 } from '@/lib/teamApi';
 import { getPanelSession, setPanelSession, clearPanelSession } from '@/lib/panelSession';
-import ParticleWaveBackground from './ParticleWaveBackground';
 import './login-gate.css';
 
 export interface AuthState {
@@ -143,11 +141,7 @@ export async function resumeSession(): Promise<AuthState | null> {
   }
 }
 
-export default function LoginGate({
-  onLoggedIn,
-}: {
-  onLoggedIn: (auth: AuthState) => void;
-}) {
+export default function LoginGate({ onLoggedIn }: { onLoggedIn: (auth: AuthState) => void }) {
   const { t } = useTranslation();
   const [instances, setInstances] = useState<MetadataInstance[]>([]);
   const [authMethods, setAuthMethods] = useState<AuthMethod[]>([]);
@@ -178,7 +172,11 @@ export default function LoginGate({
   const [dismissingWoa, setDismissingWoa] = useState(false);
   const [resumingWoa, setResumingWoa] = useState(false);
   // 建号成功后一次性展示自动生成的 user_key（供用户复制到客户端连 proxy）。
-  const [createdKey, setCreatedKey] = useState<{ userKey: string; user: PublicUser; instanceId: string } | null>(null);
+  const [createdKey, setCreatedKey] = useState<{
+    userKey: string;
+    user: PublicUser;
+    instanceId: string;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
   const hasUserKeyMethod = authMethods.some((method) => method.type === 'user_key');
   const showWoaLogin = authMethodsLoaded && authMethods.some((method) => method.type === 'woa');
@@ -200,7 +198,8 @@ export default function LoginGate({
 
   useEffect(() => {
     let cancelled = false;
-    authMethodsApi.session()
+    authMethodsApi
+      .session()
       .then((session) => {
         if (!cancelled && session.pending && session.instance_id) {
           setPendingWoa({
@@ -213,7 +212,8 @@ export default function LoginGate({
         }
       })
       .catch(() => undefined);
-    authMethodsApi.list()
+    authMethodsApi
+      .list()
       .then((result) => {
         if (cancelled) return;
         setAuthMethods(result.methods.filter((method) => method.enabled));
@@ -222,7 +222,9 @@ export default function LoginGate({
       .catch(() => {
         if (cancelled) return;
         // 配置接口不可用时保守回退到旧 user_key 登录，避免登录页空白。
-        setAuthMethods([{ id: 'user_key', type: 'user_key', display_name: 'user_key', enabled: true }]);
+        setAuthMethods([
+          { id: 'user_key', type: 'user_key', display_name: 'user_key', enabled: true },
+        ]);
         setAuthMethodsLoaded(true);
       });
     metaInstancesApi
@@ -236,7 +238,11 @@ export default function LoginGate({
       .catch((err) => {
         if (cancelled) return;
         setInstancesError(true);
-        setError(t('login.error.loadInstances', { detail: err instanceof Error ? ` (${err.message})` : '' }));
+        setError(
+          t('login.error.loadInstances', {
+            detail: err instanceof Error ? ` (${err.message})` : '',
+          }),
+        );
       });
     return () => {
       cancelled = true;
@@ -270,7 +276,13 @@ export default function LoginGate({
         return;
       }
       const instance = instances.find((i) => i.instance_id === instanceId) ?? null;
-      setPanelSession({ authMethod: 'user_key', instanceId, instanceName: instance?.name, userKey: key, user });
+      setPanelSession({
+        authMethod: 'user_key',
+        instanceId,
+        instanceName: instance?.name,
+        userKey: key,
+        user,
+      });
       const auth = toAuthState(user, instanceId, instance?.name ?? '');
       writeAuthCache(auth);
       onLoggedIn(auth);
@@ -402,20 +414,9 @@ export default function LoginGate({
 
   return (
     <div className="_tdai-login">
-      {/* 明亮点阵波纹动效背景（纯 Canvas，零外部依赖） */}
-      <div className="_tdai-login-bg" aria-hidden="true">
-        <ParticleWaveBackground
-          className="_tdai-login-bg-canvas"
-          gap={22}
-          dotRadius={1.6}
-          speed={1}
-        />
-      </div>
-
-      {/* 居中内容区 */}
       <main className="_tdai-login-main">
         <div className="_tdai-login-card">
-          <img src="/logo.png" alt="Memory Hub" className="_tdai-login-logo" />
+          <img src="/baren-logo.svg" alt="Baren" className="_tdai-login-logo" />
 
           <h1 className="_tdai-login-title">{t('login.welcome')}</h1>
           <p className="_tdai-login-subtitle">{t('login.tagline')}</p>
@@ -427,11 +428,7 @@ export default function LoginGate({
 
               <div className="_tdai-login-field">
                 <p className="_tdai-login-field-label">{t('login.woa.yourUserKey')}</p>
-                <Input
-                  size="full"
-                  value={createdKey.userKey}
-                  readonly
-                />
+                <Input size="full" value={createdKey.userKey} readonly />
                 <Button
                   className="_tdai-login-copy"
                   onClick={() => {
@@ -458,7 +455,9 @@ export default function LoginGate({
             <div className="_tdai-login-pending">
               <h2 className="_tdai-login-pending-title">{t('login.woa.pendingTitle')}</h2>
               <p className="_tdai-login-hint">
-                {t('login.woa.pendingIdentity', { name: pendingWoa.displayName || pendingWoa.loginName || 'WOA user' })}
+                {t('login.woa.pendingIdentity', {
+                  name: pendingWoa.displayName || pendingWoa.loginName || 'WOA user',
+                })}
               </p>
 
               <div className="_tdai-login-field">
@@ -499,7 +498,11 @@ export default function LoginGate({
                   {pendingPreview.exists ? (
                     <Alert type="info">
                       {t('login.woa.keyExistsHint', {
-                        name: pendingPreview.display_name || pendingPreview.username || pendingPreview.user_id || '',
+                        name:
+                          pendingPreview.display_name ||
+                          pendingPreview.username ||
+                          pendingPreview.user_id ||
+                          '',
                       })}
                     </Alert>
                   ) : (
@@ -519,7 +522,12 @@ export default function LoginGate({
                 className="_tdai-login-submit"
                 onClick={() => void completePendingWoa()}
                 loading={pendingSubmitting || pendingPreviewing}
-                disabled={pendingSubmitting || pendingPreviewing || !pendingUsername.trim() || !pendingUserKey.trim()}
+                disabled={
+                  pendingSubmitting ||
+                  pendingPreviewing ||
+                  !pendingUsername.trim() ||
+                  !pendingUserKey.trim()
+                }
               >
                 {/* 未预览=下一步（先看清 key 归属）；已预览=明确告知是绑定还是新建 */}
                 {!pendingPreview
@@ -548,64 +556,66 @@ export default function LoginGate({
 
           {!pendingWoa && showUserKeyLogin && (
             <form onSubmit={submit} className="_tdai-login-form">
-            {/* 记忆实例选择 — GET /api/v1/meta/instances */}
-            <div className="_tdai-login-field">
-              <label className="_tdai-login-label" htmlFor="tdai-login-instance">
-                {t('login.field.instance')}
-              </label>
-              <Select
-                appearance="button"
-                size="full"
-                value={instanceId}
-                onChange={(value) => {
-                  setInstanceId(value);
-                  setError(null);
-                }}
-                disabled={submitting || instances.length === 0}
-                placeholder={
-                  instancesError ? t('login.placeholder.instanceError') : t('login.placeholder.instance')
-                }
-                options={instances.map((inst) => ({ value: inst.instance_id, text: inst.name }))}
-                boxSizeSync
-              />
-            </div>
-
-            {/* user_key（sk-mem-…），经 auth/verify 验活后写入前端会话 */}
-            <div className="_tdai-login-field">
-              <label className="_tdai-login-label" htmlFor="tdai-login-key">
-                {t('login.field.userKey')}
-              </label>
-              <Input.Password
-                size="full"
-                value={userKey}
-                onChange={(value) => {
-                  setUserKey(value);
-                  setError(null);
-                }}
-                onKeyDown={onKeyDown}
-                placeholder={t('login.placeholder.userKey')}
-                autoComplete="current-password"
-                disabled={submitting}
-                rules={false}
-              />
-              <p className="_tdai-login-hint">{t('login.hint.userKey')}</p>
-            </div>
-
-            {error && (
-              <div className="_tdai-login-alert">
-                <Alert type="error">{error}</Alert>
+              {/* 记忆实例选择 — GET /api/v1/meta/instances */}
+              <div className="_tdai-login-field">
+                <label className="_tdai-login-label" htmlFor="tdai-login-instance">
+                  {t('login.field.instance')}
+                </label>
+                <Select
+                  appearance="button"
+                  size="full"
+                  value={instanceId}
+                  onChange={(value) => {
+                    setInstanceId(value);
+                    setError(null);
+                  }}
+                  disabled={submitting || instances.length === 0}
+                  placeholder={
+                    instancesError
+                      ? t('login.placeholder.instanceError')
+                      : t('login.placeholder.instance')
+                  }
+                  options={instances.map((inst) => ({ value: inst.instance_id, text: inst.name }))}
+                  boxSizeSync
+                />
               </div>
-            )}
 
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="_tdai-login-submit"
-              loading={submitting}
-              disabled={submitting || !userKey.trim() || !instanceId}
-            >
-              {submitting ? t('login.submitting') : t('login.submit')}
-            </Button>
+              {/* user_key（sk-mem-…），经 auth/verify 验活后写入前端会话 */}
+              <div className="_tdai-login-field">
+                <label className="_tdai-login-label" htmlFor="tdai-login-key">
+                  {t('login.field.userKey')}
+                </label>
+                <Input.Password
+                  size="full"
+                  value={userKey}
+                  onChange={(value) => {
+                    setUserKey(value);
+                    setError(null);
+                  }}
+                  onKeyDown={onKeyDown}
+                  placeholder={t('login.placeholder.userKey')}
+                  autoComplete="current-password"
+                  disabled={submitting}
+                  rules={false}
+                />
+                <p className="_tdai-login-hint">{t('login.hint.userKey')}</p>
+              </div>
+
+              {error && (
+                <div className="_tdai-login-alert">
+                  <Alert type="error">{error}</Alert>
+                </div>
+              )}
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="_tdai-login-submit"
+                loading={submitting}
+                disabled={submitting || !userKey.trim() || !instanceId}
+              >
+                {submitting ? t('login.submitting') : t('login.submit')}
+              </Button>
             </form>
           )}
 

@@ -1,0 +1,1640 @@
+{
+  "baseline": {
+    "width": 1728,
+    "height": 940,
+    "dpr": 2
+  },
+  "zoom": {
+    "factor": 2,
+    "width": 864,
+    "height": 470,
+    "dpr": 4
+  },
+  "restored": {
+    "dpr": 2,
+    "height": 940,
+    "width": 1728
+  },
+  "pages": [
+    {
+      "label": "tasks",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1201.9921875,
+        "height": 1110
+      },
+      "headings": ["Task board", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1150,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "tasks-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.9921875,
+        "height": 1110
+      },
+      "headings": ["Task board", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1150,
+        "scrollTop": 752,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "upcoming",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1602.80859375,
+        "height": 1511
+      },
+      "headings": ["Upcoming", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1551,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "upcoming-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450.05859375,
+        "height": 1511
+      },
+      "headings": ["Upcoming", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1551,
+        "scrollTop": 1152.75,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "projects",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 993.09765625,
+        "height": 901
+      },
+      "headings": [
+        "Projects",
+        "A calmer workspace",
+        "Autumn launch",
+        "Customer understanding",
+        "Coordinator"
+      ],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 941,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "projects-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450.09765625,
+        "height": 901
+      },
+      "headings": [
+        "Projects",
+        "A calmer workspace",
+        "Autumn launch",
+        "Customer understanding",
+        "Coordinator"
+      ],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 941,
+        "scrollTop": 543,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "areas",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 658,
+        "height": 566
+      },
+      "headings": ["Areas", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 606,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "areas-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 566
+      },
+      "headings": ["Areas", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 606,
+        "scrollTop": 208,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "loops",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1041.05078125,
+        "height": 949
+      },
+      "headings": ["Loops", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 989,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "loops-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450.05078125,
+        "height": 949
+      },
+      "headings": ["Loops", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 989,
+        "scrollTop": 591,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "timesheets",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1373.6953125,
+        "height": 1282
+      },
+      "headings": ["Timesheets", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1322,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "timesheets-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.9453125,
+        "height": 1282
+      },
+      "headings": ["Timesheets", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1322,
+        "scrollTop": 923.75,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "code",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 616.22265625,
+        "height": 524
+      },
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 564,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "code-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.97265625,
+        "height": 524
+      },
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 564,
+        "scrollTop": 166.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "team-members",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 835.6171875,
+        "height": 744
+      },
+      "headings": ["Members", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 784,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "team-members-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450.1171875,
+        "height": 744
+      },
+      "headings": ["Members", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 784,
+        "scrollTop": 385.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "team-agents",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1097.921875,
+        "height": 1006
+      },
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1046,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "team-agents-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.921875,
+        "height": 1006
+      },
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1046,
+        "scrollTop": 648,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "team-api-keys",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1028.97265625,
+        "height": 937
+      },
+      "headings": ["User_Key Management", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 977,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "team-api-keys-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.97265625,
+        "height": 937
+      },
+      "headings": ["User_Key Management", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 977,
+        "scrollTop": 579,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "analytics",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 2519.50390625,
+        "height": 2428
+      },
+      "headings": ["Observability", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 2468,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "analytics-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 484.00390625,
+        "height": 2428
+      },
+      "headings": ["Observability", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 2468,
+        "scrollTop": 2035.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "guide",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1003.69140625,
+        "height": 912
+      },
+      "headings": ["Getting Started", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 952,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "guide-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.94140625,
+        "height": 912
+      },
+      "headings": ["Getting Started", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 952,
+        "scrollTop": 553.75,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "skills-bottom-fixed",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.96875,
+        "height": 1208
+      },
+      "headings": ["Skills", "Research brief", "Output", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1248,
+        "scrollTop": 849.75,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "skills-edit-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.97265625,
+        "height": 1260
+      },
+      "headings": ["Skills", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1300,
+        "scrollTop": 902.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "memory-detail",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1028.22265625,
+        "height": 936
+      },
+      "headings": ["Memory", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 976,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "memory-detail-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.97265625,
+        "height": 936
+      },
+      "headings": ["Memory", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 976,
+        "scrollTop": 578.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "workbench",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 804.22265625,
+        "height": 712
+      },
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 752,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "workbench-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.97265625,
+        "height": 712
+      },
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 752,
+        "scrollTop": 354.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "workbench-new-task-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450.06640625,
+        "height": 943
+      },
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 983,
+        "scrollTop": 584.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "workbench-task-form",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 625.81640625,
+        "height": 943
+      },
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 983,
+        "scrollTop": 408.75,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "code-populated-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.984375,
+        "height": 737
+      },
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 777,
+        "scrollTop": 379.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "code-detail",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 785.25,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 292.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "code-detail-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "more-keyboard-end",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "coordinator",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "coordinator-proposal",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "settings",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "profile",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "settings-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 450,
+        "height": 986
+      },
+      "headings": ["Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1026,
+        "scrollTop": 627.5,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "new-task-dialog",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1313.5625,
+        "height": 1222
+      },
+      "headings": ["Today", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1262,
+        "scrollTop": 0,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "login",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": null,
+      "headings": ["Welcome to Baren"],
+      "height": 470,
+      "main": null,
+      "width": 864
+    },
+    {
+      "label": "login-bottom",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": null,
+      "headings": ["Welcome to Baren"],
+      "height": 470,
+      "main": null,
+      "width": 864
+    },
+    {
+      "label": "error-notifications-fixed",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 449.97265625,
+        "height": 636
+      },
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 676,
+        "scrollTop": 278.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "error-notification-stack-fixed",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1006.171875,
+        "height": 1192
+      },
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1232,
+        "scrollTop": 278.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    },
+    {
+      "label": "error-notification-scroll-end",
+      "documentWidth": 864,
+      "dpr": 4,
+      "frame": {
+        "bottom": 1006.171875,
+        "height": 1192
+      },
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "main": {
+        "height": 398,
+        "scrollHeight": 1232,
+        "scrollTop": 278.25,
+        "scrollWidth": 858,
+        "width": 858
+      },
+      "width": 864
+    }
+  ],
+  "states": [
+    {
+      "scenario": "empty",
+      "route": "today",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Today", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 924,
+      "mainScrollTop": 525.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "SATURDAY, SEPTEMBER 26\n\nToday\n\nA little clarity. A good place to begin.\n\nNew task\n0\nOverdue\n0\nIn progress\n0\nNeeds review\nYour team, at a glance\nFilters\nIn progress\n0\nKEEP MOVING\n\nNothing in progress. Pick your next task from the board.\n\nView task board\nAdd task\nSchedule\n\nToday's dates, without the noise.\n\nA clear schedule. There are no task dates for today.\n\nTask dates · Europe/Madrid\n\nResponsibilities\nLOOPS\nOwner & Area\n\nAll caught up. No responsibilities need attention.\n\nView all Loops",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Task board", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 884,
+      "mainScrollTop": 485.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "FROM IDEA TO DONE\n\nTask board\n\nPlan the work. Keep the context.\n\nNew task\nProject\nAll projects\nUnassigned\nManage projects\nAll assignees\nUnassigned\nAll priorities\nNo priority\nLow\nMedium\nHigh\nUrgent\n0 tasks\nBacklog\n0\n\nNo tasks here\n\nReady\n0\n\nNo tasks here\n\nIn progress\n0\n\nNo tasks here\n\nReview\n0\n\nNo tasks here\n\nDone\n0\n\nNo tasks here",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "projects",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Projects", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 603,
+      "mainScrollTop": 205.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "GIVE YOUR WORK A HOME\n\nProjects\n\nKeep the purpose, people, and moving pieces together.\n\nNew project\nSearch projects\nShow archived\n0 projects\nYour next project starts here.\n\nCreate a project to collect its context, Wiki connections, and tasks.\n\nCreate a project",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "upcoming",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Upcoming", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 1369,
+      "mainScrollTop": 970.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "SATURDAY, SEPTEMBER 26\n\nUpcoming\n\nPlan the next six weeks, from first step to deadline.\n\nNew task\nYour team, at a glance\nFilters\nSep 21 – Nov 1, 2026\n\n0 scheduled tasks · Bars span planned start to due date.\n\n←\nThis week\n→\n\nNothing scheduled in this window. Open a task and set its planned start or due date.\n\nMON\nTUE\nWED\nTHU\nFRI\nSAT\nSUN\nSep 21\nSep 22\nSep 23\nSep 24\nSep 25\nSep 26\nSep 27\nSep 28\nSep 29\nSep 30\nOct 1\nOct 2\nOct 3\nOct 4\nOct 5\nOct 6\nOct 7\nOct 8\nOct 9\nOct 10\nOct 11\nOct 12\nOct 13\nOct 14\nOct 15\nOct 16\nOct 17\nOct 18\nOct 19\nOct 20\nOct 21\nOct 22\nOct 23\nOct 24\nOct 25\nOct 26\nOct 27\nOct 28\nOct 2",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "areas",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Areas", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 503,
+      "mainScrollTop": 105,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "A HOME FOR YOUR WORK\nAreas\n\nOngoing bodies of work for this team. Give recurring responsibilities a home.\n\nNew Area\nGive ongoing work a home\n\nCreate an Area such as Paid advertising, Email marketing, or Social media.",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "loops",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Loops", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 749,
+      "mainScrollTop": 351,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "KEEP GOOD WORK GOING\nLoops\n\nRecurring responsibilities, with a clear owner and a home in an Area.\n\nManage Areas\nNew Loop\nRefresh\nTeam timezone\nSave timezone\nLoops\n0\nActive streaks\n0\nOverdue deadlines\n0\nTotal completions\n0\nOwner\nAll owners\nAlex Morgan\nJamie Chen\nSam Rivera\nArea\nAll Areas\nScheduling\nAll schedules\nScheduled\nFlexible\nShow archived\n\nNo Loops match these filters. Create an Area and its first recurring responsibility to get started.",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "timesheets",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Timesheets", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 1005,
+      "mainScrollTop": 606.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "MAKE EVERY CONTRIBUTION COUNT\nTimesheets\n\nReview contributions, approve time, and record completed payments.\n\nRefresh\nExport CSV\nTeammate\nAll teammates\nAlex Morgan\nJamie Chen\nFrom (UTC)\nThrough (UTC)\n\nDates are inclusive. Each entry is assigned in full to its start date in UTC, including work crossing midnight. Running timers are excluded from all hour totals. Approved and paid entries retain their project at approval.\n\nCompleted\n0h 0m 0s\nAwaiting approval\n0h 0m 0s\nApproved • unpaid\n0h 0m 0s\nPaid\n0h 0m 0s\nRunning timers\n0\nDaily totals UTC\n0 selected\nApprove selected\nReturn to pending\nMark paid",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "workbench",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 752,
+      "mainScrollTop": 354.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Workbench\n\nKeep your task and its execution in view.\n\nOrca\ncdesktop (trial)\nOrca\nConnect the Orca interface\n\nConfigure this runtime’s browser-client URL to load Orca’s own workspace here.\n\nPair directly inside Orca when prompted.",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "wiki",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Knowledge", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 676,
+      "mainScrollTop": 278.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Knowledge\n\nDesign studio · 0 knowledge bases\n\nTeam Wiki Pool\nAgent Assets\nNo Agent Available\nTOTAL WIKIS\n0\nREADY\n0\nPROCESSING\n0\nTOTAL PAGES\n0\nAll Status\nReady\nProcessing\nCard view\nList view\nNo Wiki Knowledge Bases",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "code",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 676,
+      "mainScrollTop": 278.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Code\n\nDesign studio · 0 repos\n\nTeam Code Pool\nAgent Assets\nNo Agent Selected\nTOTAL REPOS\n0\nREADY\n0\nPROCESSING\n0\nTOTAL FILES\n0\nAll Status\nReady\nBuilding\nError\nCard view\nList view\nNo Repos Registered",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "skills",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Skills", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 698,
+      "mainScrollTop": 300.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Skills\n\nDesign studio · 0 Skills\n\nExport Skill\nImport Skill\nTeam Assets\nAgent Assets\nNo Agent Available\nAgent Assets\n0 items\nPlease select an agent.\nSelect a skill to view its details.",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "memory",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Memory", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 858,
+      "mainScrollTop": 460.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Memory\n\nDesign studio · 0 memory blocks\n\nAllocate to Agent\nImport Memory\nTeam Assets\nAgent Assets\nNo Agent Available\nMemory Blocks\n0 items\nNo matching memory blocks.\nSelect a memory block to view its details.",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "team/members",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Members", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 784,
+      "mainScrollTop": 385.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nMembers\n\nTeam members / users / roles\n\nD\nDesign studio\nbaren-preview-team\n3 members\nA shared space for thoughtful work.\nNew Team\nMembers (3)\nbaren-preview-team\nHuman members of \"Design studio\". Admins manage team assets, members use assets and create tasks.\nAdd Member\nAL\nAlex Morgan (you)\nbaren-preview-user\nADMIN\n· Creator\nJA\nJamie Chen\nbaren-preview-jamie\nADMIN\nSA\nSam Rivera\nbaren-preview-sam\nMEMBER",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "team/agents",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 808,
+      "mainScrollTop": 410.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nAgents\n\nAgent / scope / fixed assets\n\nD\nDesign studio\nbaren-preview-team\n3 members\nA shared space for thoughtful work.\nNew Team\nDefault Agent Template\nWhen a new member joins the team, their dedicated default Agent is auto-created from this template. Only team-public assets (visibility=team) can be selected; changes apply to members joining later.\nNew Default Agent\nNot configured yet · Configure to auto-create a default Agent for new members\nAgents\nAgents created by you in team \"Design studio\" (baren-preview-team) · 0 total\nNew Agent\nAll Owners\nNo agents yet · Select \"+ New Agent\"",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "team/api-keys",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["User_Key Management", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 1034,
+      "mainScrollTop": 636,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nUser_Key Management\n\nManage your User Keys for external client access (e.g. CodeBuddy / ClaudeCode CLI).\n\nKey ID\n\t\nKey Prefix\n\t\nCreated At\n\t\nExpires At\n\t\nActions\nYou don't have any User Keys yet\nClient Access Endpoint\nCurrent instance: Isolated preview(baren-preview)\nCodeBuddy\nhttps://example.invalid/preview/codebuddy/baren-preview\nCopy\nClaude Code\nhttps://example.invalid/preview/claude-code/baren-preview\nCopy\nWorkBuddy\nhttps://example.invalid/preview/workbuddy/baren-preview\nCopy\nCodex\nhttps://example.invalid/preview/codex/baren-preview\nCopy\nDeepSeek Harness (dsh)\nhttps://example.",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "analytics",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Observability", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 2148,
+      "mainScrollTop": 1750.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Observability\n\nTeam memory usage metrics · Session adoption / tool calls / bypass (source: ClickHouse telemetry)\n\nLast 7 days\nbaren-preview\nRefresh\nUpdated at 3:27:28 PM\nUsage BehaviorCost & Models\nTool Call Rate\n75.00 %\nvs previous period↑ 7.00pp\nAvg Calls per Session\n3.40 calls\nvs previous period↑ 0.40\nper init Session\nBypass Rate\n8.00 %\nvs previous period↓ 4.00pp\n8 bypass / 92 normal\nDistinct Sessions\n0\ninit sessions in current period\nTotal Calls\n0\nbridge_call total\nAsset Call DistributionGrouped by asset category (full dataset) · click a card to drill into call details\nMemory\n0\nCalls\n0.00%",
+      "width": 864
+    },
+    {
+      "scenario": "empty",
+      "route": "guide",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Getting Started", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 952,
+      "mainScrollTop": 553.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "← Back\nGetting Started\n\nComplete the quick setup first, then use best practices to turn team experience into reusable engineering assets.\n\nQuick Setup\nConfigure IDEs & import history\nBest Practices\nTeam Coding & personal multi-Agent\nMemory Commands\nmem: commands available in chat\n✓\nDownload config pack\nGet the agents scripts & Skill\n2\nConnect your IDE\nConfigure Proxy & model\n3\nImport history\nShare memory & Skills\nDownload the config pack first\nAfter downloading and extracting, run the commands below from a location containing the agents directory.\nDownload config pack (ZIP)\nNext →\nFrontend Gui",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "today",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Today", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 487,
+      "mainScrollTop": 88.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "SATURDAY, SEPTEMBER 26\n\nToday\n\nA little clarity. A good place to begin.\n\nNew task\n—\nOverdue\n—\nIn progress\n—\nNeeds review\nYour team, at a glance\nFilters\n\nLoading tasks…",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Task board", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 503,
+      "mainScrollTop": 104.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "FROM IDEA TO DONE\n\nTask board\n\nPlan the work. Keep the context.\n\nNew task\nProject\nAll projects\nUnassigned\nManage projects\nAll assignees\nUnassigned\nAll priorities\nNo priority\nLow\nMedium\nHigh\nUrgent\n\nLoading tasks…",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "projects",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Projects", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 537,
+      "mainScrollTop": 139,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "GIVE YOUR WORK A HOME\n\nProjects\n\nKeep the purpose, people, and moving pieces together.\n\nNew project\n\nLoading projects…\n\nSearch projects\nShow archived\n0 projects",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "upcoming",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Upcoming", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 401,
+      "mainScrollTop": 2.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "SATURDAY, SEPTEMBER 26\n\nUpcoming\n\nPlan the next six weeks, from first step to deadline.\n\nNew task\nYour team, at a glance\nFilters\n\nLoading tasks…",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "areas",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Areas", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 459,
+      "mainScrollTop": 60.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "A HOME FOR YOUR WORK\nAreas\n\nOngoing bodies of work for this team. Give recurring responsibilities a home.\n\nNew Area\n\nLoading Areas…",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "loops",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Loops", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 421,
+      "mainScrollTop": 22.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "KEEP GOOD WORK GOING\nLoops\n\nRecurring responsibilities, with a clear owner and a home in an Area.\n\nManage Areas\nNew Loop\nRefresh\n\nLoading Loops…",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "timesheets",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Timesheets", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 590,
+      "mainScrollTop": 192,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "MAKE EVERY CONTRIBUTION COUNT\nTimesheets\n\nReview contributions, approve time, and record completed payments.\n\nRefresh\nExport CSV\nTeammate\nMy time\nFrom (UTC)\nThrough (UTC)\n\nDates are inclusive. Each entry is assigned in full to its start date in UTC, including work crossing midnight. Running timers are excluded from all hour totals. Approved and paid entries retain their project at approval.\n\nLoading timesheets…",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "workbench",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 752,
+      "mainScrollTop": 354.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Workbench\n\nKeep your task and its execution in view.\n\nOrca\ncdesktop (trial)\nOrca\nConnect the Orca interface\n\nConfigure this runtime’s browser-client URL to load Orca’s own workspace here.\n\nPair directly inside Orca when prompted.",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "wiki",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Knowledge", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 1047,
+      "mainScrollTop": 649.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Knowledge\n\nDesign studio · 0 knowledge bases\n\nTeam Wiki Pool\nAgent Assets\nNo Agent Available\nTOTAL WIKIS\n0\nREADY\n0\nPROCESSING\n0\nTOTAL PAGES\n0\nAll Status\nReady\nProcessing\nCard view\nList view",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "code",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 1119,
+      "mainScrollTop": 721.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Code\n\nDesign studio · 0 repos\n\nTeam Code Pool\nAgent Assets\nNo Agent Selected\nTOTAL REPOS\n0\nREADY\n0\nPROCESSING\n0\nTOTAL FILES\n0\nAll Status\nReady\nBuilding\nError\nCard view\nList view",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "skills",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Skills", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 716,
+      "mainScrollTop": 317.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Skills\n\nDesign studio · 0 Skills\n\nExport Skill\nImport Skill\nTeam Assets\nAgent Assets\nNo Agent Available\nAgent Assets\nSelect a skill to view its details.",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "memory",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Memory", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 858,
+      "mainScrollTop": 460.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Memory\n\nDesign studio · 0 memory blocks\n\nAllocate to Agent\nImport Memory\nTeam Assets\nAgent Assets\nNo Agent Available\nMemory Blocks\n0 items\nNo matching memory blocks.\nSelect a memory block to view its details.",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "team/members",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Members", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 784,
+      "mainScrollTop": 385.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nMembers\n\nTeam members / users / roles\n\nD\nDesign studio\nbaren-preview-team\n3 members\nA shared space for thoughtful work.\nNew Team\nMembers (3)\nbaren-preview-team\nHuman members of \"Design studio\". Admins manage team assets, members use assets and create tasks.\nAdd Member\nAL\nAlex Morgan (you)\nbaren-preview-user\nADMIN\n· Creator\nJA\nJamie Chen\nbaren-preview-jamie\nADMIN\nSA\nSam Rivera\nbaren-preview-sam\nMEMBER",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "team/agents",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 1232,
+      "mainScrollTop": 834.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nAgents\n\nAgent / scope / fixed assets\n\nD\nDesign studio\nbaren-preview-team\n3 members\nA shared space for thoughtful work.\nNew Team\nDefault Agent Template\nWhen a new member joins the team, their dedicated default Agent is auto-created from this template. Only team-public assets (visibility=team) can be selected; changes apply to members joining later.\nNew Default Agent\nLoading…\nAgents\nAgents created by you in team \"Design studio\" (baren-preview-team) · Loading Agents…\nNew Agent\nAll Owners",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "team/api-keys",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["User_Key Management", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 984,
+      "mainScrollTop": 586.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nUser_Key Management\n\nManage your User Keys for external client access (e.g. CodeBuddy / ClaudeCode CLI).\n\nKey ID\n\t\nKey Prefix\n\t\nCreated At\n\t\nExpires At\n\t\nActions\nLoading…\nClient Access Endpoint\nCurrent instance: Isolated preview(baren-preview)\nCodeBuddy\nhttps://example.invalid/preview/codebuddy/baren-preview\nCopy\nClaude Code\nhttps://example.invalid/preview/claude-code/baren-preview\nCopy\nWorkBuddy\nhttps://example.invalid/preview/workbuddy/baren-preview\nCopy\nCodex\nhttps://example.invalid/preview/codex/baren-preview\nCopy\nDeepSeek Harness (dsh)\nhttps://example.invalid/preview/dsh/bare",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "analytics",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Observability", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 2159,
+      "mainScrollTop": 1761,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Observability\n\nTeam memory usage metrics · Session adoption / tool calls / bypass (source: ClickHouse telemetry)\n\nLast 7 days\nbaren-preview\nRefresh\nNot loaded\nUsage BehaviorCost & Models\nTool Call Rate\n— %\nvs previous period\nAvg Calls per Session\n— calls\nvs previous period\nper init Session\nBypass Rate\n— %\nvs previous period\n— bypass / — normal\nDistinct Sessions\n—\ninit sessions in current period\nTotal Calls\n—\nbridge_call total\nAsset Call DistributionGrouped by asset category (full dataset) · click a card to drill into call details\nMemory\n0\nCalls\n0.00%\nLong-term memory and past experience recall",
+      "width": 864
+    },
+    {
+      "scenario": "loading",
+      "route": "guide",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Getting Started", "Coordinator"],
+      "height": 470,
+      "mainScrollHeight": 952,
+      "mainScrollTop": 553.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "← Back\nGetting Started\n\nComplete the quick setup first, then use best practices to turn team experience into reusable engineering assets.\n\nQuick Setup\nConfigure IDEs & import history\nBest Practices\nTeam Coding & personal multi-Agent\nMemory Commands\nmem: commands available in chat\n✓\nDownload config pack\nGet the agents scripts & Skill\n2\nConnect your IDE\nConfigure Proxy & model\n3\nImport history\nShare memory & Skills\nDownload the config pack first\nAfter downloading and extracting, run the commands below from a location containing the agents directory.\nDownload config pack (ZIP)\nNext →\nFrontend Gui",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "today",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Today", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 573,
+      "mainScrollTop": 175,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "SATURDAY, SEPTEMBER 26\n\nToday\n\nA little clarity. A good place to begin.\n\nNew task\n—\nOverdue\n—\nIn progress\n—\nNeeds review\nYour team, at a glance\nFilters\n\nProjects could not be loaded: Synthetic preview error. Reload with scenario=populated to recover.\n\nTasks could not be loaded\n\nSynthetic preview error. Reload with scenario=populated to recover.\n\nRetry tasks",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Task board", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 593,
+      "mainScrollTop": 195,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "FROM IDEA TO DONE\n\nTask board\n\nPlan the work. Keep the context.\n\nNew task\nProject\nAll projects\nUnassigned\nManage projects\n\nSynthetic preview error. Reload with scenario=populated to recover.\n\nAll assignees\nUnassigned\nAll priorities\nNo priority\nLow\nMedium\nHigh\nUrgent\nTasks could not be loaded\n\nSynthetic preview error. Reload with scenario=populated to recover.\n\nRetry tasks",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "projects",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Projects", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 488,
+      "mainScrollTop": 90,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "GIVE YOUR WORK A HOME\n\nProjects\n\nKeep the purpose, people, and moving pieces together.\n\nNew project\n\nSynthetic preview error. Reload with scenario=populated to recover.\n\nSearch projects\nShow archived\n0 projects",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "upcoming",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Upcoming", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 487,
+      "mainScrollTop": 89,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "SATURDAY, SEPTEMBER 26\n\nUpcoming\n\nPlan the next six weeks, from first step to deadline.\n\nNew task\nYour team, at a glance\nFilters\n\nProjects could not be loaded: Synthetic preview error. Reload with scenario=populated to recover.\n\nTasks could not be loaded\n\nSynthetic preview error. Reload with scenario=populated to recover.\n\nRetry tasks",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "areas",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Areas", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 459,
+      "mainScrollTop": 60.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "A HOME FOR YOUR WORK\nAreas\n\nOngoing bodies of work for this team. Give recurring responsibilities a home.\n\nNew Area\n\nSynthetic preview error. Reload with scenario=populated to recover.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "loops",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Loops", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 398,
+      "mainScrollTop": 0,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "KEEP GOOD WORK GOING\nLoops\n\nRecurring responsibilities, with a clear owner and a home in an Area.\n\nManage Areas\nNew Loop\nRefresh\n\nSynthetic preview error. Reload with scenario=populated to recover.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "timesheets",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Timesheets", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 544,
+      "mainScrollTop": 145.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "MAKE EVERY CONTRIBUTION COUNT\nTimesheets\n\nReview contributions, approve time, and record completed payments.\n\nRefresh\nExport CSV\nTeammate\nMy time\nFrom (UTC)\nThrough (UTC)\n\nDates are inclusive. Each entry is assigned in full to its start date in UTC, including work crossing midnight. Running timers are excluded from all hour totals. Approved and paid entries retain their project at approval.\n\nSynthetic preview error. Reload with scenario=populated to recover.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "workbench",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Workbench", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 752,
+      "mainScrollTop": 354.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Workbench\n\nKeep your task and its execution in view.\n\nOrca\ncdesktop (trial)\nOrca\nConnect the Orca interface\n\nConfigure this runtime’s browser-client URL to load Orca’s own workspace here.\n\nPair directly inside Orca when prompted.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "wiki",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Knowledge", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 676,
+      "mainScrollTop": 278.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Knowledge\n\nDesign studio · 0 knowledge bases\n\nTeam Wiki Pool\nAgent Assets\nNo Agent Available\nTOTAL WIKIS\n0\nREADY\n0\nPROCESSING\n0\nTOTAL PAGES\n0\nAll Status\nReady\nProcessing\nCard view\nList view\nNo Wiki Knowledge Bases",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "code",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Code", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 676,
+      "mainScrollTop": 278.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Code\n\nDesign studio · 0 repos\n\nTeam Code Pool\nAgent Assets\nNo Agent Selected\nTOTAL REPOS\n0\nREADY\n0\nPROCESSING\n0\nTOTAL FILES\n0\nAll Status\nReady\nBuilding\nError\nCard view\nList view\nNo Repos Registered",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "skills",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Skills", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 698,
+      "mainScrollTop": 300.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Skills\n\nDesign studio · 0 Skills\n\nExport Skill\nImport Skill\nTeam Assets\nAgent Assets\nNo Agent Available\nAgent Assets\n0 items\nPlease select an agent.\nSelect a skill to view its details.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "memory",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Memory", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 858,
+      "mainScrollTop": 460.25,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Memory\n\nDesign studio · 0 memory blocks\n\nAllocate to Agent\nImport Memory\nTeam Assets\nAgent Assets\nNo Agent Available\nMemory Blocks\n0 items\nNo matching memory blocks.\nSelect a memory block to view its details.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "team/members",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Members", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 784,
+      "mainScrollTop": 385.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nMembers\n\nTeam members / users / roles\n\nD\nDesign studio\nbaren-preview-team\n3 members\nA shared space for thoughtful work.\nNew Team\nMembers (3)\nbaren-preview-team\nHuman members of \"Design studio\". Admins manage team assets, members use assets and create tasks.\nAdd Member\nAL\nAlex Morgan (you)\nbaren-preview-user\nADMIN\n· Creator\nJA\nJamie Chen\nbaren-preview-jamie\nADMIN\nSA\nSam Rivera\nbaren-preview-sam\nMEMBER",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "team/agents",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Agents", "Agents", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 1232,
+      "mainScrollTop": 834.5,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nAgents\n\nAgent / scope / fixed assets\n\nD\nDesign studio\nbaren-preview-team\n3 members\nA shared space for thoughtful work.\nNew Team\nDefault Agent Template\nWhen a new member joins the team, their dedicated default Agent is auto-created from this template. Only team-public assets (visibility=team) can be selected; changes apply to members joining later.\nNew Default Agent\nNot configured yet · Configure to auto-create a default Agent for new members\nAgents\nAgents created by you in team \"Design studio\" (baren-preview-team) · Loading Agents…\nNew Agent\nAll Owners",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "team/api-keys",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["User_Key Management", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 1034,
+      "mainScrollTop": 636,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "ORGANIZATION\nUser_Key Management\n\nManage your User Keys for external client access (e.g. CodeBuddy / ClaudeCode CLI).\n\nKey ID\n\t\nKey Prefix\n\t\nCreated At\n\t\nExpires At\n\t\nActions\nYou don't have any User Keys yet\nClient Access Endpoint\nCurrent instance: Isolated preview(baren-preview)\nCodeBuddy\nhttps://example.invalid/preview/codebuddy/baren-preview\nCopy\nClaude Code\nhttps://example.invalid/preview/claude-code/baren-preview\nCopy\nWorkBuddy\nhttps://example.invalid/preview/workbuddy/baren-preview\nCopy\nCodex\nhttps://example.invalid/preview/codex/baren-preview\nCopy\nDeepSeek Harness (dsh)\nhttps://example.",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "analytics",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Observability", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 2212,
+      "mainScrollTop": 1814,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "Observability\n\nTeam memory usage metrics · Session adoption / tool calls / bypass (source: ClickHouse telemetry)\n\nLast 7 days\nbaren-preview\nRefresh\nNot loaded\nSynthetic preview error. Reload with scenario=populated to recover.\nUsage BehaviorCost & Models\nTool Call Rate\n— %\nvs previous period\nAvg Calls per Session\n— calls\nvs previous period\nper init Session\nBypass Rate\n— %\nvs previous period\n— bypass / — normal\nDistinct Sessions\n—\ninit sessions in current period\nTotal Calls\n—\nbridge_call total\nAsset Call DistributionGrouped by asset category (full dataset) · click a card to drill into call deta",
+      "width": 864
+    },
+    {
+      "scenario": "error",
+      "route": "guide",
+      "documentWidth": 864,
+      "dpr": 4,
+      "headings": ["Getting Started", "Coordinator"],
+      "height": 470,
+      "mainHeight": 398,
+      "mainScrollHeight": 952,
+      "mainScrollTop": 553.75,
+      "mainScrollWidth": 858,
+      "mainWidth": 858,
+      "visibleText": "← Back\nGetting Started\n\nComplete the quick setup first, then use best practices to turn team experience into reusable engineering assets.\n\nQuick Setup\nConfigure IDEs & import history\nBest Practices\nTeam Coding & personal multi-Agent\nMemory Commands\nmem: commands available in chat\n✓\nDownload config pack\nGet the agents scripts & Skill\n2\nConnect your IDE\nConfigure Proxy & model\n3\nImport history\nShare memory & Skills\nDownload the config pack first\nAfter downloading and extracting, run the commands below from a location containing the agents directory.\nDownload config pack (ZIP)\nNext →\nFrontend Gui",
+      "width": 864
+    }
+  ]
+}

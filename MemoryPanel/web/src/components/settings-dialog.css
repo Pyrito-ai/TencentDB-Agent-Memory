@@ -1,0 +1,64 @@
+._baren-settings {
+  padding: 4px 0 8px;
+}
+
+._baren-settings-title {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+._baren-settings-desc {
+  display: block;
+  margin-bottom: 24px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+._baren-settings-modules {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--tea-color-border-primary-default);
+}
+
+._baren-settings-module {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
+}
+
+._baren-settings-module-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+._baren-settings-module-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 8px;
+  color: var(--tea-color-text-brand-default);
+  background: var(--tea-color-bg-secondary-default);
+}
+
+._baren-settings-module-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+._baren-settings-module > *:last-child {
+  flex-shrink: 0;
+}

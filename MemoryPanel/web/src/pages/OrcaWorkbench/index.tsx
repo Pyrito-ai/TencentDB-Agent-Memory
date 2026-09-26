@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUp, Bot, ChevronDown, ChevronUp, ExternalLink, Plus, RefreshCw } from 'lucide-react';
+import {
+  ArrowUp,
+  Bot,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Plus,
+  RefreshCw,
+  PanelsTopLeft,
+} from 'lucide-react';
 import { useTeams } from '@/services';
+import { PageHeading } from '@/components/baren';
 import {
   request,
   requestedTask,
@@ -51,7 +61,11 @@ export function OrcaWorkbench() {
   return activeTeamId ? (
     <Workspace key={activeTeamId} team={activeTeamId} />
   ) : (
-    <p>Select a team to open Workbench.</p>
+    <div className="orca-connection-empty workbench-team-empty">
+      <PanelsTopLeft size={28} aria-hidden="true" />
+      <h2>Your connected workspace</h2>
+      <p>Select a team to open Workbench.</p>
+    </div>
   );
 }
 export function Workspace({ team }: { team: string }) {
@@ -77,13 +91,18 @@ export function Workspace({ team }: { team: string }) {
   }, []);
   return (
     <div className="runtime-workbench">
-      <header className="workbench-runtime-toolbar">
-        <strong>Workbench</strong>
-        <RuntimePicker
-          runtime={runtime}
-          onChange={(next) => updateWorkbenchQuery({ runtime: next })}
+      <div className="workbench-runtime-toolbar">
+        <PageHeading
+          title="Workbench"
+          description="Keep your task and its execution in view."
+          actions={
+            <RuntimePicker
+              runtime={runtime}
+              onChange={(next) => updateWorkbenchQuery({ runtime: next })}
+            />
+          }
         />
-      </header>
+      </div>
       {visited.orca && (
         <div className="workbench-runtime-pane" hidden={runtime !== 'orca'}>
           <OrcaWorkspace team={team} visible={runtime === 'orca'} />
@@ -430,10 +449,10 @@ function OrcaWorkspace({ team, visible }: { team: string; visible: boolean }) {
                   ) : (
                     <>
                       <input
-                        aria-label="Tencent task ID"
+                        aria-label="Task Board task ID"
                         value={taskId}
                         onChange={(e) => setTaskId(e.target.value)}
-                        placeholder="Tencent task ID (optional)"
+                        placeholder="Task Board task ID (optional)"
                       />
                       <label>
                         Wiki asset ID
@@ -832,6 +851,7 @@ function OrcaWorkspace({ team, visible }: { team: string; visible: boolean }) {
           />
         ) : (
           <div className="orca-connection-empty">
+            <PanelsTopLeft size={28} aria-hidden="true" />
             <strong>Connect the Orca interface</strong>
             <p>Configure this runtime’s browser-client URL to load Orca’s own workspace here.</p>
             <p>Pair directly inside Orca when prompted.</p>

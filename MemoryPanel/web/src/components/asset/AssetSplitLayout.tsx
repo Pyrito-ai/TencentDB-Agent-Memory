@@ -3,11 +3,17 @@
  *
  * 统一 Skills / Memory 等资产页的「左侧列表 + 右侧详情」分栏结构：
  * - 左右宽度可拖拽调节，比例记忆到 localStorage（同一浏览器下次保留）
- * - 右侧详情设最大高度，内容超出时在详情区内部滚动，不撑开外层页面高度
- *   （外层容器不出现滚动条）
+ * - 两侧使用工作区提供的可用高度，窄内容区改为上下排列
  */
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import './asset-split-layout.css';
 
@@ -84,7 +90,7 @@ export function AssetSplitLayout({ sidebar, detail, storageKey }: AssetSplitLayo
     <div
       ref={containerRef}
       className={`_asset-split${dragging ? ' _asset-split--dragging' : ''}`}
-      style={{ gridTemplateColumns: `${sidebarWidth}px 6px minmax(0, 1fr)` }}
+      style={{ '--asset-sidebar-width': `${sidebarWidth}px` } as CSSProperties}
     >
       <section className="_asset-split-sidebar">{sidebar}</section>
       <button

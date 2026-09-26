@@ -13,12 +13,12 @@
 ._alp {
   /* 撑满左栏高度（外层 _asset-split-sidebar 已限定视口高度），内容少也不留空 */
   height: 100%;
-  min-height: 480px;
-  padding: 16px;
+  min-height: 320px;
+  padding: 0;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -30,8 +30,8 @@
   justify-content: space-between;
   gap: 8px;
   min-height: 28px;
-  padding-bottom: 8px;
-  margin-bottom: 4px;
+  padding: 16px 18px;
+  margin-bottom: 0;
   border-bottom: 1px solid var(--tea-color-border-secondary-default);
 }
 
@@ -92,7 +92,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  padding: 12px 12px;
+  padding: 16px 18px;
   font: inherit;
   color: inherit;
   transition: background-color 0.15s ease-in-out;
@@ -121,7 +121,7 @@
 
 /* ===== 骨架屏 ===== */
 ._alp-skeleton {
-  padding: 12px 12px;
+  padding: 16px 18px;
   animation: _alp-pulse 1.5s ease-in-out infinite;
 }
 
@@ -143,8 +143,13 @@
 }
 
 @keyframes _alp-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* ============================================================
@@ -257,14 +262,38 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 480px;
+  min-height: 320px;
   font-size: 13px;
   color: var(--tea-color-text-tertiary);
 }
 
 /* ===== 响应式 ===== */
-@media (max-width: 960px) {
+@container resource-page (max-width: 720px) {
   ._alp {
     min-height: 0;
+  }
+}
+
+/* Selection remains distinct from the small actions inside each library row. */
+._alp-item--selected::before {
+  content: '';
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--tea-color-bg-brand-default);
+  pointer-events: none;
+}
+._alp-item-btn:focus-visible {
+  outline: 2px solid var(--tea-color-border-brand-default);
+  outline-offset: -3px;
+}
+._alp-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  ._alp-skeleton {
+    animation: none;
   }
 }

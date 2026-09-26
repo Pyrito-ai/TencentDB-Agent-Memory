@@ -2,17 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { request, type Options, type WorkerReceipt } from './api';
 import { CdesktopTaskHandoff } from './CdesktopTaskHandoff';
 import { RuntimePicker, type WorkbenchRuntime } from './RuntimePicker';
+import {
+  AgentBundlePreview,
+  AgentBundleReceipt,
+  type AgentBundleSnapshot,
+  type HandoffAgentProfile as AgentProfile,
+} from './AgentBundleSummary';
 import './workbench.css';
 
-type AgentProfile = {
-  id: string;
-  name: string;
-  description: string;
-  prompt: string;
-  updatedAt: string;
-};
 type Handoff = {
   profile?: AgentProfile;
+  bundle?: AgentBundleSnapshot;
   id: string;
   spec?: string;
   binding: string;
@@ -143,6 +143,7 @@ function OrcaTaskHandoff({ team, taskId }: { team: string; taskId: string }) {
       setBusy(false);
     }
   }
+  const selectedProfile = handoff?.profile || profiles.find((profile) => profile.id === profileId);
   return (
     <section className="task-execution" aria-label="Send task to Orca">
       <div className="task-execution-heading">
@@ -266,12 +267,20 @@ function OrcaTaskHandoff({ team, taskId }: { team: string; taskId: string }) {
           </label>
           {!handoff && (
             <small>
-              Uses the role and rules from <a href="#/agents">Agents</a>. Tool connections and model
-              settings remain configured in Orca.
+              {selectedProfile && (
+                <>
+                  {selectedProfile.bundle
+                    ? 'Uses the role, rules and package from '
+                    : 'Uses the role and rules from '}
+                  <a href="#/agents">Agents</a>.{' '}
+                </>
+              )}
+              Tool connections and model settings remain configured in Orca.
             </small>
           )}
+          {!handoff && <AgentBundlePreview bundle={selectedProfile?.bundle} />}
           {(() => {
-            const selected = handoff?.profile || profiles.find((p) => p.id === profileId);
+            const selected = selectedProfile;
             return (
               selected && (
                 <details>
@@ -316,6 +325,10 @@ function OrcaTaskHandoff({ team, taskId }: { team: string; taskId: string }) {
                   </pre>
                 </details>
               )}
+              <AgentBundleReceipt
+                bundle={handoff.bundle}
+                sent={handoff.receipt?.state === 'running' || handoff.receipt?.state === 'exited'}
+              />
               {handoff.error && <p role="alert">{handoff.error}</p>}
               {handoff.receipt?.worktree && <p>Worktree: {handoff.receipt.worktree}</p>}
               {handoff.receipt?.notice && <p>{handoff.receipt.notice}</p>}

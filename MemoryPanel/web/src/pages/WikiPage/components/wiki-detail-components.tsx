@@ -4,7 +4,7 @@
  * GraphTabContent / PagesTabContent / RawFilesSection）。
  * 均为纯展示组件，数据与回调由外层注入，不含业务状态。
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, StatusTip, Tag, Text } from 'tea-component';
 import {
@@ -17,7 +17,13 @@ import {
   LayersIcon as ArchitectureIcon,
   StarIcon,
 } from 'tea-icons-react';
-import { knowledgeApi, type GraphData, type GraphNode, type WikiDetail, type WikiPage } from '@/lib/api/knowledge-api';
+import {
+  knowledgeApi,
+  type GraphData,
+  type GraphNode,
+  type WikiDetail,
+  type WikiPage,
+} from '@/lib/api/knowledge-api';
 import { useResizable } from '@/lib/useResizable';
 import { tea } from '@/lib/tea-bridge';
 import { AssetMarkdown } from '@/components/asset/AssetMarkdown';
@@ -48,7 +54,12 @@ export function WikiActions({
   return (
     <div className="_asset-wiki-actions" onClick={(event) => event.stopPropagation()}>
       <Button type="weak" disabled={ingestBusy} onClick={() => onIngest(source.wiki_id)}>
-        <StarIcon size={14} /> {isCurrentIngesting ? t('wiki.action.ingestBusy') : ingestBusy ? t('wiki.action.queuing') : t('wiki.action.ingest')}
+        <StarIcon size={14} />{' '}
+        {isCurrentIngesting
+          ? t('wiki.action.ingestBusy')
+          : ingestBusy
+            ? t('wiki.action.queuing')
+            : t('wiki.action.ingest')}
       </Button>
       {scopeTab === 'fixed' ? (
         <Button type="weak" onClick={() => onUnbind(source.wiki_id)}>
@@ -58,11 +69,7 @@ export function WikiActions({
         <Button
           type="weak"
           disabled={source.status !== 'ready'}
-          tooltip={
-            source.status === 'ready'
-              ? undefined
-              : t('wiki.action.allocate.disabled')
-          }
+          tooltip={source.status === 'ready' ? undefined : t('wiki.action.allocate.disabled')}
           onClick={() => onAllocate({ wiki_id: source.wiki_id, name: source.name })}
         >
           {t('wiki.action.allocate')}
@@ -112,10 +119,7 @@ export function GraphTabContent({
   const { width: rightW, onMouseDown } = useResizable(320, 200, 500, 'right');
 
   return (
-    <div
-      className="_wiki-detail-split"
-      style={{ height: 'calc(100vh - 280px)', minHeight: '400px' }}
-    >
+    <div className="_wiki-detail-split">
       <div className="_wiki-detail-split-main">
         <KnowledgeGraphEmbed
           data={graphData}
@@ -125,7 +129,10 @@ export function GraphTabContent({
         />
       </div>
       <ResizeHandle onMouseDown={onMouseDown} />
-      <div className="_wiki-detail-split-side" style={{ width: rightW }}>
+      <div
+        className="_wiki-detail-split-side"
+        style={{ '--wiki-side-width': `${rightW}px` } as CSSProperties}
+      >
         {selectedPage ? (
           <>
             <div className="_wiki-detail-side-head">
@@ -211,11 +218,11 @@ export function PagesTabContent({
   const { width: leftW, onMouseDown } = useResizable(260, 180, 400, 'left');
 
   return (
-    <div
-      className="_wiki-detail-split"
-      style={{ height: 'calc(100vh - 280px)', minHeight: '400px' }}
-    >
-      <div className="_wiki-detail-split-side-left" style={{ width: leftW }}>
+    <div className="_wiki-detail-split">
+      <div
+        className="_wiki-detail-split-side-left"
+        style={{ '--wiki-side-width': `${leftW}px` } as CSSProperties}
+      >
         <div className="_wiki-detail-type-filter">
           <button
             className={`_wiki-detail-filter-tag${pageTypeFilter === 'all' ? ' is-active' : ''}`}
@@ -298,7 +305,9 @@ export function PagesTabContent({
                         {tag.trim()}
                       </Tag>
                     ))}
-                {metadata.created && <Text theme="label">{t('wiki.detail.created', { date: metadata.created })}</Text>}
+                {metadata.created && (
+                  <Text theme="label">{t('wiki.detail.created', { date: metadata.created })}</Text>
+                )}
               </div>
             )}
             {readLoading ? (

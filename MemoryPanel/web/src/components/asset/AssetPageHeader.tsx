@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Card } from 'tea-component';
+import { FilterToolbar, PageHeading } from '@/components/baren';
 import './asset-page-header.css';
 
 interface AssetPageHeaderProps {
@@ -7,7 +7,7 @@ interface AssetPageHeaderProps {
   scope: ReactNode;
   agent?: ReactNode;
   actions?: ReactNode;
-  subtitle?: ReactNode;
+  subtitle?: string;
 }
 
 /**
@@ -18,20 +18,16 @@ interface AssetPageHeaderProps {
  */
 export function AssetPageHeader({ title, scope, agent, actions, subtitle }: AssetPageHeaderProps) {
   return (
-    <Card className="_asset-page-header">
-      <Card.Body>
-        <div className="_asset-page-header-main">
-          <h2 className="_asset-page-header-title">{title}</h2>
-          <div className="_asset-page-header-right">
-            <div className="_asset-page-header-filters">
-              {scope}
-              {agent}
-            </div>
-            {actions && <div className="_asset-page-header-actions">{actions}</div>}
-          </div>
-        </div>
-        {subtitle && <div className="_asset-page-header-subtitle">{subtitle}</div>}
-      </Card.Body>
-    </Card>
+    <div className="_asset-page-header">
+      <PageHeading
+        title={title}
+        description={subtitle}
+        actions={actions && <div className="_asset-page-header-actions">{actions}</div>}
+      />
+      <FilterToolbar className="_asset-page-header-filters">
+        {scope}
+        {agent}
+      </FilterToolbar>
+    </div>
   );
 }

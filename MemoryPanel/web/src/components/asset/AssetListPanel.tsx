@@ -87,14 +87,23 @@ export function AssetListPanel<T>({
                   .filter(Boolean)
                   .join(' ')}
               >
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={disabled ? -1 : 0}
                   className="_alp-item-btn"
                   onClick={() => !disabled && onSelect(item)}
-                  disabled={disabled}
+                  aria-disabled={disabled || undefined}
+                  aria-pressed={isSelected}
+                  onKeyDown={(event) => {
+                    if (event.target !== event.currentTarget || disabled) return;
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onSelect(item);
+                    }
+                  }}
                 >
                   {renderItem(item, isSelected)}
-                </button>
+                </div>
               </li>
             );
           })}

@@ -12,7 +12,7 @@
  */
 
 import { create } from 'zustand';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   teamsApi,
   membersApi,
@@ -44,7 +44,11 @@ const BACKEND_REFRESH_EVENT = 'tdai-memory.backend-refresh';
 const LOCAL_CHANGE_EVENT = 'tdai-memory.demo-store-change';
 
 function emitBackendRefresh() {
-  try { window.dispatchEvent(new Event(BACKEND_REFRESH_EVENT)); } catch { /* ignore */ }
+  try {
+    window.dispatchEvent(new Event(BACKEND_REFRESH_EVENT));
+  } catch {
+    /* ignore */
+  }
 }
 
 // ========================= Store 类型 =========================
@@ -58,6 +62,8 @@ interface BackendState {
   tasksTotalByTeam: Record<string, number>;
   // 后端分页缓存：tasksPagesByTeam[teamId]["offset:limit"] = Task[]
   tasksPagesByTeam: Record<string, Record<string, Task[]>>;
+  // A failed page stays settled until explicit retry or invalidation.
+  tasksErrorsByTeam: Record<string, Record<string, string>>;
   // loaded 标记（避免重复 fetch）
   teamsLoaded: boolean;
   teamsLoading: boolean;
@@ -85,7 +91,10 @@ interface BackendState {
    */
   refreshTeams: (opts?: { silent?: boolean }) => Promise<void>;
   fetchAgents: (teamId: string) => Promise<Agent[]>;
-  fetchTasks: (teamId: string, params?: { limit?: number; offset?: number; force?: boolean }) => Promise<Task[]>;
+  fetchTasks: (
+    teamId: string,
+    params?: { limit?: number; offset?: number; force?: boolean },
+  ) => Promise<Task[]>;
   setActiveTeamId: (teamId: string | null) => void;
   invalidate: () => void;
   invalidateTeam: (teamId: string) => void;
@@ -100,6 +109,7 @@ export const useBackendStore = create<BackendState>((set, get) => ({
   agentsByTeam: {},
   tasksTotalByTeam: {},
   tasksPagesByTeam: {},
+  tasksErrorsByTeam: {},
   teamsLoaded: false,
   teamsLoading: false,
   agentsLoadedTeamIds: new Set(),
@@ -118,7 +128,10 @@ export const useBackendStore = create<BackendState>((set, get) => ({
   refreshTeams: async (opts?: { silent?: boolean }) => {
     const state = get();
     // in-flight 去重：多个组件同时挂载时只发一次
-    if (state.inflightTeams) { await state.inflightTeams; return; }
+    if (state.inflightTeams) {
+      await state.inflightTeams;
+      return;
+    }
 
     const silent = opts?.silent === true;
     // 捕获发起时的代数：期间若发生登出/清缓存（epoch 自增），本次结果必须丢弃
@@ -132,13 +145,13 @@ export const useBackendStore = create<BackendState>((set, get) => ({
         const backendTeams = await teamsApi.list();
         // 批量拉 members（N+1 → N，但这是后端 API 限制，无批量接口）
         const memberResults = await Promise.all(
-          backendTeams.map((t) => membersApi.list(t.team_id).catch(() => [] as BackendMember[]))
+          backendTeams.map((t) => membersApi.list(t.team_id).catch(() => [] as BackendMember[])),
         );
         // 登出/清缓存后返回的旧会话结果：丢弃，防止旧 teams 写回 store、
         // 防止 ensureValidActiveTeamId 把旧 team 重新写回 localStorage activeTeamId。
         if (get().epoch !== epoch) return;
         const adapted = backendTeams.map((bt, i) =>
-          adaptTeam(bt, memberResults[i].map(adaptMember))
+          adaptTeam(bt, memberResults[i].map(adaptMember)),
         );
         seedDisplayNameCache(adapted.flatMap((t) => t.members));
         ensureValidActiveTeamId(adapted);
@@ -185,7 +198,7 @@ export const useBackendStore = create<BackendState>((set, get) => ({
           agentsByTeam: { ...s.agentsByTeam, [teamId]: adapted },
           agentsLoadedTeamIds: new Set(s.agentsLoadedTeamIds).add(teamId),
           inflightAgents: Object.fromEntries(
-            Object.entries(s.inflightAgents).filter(([k]) => k !== teamId)
+            Object.entries(s.inflightAgents).filter(([k]) => k !== teamId),
           ),
         }));
         return adapted;
@@ -194,7 +207,7 @@ export const useBackendStore = create<BackendState>((set, get) => ({
         console.error('[backend store] fetchAgents failed:', err);
         set((s) => ({
           inflightAgents: Object.fromEntries(
-            Object.entries(s.inflightAgents).filter(([k]) => k !== teamId)
+            Object.entries(s.inflightAgents).filter(([k]) => k !== teamId),
           ),
         }));
         tea.notify.error(i18n.t('backend.loadAgentsFailed'));
@@ -206,7 +219,10 @@ export const useBackendStore = create<BackendState>((set, get) => ({
     return promise;
   },
 
-  fetchTasks: async (teamId: string, params?: { limit?: number; offset?: number; force?: boolean }) => {
+  fetchTasks: async (
+    teamId: string,
+    params?: { limit?: number; offset?: number; force?: boolean },
+  ) => {
     const state = get();
     const limit = params?.limit ?? 20;
     const offset = params?.offset ?? 0;
@@ -218,41 +234,76 @@ export const useBackendStore = create<BackendState>((set, get) => ({
       return state.tasksPagesByTeam[teamId][cacheKey];
     }
     // in-flight 去重
-    if (state.inflightTasks[inflightKey]) { await state.inflightTasks[inflightKey]; return get().tasksPagesByTeam[teamId]?.[cacheKey] ?? []; }
+    if (state.inflightTasks[inflightKey]) {
+      await state.inflightTasks[inflightKey];
+      return get().tasksPagesByTeam[teamId]?.[cacheKey] ?? [];
+    }
+    if (!params?.force && state.tasksErrorsByTeam[teamId]?.[cacheKey]) return [];
 
     const epoch = state.epoch;
-    const promise = (async () => {
+    // Register the promise before invoking the API, including synchronous failures.
+    const promise = Promise.resolve().then(async () => {
       try {
-        const { items: tasksWithAgents, total } = await tasksApi.listWithAgents(teamId, { limit, offset });
+        const { items: tasksWithAgents, total } = await tasksApi.listWithAgents(teamId, {
+          limit,
+          offset,
+        });
         // 登出/清缓存后返回的旧会话结果：丢弃，不写入 store
-        if (get().epoch !== epoch) return [];
+        if (get().epoch !== epoch || get().inflightTasks[inflightKey] !== promise) return [];
         const adapted = tasksWithAgents.map((t) =>
-          adaptTask(t, t.agents.filter((a) => a.status === 'active').map((a) => a.agent_id))
+          adaptTask(
+            t,
+            t.agents.filter((a) => a.status === 'active').map((a) => a.agent_id),
+          ),
         );
         set((s) => {
           const teamPages = s.tasksPagesByTeam[teamId] ?? {};
+          const teamErrors = { ...s.tasksErrorsByTeam[teamId] };
+          delete teamErrors[cacheKey];
           return {
-            tasksPagesByTeam: { ...s.tasksPagesByTeam, [teamId]: { ...teamPages, [cacheKey]: adapted } },
+            tasksPagesByTeam: {
+              ...s.tasksPagesByTeam,
+              [teamId]: { ...teamPages, [cacheKey]: adapted },
+            },
             tasksTotalByTeam: { ...s.tasksTotalByTeam, [teamId]: total },
+            tasksErrorsByTeam: { ...s.tasksErrorsByTeam, [teamId]: teamErrors },
             inflightTasks: Object.fromEntries(
-              Object.entries(s.inflightTasks).filter(([k]) => k !== inflightKey)
+              Object.entries(s.inflightTasks).filter(([k]) => k !== inflightKey),
             ),
           };
         });
         return adapted;
       } catch (err) {
+        if (get().epoch !== epoch || get().inflightTasks[inflightKey] !== promise) return [];
         console.error('[backend store] fetchTasks failed:', err);
         set((s) => ({
+          tasksErrorsByTeam: {
+            ...s.tasksErrorsByTeam,
+            [teamId]: {
+              ...s.tasksErrorsByTeam[teamId],
+              [cacheKey]:
+                err instanceof Error && err.message.trim()
+                  ? err.message
+                  : i18n.t('backend.loadTasksFailed'),
+            },
+          },
           inflightTasks: Object.fromEntries(
-            Object.entries(s.inflightTasks).filter(([k]) => k !== inflightKey)
+            Object.entries(s.inflightTasks).filter(([k]) => k !== inflightKey),
           ),
         }));
         tea.notify.error(i18n.t('backend.loadTasksFailed'));
         return [];
       }
-    })();
+    });
 
-    set((s) => ({ inflightTasks: { ...s.inflightTasks, [inflightKey]: promise } }));
+    set((s) => {
+      const teamErrors = { ...s.tasksErrorsByTeam[teamId] };
+      delete teamErrors[cacheKey];
+      return {
+        tasksErrorsByTeam: { ...s.tasksErrorsByTeam, [teamId]: teamErrors },
+        inflightTasks: { ...s.inflightTasks, [inflightKey]: promise },
+      };
+    });
     return promise;
   },
 
@@ -270,6 +321,7 @@ export const useBackendStore = create<BackendState>((set, get) => ({
       agentsByTeam: {},
       tasksTotalByTeam: {},
       tasksPagesByTeam: {},
+      tasksErrorsByTeam: {},
       agentsLoadedTeamIds: new Set(),
       inflightTeams: null,
       inflightAgents: {},
@@ -291,7 +343,19 @@ export const useBackendStore = create<BackendState>((set, get) => ({
       delete tasksPagesByTeam[teamId];
       const tasksTotalByTeam = { ...s.tasksTotalByTeam };
       delete tasksTotalByTeam[teamId];
-      return { agentsLoadedTeamIds, agentsByTeam, tasksPagesByTeam, tasksTotalByTeam };
+      const tasksErrorsByTeam = { ...s.tasksErrorsByTeam };
+      delete tasksErrorsByTeam[teamId];
+      const inflightTasks = Object.fromEntries(
+        Object.entries(s.inflightTasks).filter(([key]) => !key.startsWith(`${teamId}:`)),
+      );
+      return {
+        agentsLoadedTeamIds,
+        agentsByTeam,
+        tasksPagesByTeam,
+        tasksTotalByTeam,
+        tasksErrorsByTeam,
+        inflightTasks,
+      };
     });
     emitBackendRefresh();
   },
@@ -308,6 +372,7 @@ export const useBackendStore = create<BackendState>((set, get) => ({
       agentsByTeam: {},
       tasksTotalByTeam: {},
       tasksPagesByTeam: {},
+      tasksErrorsByTeam: {},
       agentsLoadedTeamIds: new Set(),
       inflightTeams: null,
       inflightAgents: {},
@@ -375,7 +440,7 @@ export function useAgents(teamId: string | null | undefined): {
 } {
   // 用 ref 缓存上次的 teamId，避免 selector 每次返回不同引用
   const agents = useBackendStore((s) =>
-    teamId ? (s.agentsByTeam[teamId] ?? EMPTY_AGENTS) : EMPTY_AGENTS
+    teamId ? (s.agentsByTeam[teamId] ?? EMPTY_AGENTS) : EMPTY_AGENTS,
   );
   const loaded = useBackendStore((s) => (teamId ? s.agentsLoadedTeamIds.has(teamId) : true));
   const fetchAgents = useBackendStore((s) => s.fetchAgents);
@@ -393,30 +458,40 @@ export function useAgents(teamId: string | null | undefined): {
 /**
  * useTasks — 从 store 读指定 team 的 task 列表。
  */
-export function useTasks(teamId: string | null | undefined, page: number = 1, pageSize: number = 12): {
+export function useTasks(
+  teamId: string | null | undefined,
+  page: number = 1,
+  pageSize: number = 12,
+): {
   tasks: Task[];
   total: number;
   loading: boolean;
+  error: string | null;
+  retry: () => void;
 } {
   const offset = (page - 1) * pageSize;
   const cacheKey = `${offset}:${pageSize}`;
   const tasks = useBackendStore((s) =>
-    teamId ? (s.tasksPagesByTeam[teamId]?.[cacheKey] ?? EMPTY_TASKS) : EMPTY_TASKS
+    teamId ? (s.tasksPagesByTeam[teamId]?.[cacheKey] ?? EMPTY_TASKS) : EMPTY_TASKS,
   );
-  const total = useBackendStore((s) =>
-    teamId ? (s.tasksTotalByTeam[teamId] ?? 0) : 0
+  const total = useBackendStore((s) => (teamId ? (s.tasksTotalByTeam[teamId] ?? 0) : 0));
+  const loaded = useBackendStore((s) => (teamId ? !!s.tasksPagesByTeam[teamId]?.[cacheKey] : true));
+  const error = useBackendStore((s) =>
+    teamId ? (s.tasksErrorsByTeam[teamId]?.[cacheKey] ?? null) : null,
   );
-  const loaded = useBackendStore((s) =>
-    teamId ? !!s.tasksPagesByTeam[teamId]?.[cacheKey] : true
-  );
+  const fetching = useBackendStore((s) => !!teamId && !!s.inflightTasks[`${teamId}:${cacheKey}`]);
   const fetchTasks = useBackendStore((s) => s.fetchTasks);
 
   useEffect(() => {
-    if (!teamId || loaded) return;
+    if (!teamId || loaded || error) return;
     void fetchTasks(teamId, { limit: pageSize, offset });
-  }, [teamId, offset, pageSize, loaded, fetchTasks]);
+  }, [teamId, offset, pageSize, loaded, error, fetchTasks]);
 
-  return { tasks, total, loading: !!teamId && !loaded };
+  const retry = useCallback(() => {
+    if (teamId) void fetchTasks(teamId, { limit: pageSize, offset, force: true });
+  }, [teamId, offset, pageSize, fetchTasks]);
+
+  return { tasks, total, loading: !!teamId && !error && (!loaded || fetching), error, retry };
 }
 
 /**

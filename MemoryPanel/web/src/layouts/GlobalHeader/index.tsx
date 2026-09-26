@@ -19,6 +19,8 @@ import {
   Text,
 } from 'tea-component';
 import { SettingIcon } from 'tea-icons-react';
+import { ChevronRight, MessageCircle } from 'lucide-react';
+import type { PageId } from '@/constants/menu';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SettingsDialog } from '@/components/SettingsDialog';
@@ -32,6 +34,11 @@ export function GlobalHeader({
   currentUserId,
   instanceName,
   onLogout,
+  pageLabel,
+  activePage,
+  coordinatorAvailable,
+  coordinatorOpen,
+  onToggleCoordinator,
 }: {
   userRole: TeamRole | null;
   currentUser: string;
@@ -39,6 +46,11 @@ export function GlobalHeader({
   /** 当前登录所在的 memory 实例名（来自 auth.instance_name），用于「我的资料」展示 */
   instanceName?: string;
   onLogout: () => void;
+  pageLabel: string;
+  activePage: PageId | null;
+  coordinatorAvailable: boolean;
+  coordinatorOpen: boolean;
+  onToggleCoordinator: () => void;
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -51,14 +63,32 @@ export function GlobalHeader({
       {/* 左侧：品牌 + 团队切换器 */}
       <div className="_memory-global-header-left">
         <div className="_memory-global-header-brand">
-          <img src="/logo.png" alt="Memory Hub" className="_memory-global-header-logo" />
-          <span className="_memory-global-header-brand-text">{t('header.brand')}</span>
+          <img src="/baren-logo.svg" alt="Baren" className="_memory-global-header-logo" />
         </div>
         <TeamSwitcher userRole={userRole} />
+        <nav className="baren-breadcrumb" aria-label="Breadcrumb">
+          <span>Workspace</span>
+          <ChevronRight size={13} aria-hidden="true" />
+          <strong data-guide={activePage === 'code' ? 'tab-code' : undefined}>{pageLabel}</strong>
+        </nav>
       </div>
 
       {/* 右侧：同步状态 + 语言切换 + 用户菜单 */}
       <div className="_memory-global-header-right">
+        {coordinatorAvailable && (
+          <button
+            type="button"
+            className="baren-coordinator-toggle"
+            id="baren-coordinator-toggle"
+            aria-label={coordinatorOpen ? 'Hide coordinator' : 'Show coordinator'}
+            aria-controls="baren-coordinator-panel"
+            aria-expanded={coordinatorOpen}
+            onClick={onToggleCoordinator}
+          >
+            <MessageCircle size={18} />
+            <span>Coordinator</span>
+          </button>
+        )}
         {/* <span className="_memory-global-header-sync" title={t('header.sync.title')}>
         <span className="_memory-global-header-sync-dot" />
         {t('header.sync')}
@@ -73,11 +103,11 @@ export function GlobalHeader({
           {t('header.guide')}
         </button>
 
-
         <button
           type="button"
           className="_memory-global-header-icon-btn"
           title={t('header.settings')}
+          aria-label={t('header.settings')}
           onClick={() => setSettingsOpen(true)}
         >
           <SettingIcon size={16} />
@@ -86,7 +116,11 @@ export function GlobalHeader({
         <Dropdown
           appearance="pure"
           button={
-            <button type="button" className="_memory-global-header-user-btn">
+            <button
+              type="button"
+              className="_memory-global-header-user-btn"
+              aria-label="Profile menu"
+            >
               <span className="_memory-global-header-avatar">
                 {currentUser.slice(0, 1).toUpperCase()}
               </span>
@@ -96,6 +130,14 @@ export function GlobalHeader({
         >
           {(close) => (
             <List type="option">
+              <List.Item
+                onClick={() => {
+                  close();
+                  navigate('/guide');
+                }}
+              >
+                {t('header.guide')}
+              </List.Item>
               <List.Item
                 onClick={() => {
                   close();
@@ -135,7 +177,10 @@ export function GlobalHeader({
 // =================== Profile Modal ===================
 
 /** TeamRole → 展示文案 + Tag 主题色 */
-function roleDisplay(role: TeamRole | null): { label: string; theme: 'primary' | 'default' | 'warning' } {
+function roleDisplay(role: TeamRole | null): {
+  label: string;
+  theme: 'primary' | 'default' | 'warning';
+} {
   if (role === 'admin') return { label: 'admin', theme: 'primary' };
   if (role === 'reviewer') return { label: 'reviewer', theme: 'warning' };
   return { label: 'member', theme: 'default' };
@@ -173,12 +218,7 @@ function ProfileModal({
         <Justify
           left={
             <div className="_memory-profile-identity">
-              <Avatar
-                color={currentUserId}
-                text={initial}
-                width={48}
-                height={48}
-              />
+              <Avatar color={currentUserId} text={initial} width={48} height={48} />
               <div className="_memory-profile-identity-meta">
                 <Text theme="strong" parent="div" className="_memory-profile-identity-name">
                   {currentUser}
@@ -189,7 +229,11 @@ function ProfileModal({
               </div>
             </div>
           }
-          right={<Tag theme={role.theme} variant="soft">{t(`header.profile.role.${role.label}`)}</Tag>}
+          right={
+            <Tag theme={role.theme} variant="soft">
+              {t(`header.profile.role.${role.label}`)}
+            </Tag>
+          }
         />
 
         <div className="_memory-profile-divider" />
@@ -199,7 +243,10 @@ function ProfileModal({
           <Text theme="label" parent="div" className="_memory-profile-section-label">
             {t('header.profile.userId')}
           </Text>
-          <InputAdornment after={<Copy text={currentUserId} />} className="_memory-profile-input-adornment">
+          <InputAdornment
+            after={<Copy text={currentUserId} />}
+            className="_memory-profile-input-adornment"
+          >
             <Input value={currentUserId} readonly size="full" />
           </InputAdornment>
           <Text theme="weak" parent="div" className="_memory-profile-section-hint">
@@ -225,7 +272,11 @@ function ProfileModal({
               {t('header.profile.instance')}
             </Text>
             <InputAdornment
-              after={<Tag size="sm" variant="outlined">{currentUserId.split('-')[0]}</Tag>}
+              after={
+                <Tag size="sm" variant="outlined">
+                  {currentUserId.split('-')[0]}
+                </Tag>
+              }
               className="_memory-profile-input-adornment"
             >
               <Input value={instanceName} readonly size="full" />

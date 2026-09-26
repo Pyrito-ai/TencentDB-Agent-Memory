@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { ArrowRight, CalendarDays, Plus, RefreshCw, SlidersHorizontal } from 'lucide-react';
+import { Badge, SummaryStrip, TaskRow } from '@/components/baren';
 import type { Task } from '@/services';
 import { readTaskBoard } from '@/services/task-board';
 import {
@@ -6,12 +8,13 @@ import {
   calendarWindow,
   localDay,
   taskSpan,
-  todayBucket,
+  validDay,
   weekSegments,
 } from '@/services/task-schedule';
 import { useDisplayNameResolver } from '@/services/user-profile-store';
 import { getPanelSession } from '@/lib/panelSession';
 import { useProjects } from '../hooks/useProjects';
+import { todayFocus } from '../utils/today-focus';
 import '../styles/agenda.css';
 
 import type { Loop as LoopSummary } from './loop-types';
@@ -25,17 +28,25 @@ export default function Agenda({
   teamId,
   tasks,
   loading,
+  error,
+  onRetry,
   currentUser,
   onOpenTask,
   onOpenLoops,
+  onCreate,
+  onOpenBoard,
 }: {
   view: 'today' | 'upcoming';
   teamId: string;
   tasks: Task[];
   loading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
   currentUser: string;
   onOpenTask: (id: string) => void;
   onOpenLoops: (id?: string, due?: string) => void;
+  onCreate?: () => void;
+  onOpenBoard?: () => void;
 }) {
   const areas = useAreas(teamId);
   const [loopOwner, setLoopOwner] = useState(currentUser),
@@ -45,6 +56,7 @@ export default function Agenda({
   const [person, setPerson] = useState('all'),
     [project, setProject] = useState('all'),
     [query, setQuery] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [today, setToday] = useState(localDay()),
     [offset, setOffset] = useState(0);
   const [loops, setLoops] = useState<LoopSummary[] | null>(null),
@@ -108,6 +120,8 @@ export default function Agenda({
     );
   });
   const active = filtered.filter((t) => readTaskBoard(t).status !== 'done');
+  const focus = todayFocus(filtered, today);
+  const hasFilters = person !== 'all' || project !== 'all' || query.length > 0;
   const windowDays = calendarWindow(today, offset);
   const scheduled = active.filter((t) => {
     const s = taskSpan(t);
@@ -126,23 +140,46 @@ export default function Agenda({
   const row = (task: Task) => {
     const b = readTaskBoard(task);
     return (
-      <button className="agenda-task" key={task.task_id} onClick={() => onOpenTask(task.task_id)}>
-        <span>
-          <strong>{task.title}</strong>
-          <small>
-            {projectName(task)} · {b.assignee ? name(b.assignee) : 'Unassigned'}
-          </small>
-        </span>
-        <span className="agenda-task-meta">
-          {b.priority !== 'none' && (
-            <span className={`project-board-priority ${b.priority}`}>{b.priority}</span>
-          )}
-          <small>
-            {b.status.replaceAll('_', ' ')}
-            {b.dueDate && ` · Due ${b.dueDate}`}
-          </small>
-        </span>
-      </button>
+      <TaskRow
+        className="agenda-task"
+        key={task.task_id}
+        onClick={() => onOpenTask(task.task_id)}
+        copyClassName="agenda-task-copy"
+        metaClassName="agenda-task-meta"
+        title={task.title}
+        subtitle={
+          <>
+            {projectName(task)}
+            {b.priority !== 'none' && (
+              <>
+                {' '}
+                <span aria-hidden="true">·</span>{' '}
+                <Badge className={`project-board-priority ${b.priority}`}>{b.priority}</Badge>
+              </>
+            )}
+          </>
+        }
+        meta={
+          <>
+            {b.dueDate && <small>{validDay(b.dueDate) ? dateLabel(b.dueDate) : b.dueDate}</small>}
+            <span
+              className="work-avatar"
+              title={b.assignee ? name(b.assignee) : 'Unassigned'}
+              aria-label={b.assignee ? `Assigned to ${name(b.assignee)}` : 'Unassigned'}
+            >
+              {b.assignee
+                ? name(b.assignee)
+                    .split(/\s+/)
+                    .map((part) => part[0])
+                    .slice(0, 2)
+                    .join('')
+                    .toUpperCase()
+                : '—'}
+            </span>
+            <ArrowRight size={15} aria-hidden="true" />
+          </>
+        }
+      />
     );
   };
   function loopControls() {
@@ -183,176 +220,301 @@ export default function Agenda({
   }
   return (
     <section className="agenda" aria-label={view === 'today' ? 'Today' : 'Upcoming'}>
-      <header className="agenda-heading">
+      <header className="agenda-heading work-page-header">
         <div>
-          <p className="agenda-eyebrow">YOUR TEAM’S WORK</p>
+          <p className="work-eyebrow">
+            {new Intl.DateTimeFormat('en', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              timeZone: 'UTC',
+            }).format(new Date(today + 'T12:00:00Z'))}
+          </p>
           <h2>{view === 'today' ? 'Today' : 'Upcoming'}</h2>
           <p>
             {view === 'today'
-              ? `${dateLabel(today)} · A clear view of what needs attention.`
+              ? 'A little clarity. A good place to begin.'
               : 'Plan the next six weeks, from first step to deadline.'}
           </p>
         </div>
-        <button
-          onClick={() => {
-            setToday(localDay());
-            setVersion((v) => v + 1);
-            window.dispatchEvent(new Event('tdai-memory.backend-refresh'));
-          }}
-        >
-          Refresh
-        </button>
-      </header>
-      <div className="agenda-filters">
-        <label>
-          Search
-          <input
-            placeholder="Find a task…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </label>
-        <label>
-          Assignee
-          <select value={person} onChange={(e) => setPerson(e.target.value)}>
-            <option value="all">Everyone</option>
-            <option value="">Unassigned</option>
-            {people.map((p) => (
-              <option key={p} value={p}>
-                {p === currentUser ? `${name(p)} (me)` : name(p)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Project
-          <select
-            value={project}
-            disabled={!projects.loaded}
-            onChange={(e) => setProject(e.target.value)}
+        <div className="work-actions">
+          <button
+            className="work-icon-button"
+            title="Refresh"
+            aria-label="Refresh tasks and responsibilities"
+            onClick={() => {
+              setToday(localDay());
+              setVersion((v) => v + 1);
+              window.dispatchEvent(new Event('tdai-memory.backend-refresh'));
+            }}
           >
-            <option value="all">All projects</option>
-            <option value="">Unassigned</option>
-            {projects.items.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-                {p.archived ? ' (archived)' : ''}
-              </option>
-            ))}
-          </select>
-        </label>
+            <RefreshCw size={16} aria-hidden="true" />
+          </button>
+          {onCreate && (
+            <button className="work-primary" onClick={onCreate}>
+              <Plus size={16} aria-hidden="true" />
+              New task
+            </button>
+          )}
+        </div>
+      </header>
+      {view === 'today' && (
+        <SummaryStrip
+          className="agenda-summary"
+          aria-label="Task summary"
+          aria-busy={loading}
+          valueFirst
+          items={[
+            {
+              label: 'Overdue',
+              value: loading || error ? '—' : focus.overdue.length,
+              className: focus.overdue.length ? 'needs-attention' : '',
+            },
+            { label: 'In progress', value: loading || error ? '—' : focus.inProgress.length },
+            { label: 'Needs review', value: loading || error ? '—' : focus.review.length },
+          ]}
+        />
+      )}
+      <div className="agenda-tools">
+        <span>{hasFilters ? 'Showing filtered work' : 'Your team, at a glance'}</span>
+        <button
+          className="work-text-button"
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen(!filtersOpen)}
+        >
+          <SlidersHorizontal size={14} aria-hidden="true" />
+          Filters{hasFilters ? ' · On' : ''}
+        </button>
       </div>
-      <p className="agenda-help">
-        Task dates use your local calendar ({Intl.DateTimeFormat().resolvedOptions().timeZone}).
-        Completed tasks are hidden. Open any task for notes, attachments, time tracking, or
-        scheduling.
-      </p>
+      {filtersOpen && (
+        <div className="agenda-filters work-filterbar">
+          <label>
+            Search
+            <input
+              placeholder="Find a task…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </label>
+          <label>
+            Assignee
+            <select value={person} onChange={(e) => setPerson(e.target.value)}>
+              <option value="all">Everyone</option>
+              <option value="">Unassigned</option>
+              {people.map((p) => (
+                <option key={p} value={p}>
+                  {p === currentUser ? `${name(p)} (me)` : name(p)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Project
+            <select
+              value={project}
+              disabled={!projects.loaded}
+              onChange={(e) => setProject(e.target.value)}
+            >
+              <option value="all">All projects</option>
+              <option value="">Unassigned</option>
+              {projects.items.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                  {p.archived ? ' (archived)' : ''}
+                </option>
+              ))}
+            </select>
+          </label>
+          {hasFilters && (
+            <button
+              onClick={() => {
+                setPerson('all');
+                setProject('all');
+                setQuery('');
+              }}
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      )}
       {projects.error && <p role="alert">Projects could not be loaded: {projects.error}</p>}
-      {loading ? (
+      {error ? (
+        <div className="work-load-error" role="alert">
+          <div>
+            <strong>Tasks could not be loaded</strong>
+            <p>{error}</p>
+          </div>
+          {onRetry && <button onClick={onRetry}>Retry tasks</button>}
+        </div>
+      ) : loading ? (
         <p role="status">Loading tasks…</p>
       ) : view === 'today' ? (
-        <>
-          <div className="agenda-today-grid">
-            <div>
-              {(
-                [
-                  ['overdue', 'Overdue'],
-                  ['due', 'Due today'],
-                  ['planned', 'Planned for today'],
-                  ['progress', 'In progress'],
-                ] as const
-              ).map(([bucket, label]) => {
-                const items = filtered
-                  .filter((t) => todayBucket(t, today) === bucket)
-                  .sort(
-                    (a, b) =>
-                      readTaskBoard(a).dueDate.localeCompare(readTaskBoard(b).dueDate) ||
-                      a.title.localeCompare(b.title),
+        <div className="agenda-today-grid">
+          <div className="agenda-focus-column">
+            <section className="agenda-section agenda-focus-panel">
+              <header className="agenda-section-heading">
+                <h3>
+                  In progress <span>{focus.inProgress.length}</span>
+                </h3>
+                <span className="work-eyebrow">Keep moving</span>
+              </header>
+              {focus.inProgress.length ? (
+                focus.inProgress.map(row)
+              ) : (
+                <p className="work-empty">
+                  Nothing in progress. Pick your next task from the board.
+                </p>
+              )}
+              <footer className="agenda-panel-footer">
+                {onOpenBoard ? (
+                  <button className="work-text-button" onClick={onOpenBoard}>
+                    View task board <ArrowRight size={14} aria-hidden="true" />
+                  </button>
+                ) : (
+                  <a href="/#/">View task board →</a>
+                )}
+                {onCreate && (
+                  <button className="work-text-button" onClick={onCreate}>
+                    <Plus size={14} aria-hidden="true" />
+                    Add task
+                  </button>
+                )}
+              </footer>
+            </section>
+            {focus.overdue.length > 0 && (
+              <section className="agenda-section overdue">
+                <header className="agenda-section-heading">
+                  <h3>
+                    Overdue <span>{focus.overdue.length}</span>
+                  </h3>
+                  <span className="work-eyebrow">Needs attention</span>
+                </header>
+                {focus.overdue.map(row)}
+              </section>
+            )}
+            {focus.review.length > 0 && (
+              <section className="agenda-section">
+                <header className="agenda-section-heading">
+                  <h3>
+                    Needs review <span>{focus.review.length}</span>
+                  </h3>
+                </header>
+                {focus.review.map(row)}
+              </section>
+            )}
+          </div>
+          <aside className="agenda-aside">
+            <section className="agenda-section agenda-schedule">
+              <header className="agenda-section-heading">
+                <h3>Schedule</h3>
+                <CalendarDays size={17} aria-hidden="true" />
+              </header>
+              <p className="agenda-section-description">Today's dates, without the noise.</p>
+              {focus.scheduled.length ? (
+                focus.scheduled.map((task) => {
+                  const board = readTaskBoard(task);
+                  return (
+                    <button
+                      key={task.task_id}
+                      className="agenda-schedule-item"
+                      onClick={() => onOpenTask(task.task_id)}
+                    >
+                      <span className="agenda-schedule-marker" aria-hidden="true" />
+                      <span>
+                        <small>{board.dueDate === today ? 'DUE TODAY' : 'PLANNED TODAY'}</small>
+                        <strong>{task.title}</strong>
+                        <span>{projectName(task)}</span>
+                      </span>
+                    </button>
                   );
-                return (
-                  <section className={`agenda-section ${bucket}`} key={bucket}>
-                    <h3>
-                      {label}
-                      <span>{items.length}</span>
-                    </h3>
-                    {items.length ? (
-                      items.map(row)
-                    ) : (
-                      <p className="agenda-empty">
-                        {bucket === 'overdue' ? 'Nothing overdue.' : 'No tasks here.'}
-                      </p>
-                    )}
-                  </section>
-                );
-              })}
-            </div>
-            <aside className="agenda-section">
-              <h3>Loop responsibilities</h3>
-              {loopControls()}
+                })
+              ) : (
+                <p className="work-empty">A clear schedule. There are no task dates for today.</p>
+              )}
+              <p className="agenda-timezone">
+                Task dates · {Intl.DateTimeFormat().resolvedOptions().timeZone}
+              </p>
+            </section>
+            <section className="agenda-section agenda-responsibilities">
+              <header className="agenda-section-heading">
+                <h3>Responsibilities</h3>
+                <span className="work-eyebrow">Loops</span>
+              </header>
+              <details className="agenda-loop-filters">
+                <summary>Owner &amp; Area</summary>
+                {loopControls()}
+              </details>
               {loopError ? (
                 <p role="alert">
                   {loopError} <button onClick={() => setVersion((v) => v + 1)}>Retry</button>
                 </p>
               ) : !loops ? (
-                <p role="status">Loading Loops…</p>
+                <p role="status">Loading responsibilities…</p>
               ) : (
                 <>
-                  <h4>Due & overdue</h4>
                   {pendingLoops
                     .filter(
-                      (l) =>
-                        l.mode === 'scheduled' &&
-                        l.slots.some((s) => s.state === 'due' || s.state === 'overdue'),
+                      (loop) =>
+                        loop.mode === 'scheduled' &&
+                        loop.slots.some((slot) => slot.state === 'due' || slot.state === 'overdue'),
                     )
-                    .map((l) => (
+                    .map((loop) => (
                       <button
                         className="agenda-loop"
-                        key={l.id}
-                        onClick={() => onOpenLoops(l.id, l.nextDue)}
+                        key={loop.id}
+                        onClick={() => onOpenLoops(loop.id, loop.nextDue)}
                       >
-                        <strong>{l.name}</strong>
+                        <strong>{loop.name}</strong>
                         <span>
-                          {name(l.owner_id)} · {l.nextDue}
-                          {l.overdue ? ` · ${l.overdue} overdue` : ' · Due today'}
+                          {name(loop.owner_id)} · {loop.nextDue}
                         </span>
+                        <small className={loop.overdue ? 'agenda-loop-late' : ''}>
+                          {loop.overdue ? `${loop.overdue} overdue` : 'Due today'}
+                        </small>
+                      </button>
+                    ))}
+                  {pendingLoops
+                    .filter((loop) => loop.mode === 'flexible')
+                    .map((loop) => (
+                      <button
+                        className="agenda-loop"
+                        key={loop.id}
+                        onClick={() => onOpenLoops(loop.id)}
+                      >
+                        <strong>{loop.name}</strong>
+                        <span>
+                          {name(loop.owner_id)} · {loop.frequency}
+                        </span>
+                        <progress
+                          value={Math.min(loop.stats.progress, loop.target)}
+                          max={loop.target}
+                          aria-label={`${loop.name} completion`}
+                        />
+                        <small>
+                          {loop.stats.progress} of {loop.target} this period
+                        </small>
                       </button>
                     ))}
                   {!pendingLoops.some(
-                    (l) =>
-                      l.mode === 'scheduled' &&
-                      l.slots.some((s) => s.state === 'due' || s.state === 'overdue'),
-                  ) && <p>No deadlines due.</p>}
-                  <h4>Flexible this period</h4>
-                  {pendingLoops
-                    .filter((l) => l.mode === 'flexible')
-                    .map((l) => (
-                      <button
-                        className="agenda-loop"
-                        key={l.id}
-                        onClick={() => onOpenLoops(l.id, l.nextDue)}
-                      >
-                        <strong>{l.name}</strong>
-                        <span>
-                          {name(l.owner_id)} · {l.stats.progress} / {l.target} · {l.frequency}
-                        </span>
-                        <progress
-                          value={Math.min(l.stats.progress, l.target)}
-                          max={l.target}
-                          aria-label={`${l.name} completion`}
-                        />
-                      </button>
-                    ))}
-                  {!pendingLoops.some((l) => l.mode === 'flexible') && (
-                    <p>No unfinished flexible targets.</p>
+                    (loop) =>
+                      loop.mode === 'flexible' ||
+                      loop.slots.some((slot) => slot.state === 'due' || slot.state === 'overdue'),
+                  ) && (
+                    <p className="work-empty">All caught up. No responsibilities need attention.</p>
                   )}
                 </>
               )}
-              <button onClick={() => onOpenLoops()}>Open Loops</button>
-            </aside>
-          </div>
-        </>
+              <footer className="agenda-panel-footer">
+                <button className="work-text-button" onClick={() => onOpenLoops()}>
+                  View all Loops <ArrowRight size={14} aria-hidden="true" />
+                </button>
+              </footer>
+            </section>
+          </aside>
+        </div>
       ) : (
-        <>
+        <section className="agenda-upcoming-surface work-surface">
           <div className="agenda-calendar-heading">
             <div>
               <h3>
@@ -482,7 +644,7 @@ export default function Agenda({
             </p>
             {unscheduled.map(row)}
           </details>
-        </>
+        </section>
       )}
     </section>
   );

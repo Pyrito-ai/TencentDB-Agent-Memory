@@ -1,0 +1,71 @@
+/* Meridian Blue by serafimcloud — exact color tokens retrieved from 21st.dev.
+ * Source: https://21st.dev/community/themes/meridian-blue
+ * Palette only: Baren retains its bundled Manrope / IBM Plex Mono typography. */
+:root {
+  --background: #eef0f3;
+  --foreground: #181b21;
+  --card: #ffffff;
+  --card-foreground: #181b21;
+  --popover: #ffffff;
+  --popover-foreground: #181b21;
+  --primary: #3b608f;
+  --primary-foreground: #ffffff;
+  --secondary: #b8694a;
+  --secondary-foreground: #ffffff;
+  --muted: #e8eaee;
+  --muted-foreground: #5a6072;
+  --accent: #d8e2ee;
+  --accent-foreground: #1f3a5c;
+  --destructive: #b8332e;
+  --destructive-foreground: #ffffff;
+  --border: #c9cfd8;
+  --input: #c9cfd8;
+  --ring: #6b87b0;
+  --chart-1: #3b608f;
+  --chart-2: #b8694a;
+  --chart-3: #5b8caf;
+  --chart-4: #4a7c59;
+  --chart-5: #c9a14a;
+  --sidebar: #e2e5ea;
+  --sidebar-foreground: #181b21;
+  --sidebar-primary: #3b608f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d8e2ee;
+  --sidebar-accent-foreground: #1f3a5c;
+  --sidebar-border: #d0d4db;
+  --sidebar-ring: #6b87b0;
+}
+.dark {
+  --background: #14171c;
+  --foreground: #e6e9ef;
+  --card: #1c2027;
+  --card-foreground: #e6e9ef;
+  --popover: #232831;
+  --popover-foreground: #e6e9ef;
+  --primary: #6b8db8;
+  --primary-foreground: #0f1216;
+  --secondary: #d18866;
+  --secondary-foreground: #1a0e08;
+  --muted: #232831;
+  --muted-foreground: #9097a6;
+  --accent: #1f2d3d;
+  --accent-foreground: #a8c2dd;
+  --destructive: #d4524c;
+  --destructive-foreground: #160807;
+  --border: #353c48;
+  --input: #353c48;
+  --ring: #88a8c9;
+  --chart-1: #6b8db8;
+  --chart-2: #d18866;
+  --chart-3: #88a8c9;
+  --chart-4: #6b9b78;
+  --chart-5: #dab86a;
+  --sidebar: #0f1216;
+  --sidebar-foreground: #e6e9ef;
+  --sidebar-primary: #6b8db8;
+  --sidebar-primary-foreground: #0f1216;
+  --sidebar-accent: #1f2d3d;
+  --sidebar-accent-foreground: #a8c2dd;
+  --sidebar-border: #232831;
+  --sidebar-ring: #88a8c9;
+}

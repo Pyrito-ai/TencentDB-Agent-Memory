@@ -126,3 +126,36 @@
   background: var(--tea-color-bg-secondary-default);
   padding: 16px;
 }
+
+._codedetail-root {
+  min-width: 0;
+  gap: 24px;
+}
+._codedetail-header-body {
+  padding: 22px;
+}
+._codedetail-title {
+  max-width: 100%;
+  font-size: 24px;
+  letter-spacing: -0.035em;
+}
+._codedetail-info-grid > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+._codedetail-result-box {
+  border-radius: 10px;
+  padding: 20px;
+}
+@container resource-page (max-width: 540px) {
+  ._codedetail-header-body {
+    padding: 16px;
+  }
+  ._codedetail-title {
+    font-size: 20px;
+  }
+  ._codedetail-info-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

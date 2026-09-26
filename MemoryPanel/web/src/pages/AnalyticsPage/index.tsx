@@ -21,6 +21,7 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Button, Card, Select, Status, TabPanel, Tabs, Text } from 'tea-component';
 import { ResourcePage } from '@/pages/ResourcePage';
+import { FilterToolbar, PageHeading } from '@/components/baren';
 import { useCurrentRole } from '@/services/useCurrentRole';
 import { usePanelAnalyticsEnabled } from '@/services/usePanelCapabilities';
 import { useAuthStore } from '@/stores/auth';
@@ -155,15 +156,21 @@ export function AnalyticsPage() {
 
   return (
     <ResourcePage>
+      <div className="_an-heading">
+        <PageHeading title={t('analytics.title')} description={t('analytics.subtitle')} />
+      </div>
       <Card bordered>
-        <Card.Body title={t('analytics.title')} subtitle={t('analytics.subtitle')}>
-          <div className="_an-toolbar">
+        <Card.Body>
+          <FilterToolbar className="_an-toolbar">
             <Select
               className="_an-toolbar-select"
               appearance="button"
               value={String(days)}
               onChange={(v) => setDays(Number(v) as AnalyticsRangeDays)}
-              options={DAYS.map((d) => ({ value: String(d), text: t('analytics.range', { days: d }) }))}
+              options={DAYS.map((d) => ({
+                value: String(d),
+                text: t('analytics.range', { days: d }),
+              }))}
               listWidth={140}
             />
             <Select
@@ -184,7 +191,7 @@ export function AnalyticsPage() {
                 ? t('analytics.updatedAt', { time: activeUpdatedAt.toLocaleTimeString() })
                 : t('analytics.notLoaded')}
             </Text>
-          </div>
+          </FilterToolbar>
 
           {metrics.error && <Alert type="error">{metrics.error}</Alert>}
           {chAlert && <Alert type="warning">{chAlert}</Alert>}
@@ -207,7 +214,9 @@ export function AnalyticsPage() {
                 endpointFilter={endpointFilter}
                 resolveUserName={resolveUserName}
                 onEndpointFilterChange={setEndpointFilter}
-                onDrillCategory={(category: AssetCategory) => setDrill({ type: 'category', category })}
+                onDrillCategory={(category: AssetCategory) =>
+                  setDrill({ type: 'category', category })
+                }
                 onDrillMember={(userId) => setDrill({ type: 'member', userId })}
               />
             </div>
@@ -219,7 +228,9 @@ export function AnalyticsPage() {
                 expandedRawKeys={expandedRawKeys}
                 resolveUserName={resolveUserName}
                 onExpandedRawKeysChange={setExpandedRawKeys}
-                onDrillModel={(modelId, modelName) => setDrill({ type: 'model', modelId, modelName })}
+                onDrillModel={(modelId, modelName) =>
+                  setDrill({ type: 'model', modelId, modelName })
+                }
                 onDrillMember={(userId) => setDrill({ type: 'member', userId })}
               />
             </div>

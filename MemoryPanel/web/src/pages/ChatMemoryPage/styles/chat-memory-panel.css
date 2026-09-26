@@ -170,9 +170,9 @@
   min-height: 480px;
   padding: 16px;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
 }
 
 /* ===== Memory 详情区 ===== */
@@ -269,7 +269,7 @@
   margin-bottom: 16px;
 }
 
-@media (min-width: 768px) {
+@container asset-detail (min-width: 680px) {
   ._memory-detail-layers {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -280,7 +280,7 @@
   text-align: left;
   padding: 10px 12px;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
   cursor: pointer;
   transition:
@@ -305,6 +305,7 @@
 
 ._memory-detail-layer-btn-top {
   display: flex;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
 }
@@ -315,6 +316,7 @@
 }
 
 ._memory-detail-layer-count {
+  flex-shrink: 0;
   font-size: 11px;
   font-family: var(--font-mono);
   color: var(--tea-color-text-tertiary);
@@ -346,9 +348,9 @@
   /* 卡片外框：与左栏列表（_alp）、Skills 右栏详情（_memory-skill-detail-card）视觉统一 */
   padding: 16px;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
 }
 
 /* 详情空态：同样套卡片外框并撑满高度，避免"贴边灰底"与留白 */
@@ -360,15 +362,15 @@
   min-height: 480px;
   padding: 16px;
   border: 1px solid var(--tea-color-border-primary-default);
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
   font-size: 13px;
   color: var(--tea-color-text-tertiary);
 }
 
 /* 窄屏堆叠布局下（AssetSplitLayout 取消高度限制），卡片也回归文档流高度 */
-@media (max-width: 960px) {
+@container resource-page (max-width: 720px) {
   ._memory-detail {
     height: auto;
     min-height: 480px;
@@ -405,7 +407,7 @@
 
 ._memory-detail-skeleton-row {
   height: 56px;
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-secondary-default);
   animation: _memory-detail-pulse 1.5s ease-in-out infinite;
 }
@@ -506,7 +508,7 @@
   border: 1px solid var(--tea-color-border-primary-default);
   border-radius: 8px;
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
 }
 
 /* 进入 L2 时只有标题行：去掉底部 padding / 阴影，让卡片高度贴合 head 实际高度 */
@@ -626,7 +628,7 @@
 ._memory-detail-mode-switch {
   display: inline-flex;
   padding: 2px;
-  border-radius: 6px;
+  border-radius: 10px;
   background: var(--tea-color-bg-secondary, #f2f3f5);
   border: 1px solid var(--tea-color-border, #e5e6eb);
 }
@@ -785,7 +787,7 @@
   border-radius: 10px;
   border: 1px solid var(--tea-color-border-primary-default);
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
   transition: box-shadow 0.15s ease-in-out;
 }
 
@@ -865,7 +867,7 @@
   border: 1px solid var(--tea-color-border-primary-default);
   border-radius: 8px;
   background: var(--tea-color-bg-primary-default);
-  box-shadow: var(--tea-shadow-xs);
+  box-shadow: none;
   /* 不要在此设 overflow:hidden——它会让 head 的 position:sticky 吸顶失效
      （overflow 会将 li 变成 sticky 的滚动容器，而 li 本身无额外滚动空间，故无法吸附）。
      head 现已与卡片边缘对齐、无越界溢出，无需裁切；圆角由 head 自身的 border-radius 保证。 */
@@ -1175,10 +1177,82 @@
 ._memory-item-content {
   padding: 16px;
   background: var(--tea-color-bg-secondary-default);
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 13px;
   line-height: 1.7;
   color: var(--tea-color-text-primary);
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+._asset-memory-page ._alp-items {
+  gap: 0;
+  padding: 0;
+}
+._asset-memory-page ._alp-item {
+  border-radius: 0;
+  border-bottom: 1px solid var(--tea-color-border-secondary-default);
+}
+._asset-memory-page ._alp-item-btn {
+  border-radius: 0;
+  padding: 16px 18px;
+}
+._memory-detail,
+._memory-detail-empty-card {
+  padding: 22px;
+}
+._memory-detail-title {
+  font-size: 20px;
+  letter-spacing: -0.025em;
+}
+._memory-detail-body {
+  padding-top: 12px;
+}
+@container resource-page (max-width: 720px) {
+  ._memory-detail,
+  ._memory-detail-empty-card {
+    padding: 18px;
+  }
+  ._memory-detail-empty-card {
+    min-height: 280px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ._memory-detail-skeleton-row {
+    animation: none;
+  }
+}
+
+@container asset-detail (max-width: 720px) {
+  ._memory-detail-header {
+    flex-direction: column;
+  }
+  ._memory-detail-header-info,
+  ._memory-detail-header-actions,
+  ._memory-detail-mode,
+  ._memory-detail-timefilter {
+    width: 100%;
+    min-width: 0;
+  }
+  ._memory-detail-mode {
+    align-items: flex-start;
+  }
+  ._memory-detail-timefilter .tea-datetimepicker,
+  ._memory-detail-timefilter .tea-datepicker__input--range {
+    width: 100%;
+    min-width: 0;
+  }
+  ._memory-detail-timefilter .tea-input {
+    min-width: 0;
+  }
+  ._memory-detail-meta ._memory-badge {
+    white-space: normal;
+  }
+}
+
+@media (max-height: 650px) {
+  ._memory-detail,
+  ._memory-detail-empty-card {
+    height: auto;
+  }
 }

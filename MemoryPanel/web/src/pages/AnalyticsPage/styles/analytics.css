@@ -26,7 +26,7 @@
  * （与 WikiSourcesPanel 的 _asset-wiki-stats 同一模式） */
 ._an-kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
   gap: 12px;
 }
 
@@ -165,14 +165,14 @@
 
 /* 请求体 / 指纹等技术字段等宽展示 */
 ._an-mono {
-  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
 }
 
 /* ── 四类资产分布卡片 ── */
 ._an-cat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
   gap: 12px;
 }
 
@@ -187,7 +187,9 @@
   border-radius: 6px;
   background: var(--tea-color-bg-primary-default);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 
 ._an-cat-card:hover {
@@ -261,7 +263,7 @@
   overflow: auto;
   white-space: pre-wrap;
   word-break: break-all;
-  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.6;
   color: var(--tea-color-text-secondary);
@@ -414,4 +416,141 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Baren report hierarchy; metrics retain the existing units and data scope. */
+._an-heading {
+  padding: 4px 0 8px;
+}
+
+._an-toolbar {
+  margin-bottom: 0;
+  gap: 10px;
+}
+
+._an-toolbar + * {
+  margin-top: 14px;
+}
+
+._an-toolbar-select {
+  max-width: 100%;
+}
+
+._an-stamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+._an-kpi-row {
+  gap: 20px;
+}
+
+._an-kpi-row > * {
+  min-width: 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--tea-color-border-primary-default);
+}
+
+._an-cat-card {
+  gap: 10px;
+  padding: 18px;
+  border-radius: 10px;
+}
+
+._an-cat-value {
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+._an-cat-badge,
+._an-cat-meta,
+._an-trend-axis,
+._an-raw-stat-value {
+  font-family: var(--font-mono);
+}
+
+._an-cat-badge {
+  font-size: 10px;
+  letter-spacing: 0.03em;
+}
+
+._an-tab-body {
+  gap: 24px;
+  padding-top: 24px;
+  min-width: 0;
+}
+
+._an-tab-body > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+._an-trend-svg {
+  height: 210px;
+}
+
+._an-trace-filters > *,
+._an-drill-subtitle > * {
+  max-width: 100%;
+  min-width: 0;
+}
+
+._an-pager,
+._an-drill-subtitle {
+  flex-wrap: wrap;
+}
+
+._an-raw-summary {
+  padding: 16px;
+  border-radius: 8px;
+  gap: 14px 24px;
+}
+
+._an-drill-body {
+  gap: 20px;
+  padding: 24px;
+  min-width: 0;
+}
+
+._an-drill-drawer.tea-drawer {
+  max-width: 100vw;
+}
+
+._an-drill-drawer .tea-drawer__body-inner {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  ._an-stamp {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  ._an-sharebar-row {
+    grid-template-columns: minmax(80px, 28%) minmax(20px, 1fr) auto;
+    gap: 8px;
+  }
+
+  ._an-drill-body {
+    padding: 16px;
+  }
+
+  ._an-drill-drawer .tea-drawer__header {
+    height: auto;
+    min-height: 50px;
+    padding-right: 48px;
+  }
+
+  ._an-drill-drawer .tea-drawer__header .tea-h3 {
+    overflow-wrap: anywhere;
+  }
+}
+
+._an-heading > .baren-heading {
+  margin-bottom: 0;
+}
+
+._an-toolbar.baren-toolbar {
+  padding: 0;
 }

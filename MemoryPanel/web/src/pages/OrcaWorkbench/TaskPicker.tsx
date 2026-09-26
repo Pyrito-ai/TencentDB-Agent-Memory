@@ -120,7 +120,7 @@ export function TaskPicker({
             />
           </label>
           <label>
-            Tencent project
+            Project
             <select
               value={projectId}
               disabled={busy}

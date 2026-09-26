@@ -1,18 +1,15 @@
 .native-workbench {
-  --wb-border: #dedee3;
-  --wb-muted: #777781;
+  --wb-border: var(--tea-color-border-primary-default);
+  --wb-muted: var(--tea-color-text-secondary);
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 125px);
-  min-height: 650px;
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 520px;
   margin: 0;
-  background: #fafafa;
-  color: #242428;
-  font:
-    13px -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+  background: transparent;
+  color: var(--tea-color-text-primary);
+  font: 13px var(--font-sans, 'Manrope', sans-serif);
   overflow: hidden;
 }
 .native-workbench * {
@@ -28,8 +25,8 @@
 .native-workbench button,
 .native-workbench select {
   border: 1px solid var(--wb-border);
-  background: #fff;
-  border-radius: 5px;
+  background: var(--tea-color-bg-primary-default);
+  border-radius: 8px;
   padding: 5px 8px;
 }
 .native-workbench button {
@@ -39,20 +36,20 @@
   cursor: pointer;
 }
 .native-workbench button:hover {
-  background: #eeeef1;
+  background: var(--tea-color-bg-secondary-default);
 }
 .native-workbench button:disabled {
   opacity: 0.45;
   cursor: default;
 }
 .native-workbench :is(button, select, input, textarea, a):focus-visible {
-  outline: 2px solid #7474b6;
+  outline: 2px solid var(--tea-color-border-brand-default);
   outline-offset: 2px;
 }
 .coordinator-band {
   flex: 0 0 auto;
-  border-bottom: 1px solid #ccccd4;
-  background: #f8f8fa;
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
+  background: var(--tea-color-bg-secondary-default);
 }
 .coordinator-heading {
   height: 42px;
@@ -114,7 +111,7 @@
   overflow-wrap: anywhere;
 }
 .coordinator-message.user p {
-  color: #696971;
+  color: var(--tea-color-text-secondary);
 }
 .coordinator-message.event {
   font-size: 11px;
@@ -124,8 +121,8 @@
   flex-direction: column;
   min-height: 0;
   border: 1px solid var(--wb-border);
-  border-radius: 7px;
-  background: white;
+  border-radius: 8px;
+  background: var(--tea-color-bg-primary-default);
   padding: 8px;
   gap: 6px;
 }
@@ -149,7 +146,7 @@
   color: var(--wb-muted);
 }
 .coordinator-send button {
-  background: #33333c;
+  background: var(--tea-color-bg-brand-default);
   color: white;
   border: 0;
 }
@@ -166,9 +163,9 @@
   gap: 12px;
   padding: 8px;
   border: 1px solid var(--wb-border);
-  border-radius: 5px;
+  border-radius: 8px;
   margin-top: 8px;
-  background: white;
+  background: var(--tea-color-bg-primary-default);
 }
 .coordinator-proposal details {
   flex: 1;
@@ -207,15 +204,15 @@
 }
 .coordinator-error {
   padding: 8px 14px;
-  color: #9b2828;
-  background: #fff0f0;
+  color: var(--tea-color-text-error-default);
+  background: var(--tea-color-bg-error-lighten-default);
 }
 .native-orca {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 330px;
-  background: #fff;
+  background: var(--tea-color-bg-primary-default);
 }
 .native-orca-toolbar {
   height: 34px;
@@ -225,7 +222,7 @@
   gap: 10px;
   padding: 0 12px;
   border-bottom: 1px solid var(--wb-border);
-  background: #f4f4f6;
+  background: var(--tea-color-bg-secondary-default);
   font-size: 11px;
 }
 .native-orca-toolbar > span {
@@ -248,7 +245,7 @@
   flex: 1;
   width: 100%;
   min-height: 0;
-  background: #fff;
+  background: var(--tea-color-bg-primary-default);
 }
 .orca-connection-empty {
   margin: auto;
@@ -368,7 +365,7 @@
   min-width: 180px;
   min-height: 56px;
   border: 1px solid var(--wb-border);
-  border-radius: 5px;
+  border-radius: 8px;
   padding: 6px;
 }
 .coordinator-receipts > div {
@@ -380,8 +377,8 @@
   gap: 9px;
   padding: 12px;
   margin: 12px 0;
-  border: 1px solid var(--wb-border, #dedee3);
-  border-radius: 6px;
+  border: 1px solid var(--wb-border, var(--tea-color-border-primary-default));
+  border-radius: 8px;
   font-size: 12px;
 }
 .task-execution-heading {
@@ -405,7 +402,7 @@
 .task-execution :is(select, textarea, button) {
   font: inherit;
   padding: 6px;
-  border: 1px solid var(--wb-border, #dedee3);
+  border: 1px solid var(--wb-border, var(--tea-color-border-primary-default));
   border-radius: 4px;
   color: inherit;
   background: transparent;
@@ -436,7 +433,7 @@
   margin: 0;
 }
 .task-execution [role='alert'] {
-  color: #a22;
+  color: var(--tea-color-text-error-default);
 }
 .coordinator-task-picker {
   display: flex;
@@ -476,15 +473,15 @@
 .coordinator-approval-notice {
   margin: 0;
   padding: 8px 14px;
-  color: #356743;
+  color: var(--tea-color-text-success-default);
 }
 .worker-question {
   display: grid;
   gap: 6px;
   padding: 10px;
   margin: 8px 0;
-  border: 1px solid #c8a36b;
-  border-radius: 5px;
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 8px;
 }
 .worker-question p {
   white-space: pre-wrap;
@@ -502,15 +499,12 @@
 .runtime-workbench {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 125px);
-  min-height: 650px;
-  color: #242428;
-  background: #fafafa;
-  font:
-    13px -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    sans-serif;
+  height: auto;
+  flex: 1 1 auto;
+  min-height: 520px;
+  color: var(--tea-color-text-primary);
+  background: transparent;
+  font: 13px var(--font-sans, 'Manrope', sans-serif);
 }
 .workbench-runtime-toolbar,
 .task-handoff-runtime-heading {
@@ -524,7 +518,7 @@
 .workbench-runtime-toolbar {
   flex: 0 0 auto;
   padding: 7px 12px;
-  border-bottom: 1px solid #dedee3;
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
 }
 .task-handoff-runtime-heading {
   margin-top: 16px;
@@ -533,31 +527,31 @@
   display: inline-flex;
   gap: 2px;
   padding: 2px;
-  background: #ededf0;
-  border: 1px solid #dedee3;
-  border-radius: 6px;
+  background: var(--tea-color-bg-secondary-default);
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 8px;
 }
 .workbench-runtime-picker button {
   padding: 4px 9px;
   border: 0;
   border-radius: 4px;
   background: transparent;
-  color: #555560;
+  color: var(--tea-color-text-secondary);
   font: inherit;
   cursor: pointer;
 }
 .workbench-runtime-picker button[aria-pressed='true'] {
-  background: #fff;
-  color: #242428;
-  box-shadow: 0 1px 3px #00000012;
+  background: var(--tea-color-bg-primary-default);
+  color: var(--tea-color-text-primary);
+  box-shadow: none;
 }
 .workbench-runtime-picker button:focus-visible {
-  outline: 2px solid #7474b6;
+  outline: 2px solid var(--tea-color-border-brand-default);
   outline-offset: 2px;
 }
 .workbench-runtime-picker button span,
 .runtime-trial {
-  color: #777781;
+  color: var(--tea-color-text-secondary);
   font-size: 10px;
   font-weight: 400;
 }
@@ -596,7 +590,7 @@
   font-size: 11px;
 }
 .handoff-receipt dt {
-  color: #777781;
+  color: var(--tea-color-text-secondary);
 }
 .handoff-receipt dd {
   margin: 0;
@@ -606,4 +600,173 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+/* Baren host surfaces. Native runtime documents retain their own interface. */
+.runtime-workbench {
+  container: native-workspace / inline-size;
+  gap: 24px;
+  min-width: 0;
+}
+.workbench-runtime-toolbar {
+  padding: 8px 0 20px;
+  gap: 20px;
+  align-items: flex-start;
+}
+.workbench-runtime-picker {
+  gap: 3px;
+  padding: 4px;
+  border-radius: 10px;
+}
+.workbench-runtime-picker button {
+  padding: 8px 14px;
+  border-radius: 7px;
+  font-size: 12px;
+}
+.workbench-runtime-picker button[aria-pressed='true'] {
+  background: var(--tea-color-bg-brand-default);
+  color: var(--tea-color-text-on-bg-brand-default);
+}
+.workbench-runtime-picker button[aria-pressed='true'] span {
+  color: inherit;
+  opacity: 0.75;
+}
+.workbench-runtime-pane {
+  min-width: 0;
+}
+.native-workbench {
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 12px;
+}
+.native-orca {
+  min-width: 0;
+  min-height: 420px;
+}
+.native-orca-toolbar {
+  height: auto;
+  min-height: 50px;
+  padding: 10px 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--tea-color-bg-primary-default);
+}
+.native-orca-toolbar > strong {
+  font-size: 13px;
+  font-weight: 650;
+}
+.native-orca-toolbar button,
+.native-orca-toolbar a {
+  font-size: 11px;
+  padding: 5px 8px;
+}
+.native-orca iframe {
+  min-height: 360px;
+}
+.orca-connection-empty {
+  width: min(100%, 500px);
+  padding: 40px 28px;
+  text-align: center;
+}
+.orca-connection-empty > svg {
+  display: block;
+  margin: 0 auto 18px;
+  color: var(--tea-color-text-brand-default);
+}
+.orca-connection-empty > strong {
+  display: block;
+  font-size: 20px;
+  letter-spacing: -0.025em;
+}
+.orca-connection-empty p {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+.workbench-team-empty {
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 12px;
+  background: var(--tea-color-bg-primary-default);
+}
+.workbench-team-empty h2 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -0.035em;
+}
+.cdesktop-task-picker {
+  padding: 18px;
+  border-bottom: 1px solid var(--tea-color-border-primary-default);
+}
+.cdesktop-handoff-panel {
+  padding: 0 18px;
+}
+.task-execution {
+  --wb-border: var(--tea-color-border-primary-default);
+  --wb-muted: var(--tea-color-text-secondary);
+  border-radius: 10px;
+  padding: 18px;
+  background: var(--tea-color-bg-primary-default);
+}
+.task-execution-heading {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.task-execution :is(input, textarea, select) {
+  border-radius: 8px;
+}
+@container native-workspace (max-width: 620px) {
+  .workbench-runtime-toolbar {
+    gap: 16px;
+  }
+  .workbench-runtime-picker {
+    width: 100%;
+  }
+  .workbench-runtime-picker button {
+    flex: 1;
+  }
+  .native-orca-toolbar > div {
+    display: none;
+  }
+  .native-orca-toolbar {
+    gap: 8px;
+    padding: 10px;
+  }
+  .orca-connection-empty {
+    padding: 30px 20px;
+  }
+}
+
+.workbench-runtime-toolbar .baren-heading {
+  width: 100%;
+  margin: 0;
+  align-items: flex-start;
+}
+.workbench-runtime-toolbar .baren-heading > :first-child {
+  min-width: 0;
+  flex: 1 1 220px;
+}
+@container native-workspace (max-width: 620px) {
+  .workbench-runtime-toolbar .baren-heading > :last-child {
+    width: 100%;
+  }
+}
+
+.runtime-workbench .coordinator-task-picker,
+.runtime-workbench .coordinator-task-picker > label {
+  min-width: 0;
+  max-width: 100%;
+}
+.runtime-workbench .coordinator-task-picker > label {
+  flex-wrap: wrap;
+}
+.runtime-workbench .coordinator-task-picker select {
+  min-width: 0;
+  max-width: 100%;
+}
+@container native-workspace (max-width: 620px) {
+  .runtime-workbench .coordinator-task-picker > label {
+    display: grid;
+    width: 100%;
+  }
+  .runtime-workbench .coordinator-task-picker select {
+    width: 100%;
+  }
 }

@@ -48,7 +48,8 @@ const QUICK_SETUP_SCRIPT = 'bash agents/setup-proxy.sh';
 const QUICK_SETUP_SKILL_PREP = 'cp -r agents ~/agents';
 const QUICK_SETUP_SKILL_PROMPT =
   'Read ~/agents/skills/setup-proxy/SKILL.md and guide me through connecting my agent to Memory Proxy.';
-const HISTORY_IMPORT_SCRIPT = 'tsx agents/asset-import.ts --source <agent> --agent-id <id> --team-id <tid>';
+const HISTORY_IMPORT_SCRIPT =
+  'tsx agents/asset-import.ts --source <agent> --agent-id <id> --team-id <tid>';
 const HISTORY_SOURCES = 'claude-code, codebuddy, codex, workbuddy, dsh, hermes, openclaw';
 const KEY_PLACEHOLDER = '<your-team-memory-api-key>';
 
@@ -96,7 +97,7 @@ const MANUAL_IDES: ManualIde[] = [
     file: '~/.codex/config.toml',
     protocol: 'OpenAI Responses',
     config: (base, instanceId, mode, model) =>
-      `model_provider = "team-proxy"\nmodel = "${model}"\nmodel_reasoning_effort = "high"\ndisable_response_storage = true\n\n[model_providers.team-proxy]\nname       = "TDAI team-proxy"\nwire_api   = "responses"\nbase_url   = "${proxyEndpoint(base, 'codex', instanceId, mode)}"\nexperimental_bearer_token = "${KEY_PLACEHOLDER}"\n\nrequest_max_retries    = 2\nstream_max_retries     = 3\nstream_idle_timeout_ms = 120000`,
+      `model_provider = "team-proxy"\nmodel = "${model}"\nmodel_reasoning_effort = "high"\ndisable_response_storage = true\n\n[model_providers.team-proxy]\nname       = "Baren team-proxy"\nwire_api   = "responses"\nbase_url   = "${proxyEndpoint(base, 'codex', instanceId, mode)}"\nexperimental_bearer_token = "${KEY_PLACEHOLDER}"\n\nrequest_max_retries    = 2\nstream_max_retries     = 3\nstream_idle_timeout_ms = 120000`,
     notes: ['guide.manual.note.codex'],
   },
   {
@@ -115,11 +116,7 @@ const MANUAL_IDES: ManualIde[] = [
     protocol: 'OpenAI Chat',
     config: (base, instanceId, mode, model) =>
       `# ~/.dsh/settings.yaml\nllm-deepseek:\n  apiKeyEnv: PROXY_USER_KEY\n  # Do not append /v1: dsh uses baseURL/chat/completions\n  baseURL: ${proxyEndpoint(base, 'dsh', instanceId, mode)}\n  model: ${model}\n  reasoningEffort: high\n\n# ~/.dsh/.credentials.yaml\nPROXY_USER_KEY: ${KEY_PLACEHOLDER}`,
-    notes: [
-      'guide.manual.note.dsh.0',
-      'guide.manual.note.dsh.1',
-      'guide.manual.note.dsh.2',
-    ],
+    notes: ['guide.manual.note.dsh.0', 'guide.manual.note.dsh.1', 'guide.manual.note.dsh.2'],
   },
   {
     id: 'hermes',
@@ -327,7 +324,8 @@ export function GuidePage() {
   const proxyFallback = t('guide.proxyFallback');
   const modelFallback = t('guide.modelFallback');
   const manualConfig = useMemo(
-    () => manualIde.config(proxyBase || proxyFallback, instanceId, proxyMode, modelId || modelFallback),
+    () =>
+      manualIde.config(proxyBase || proxyFallback, instanceId, proxyMode, modelId || modelFallback),
     [manualIde, modelId, proxyBase, proxyMode, instanceId, proxyFallback, modelFallback],
   );
   const practiceSteps = PRACTICE_STEPS[practice];
@@ -343,13 +341,14 @@ export function GuidePage() {
           <h1>{t('guide.title')}</h1>
           <p>{t('guide.subtitle')}</p>
         </div>
-        <span className="guide-brand">{t('guide.brand')}</span>
+        <img className="guide-brand" src="/baren-logo.svg" alt="Baren" />
       </header>
 
       <nav className="guide-main-tabs" aria-label={t('guide.tabs.aria')}>
         <button
           type="button"
           className={mainTab === 'quick' ? 'active' : ''}
+          aria-pressed={mainTab === 'quick'}
           onClick={() => setMainTab('quick')}
         >
           <b>{t('guide.quick.title')}</b>
@@ -358,6 +357,7 @@ export function GuidePage() {
         <button
           type="button"
           className={mainTab === 'practice' ? 'active' : ''}
+          aria-pressed={mainTab === 'practice'}
           onClick={() => setMainTab('practice')}
         >
           <b>{t('guide.practice.title')}</b>
@@ -366,6 +366,7 @@ export function GuidePage() {
         <button
           type="button"
           className={mainTab === 'commands' ? 'active' : ''}
+          aria-pressed={mainTab === 'commands'}
           onClick={() => setMainTab('commands')}
         >
           <b>{t('guide.mem.title')}</b>
@@ -387,7 +388,9 @@ export function GuidePage() {
                     aria-current={isCurrent ? 'step' : undefined}
                     onClick={() => {
                       setQuickTab(step.id);
-                      setVisitedSteps((prev) => (prev.includes(step.id) ? prev : [...prev, step.id]));
+                      setVisitedSteps((prev) =>
+                        prev.includes(step.id) ? prev : [...prev, step.id],
+                      );
                     }}
                   >
                     <span className="guide-stepper-badge">{isDone ? '✓' : index + 1}</span>
@@ -423,7 +426,9 @@ export function GuidePage() {
               <div className="guide-prepare">
                 <div className="guide-prepare-row">
                   <b>{t('guide.prepare.proxy')}</b>
-                  <code className="guide-prepare-value">{proxyBase || t('guide.prepare.reading')}</code>
+                  <code className="guide-prepare-value">
+                    {proxyBase || t('guide.prepare.reading')}
+                  </code>
                   <CopyButton value={proxyBase} />
                 </div>
                 <small className="guide-prepare-hint">{urlHint}</small>
@@ -453,21 +458,27 @@ export function GuidePage() {
                   </div>
                   <small>{t('guide.mode.analyseHint')}</small>
                   {proxyMode === 'analyse' && (
-                    <small className="guide-mode-notice">
-                      {t('guide.mode.analyseNotice')}
-                    </small>
+                    <small className="guide-mode-notice">{t('guide.mode.analyseNotice')}</small>
                   )}
                 </div>
 
                 <div className="guide-prepare-row">
                   <b>{t('guide.prepare.key')}</b>
-                  <button type="button" className="guide-key-link" onClick={() => navigate('/team/api-keys')}>
+                  <button
+                    type="button"
+                    className="guide-key-link"
+                    onClick={() => navigate('/team/api-keys')}
+                  >
                     {t('guide.prepare.keyLink')} →
                   </button>
                 </div>
               </div>
 
-              <div className="guide-method-picker" role="radiogroup" aria-label={t('guide.method.aria')}>
+              <div
+                className="guide-method-picker"
+                role="radiogroup"
+                aria-label={t('guide.method.aria')}
+              >
                 <button
                   type="button"
                   className={method === 'skill' ? 'active' : ''}
@@ -558,9 +569,21 @@ export function GuidePage() {
                       <small>{t('guide.manual.modelHint')}</small>
                     </label>
                     <div className="guide-command secondary">
-                      <code>{proxyEndpoint(proxyBase || proxyFallback, manualIde.id, instanceId, proxyMode)}</code>
+                      <code>
+                        {proxyEndpoint(
+                          proxyBase || proxyFallback,
+                          manualIde.id,
+                          instanceId,
+                          proxyMode,
+                        )}
+                      </code>
                       <CopyButton
-                        value={proxyEndpoint(proxyBase || proxyFallback, manualIde.id, instanceId, proxyMode)}
+                        value={proxyEndpoint(
+                          proxyBase || proxyFallback,
+                          manualIde.id,
+                          instanceId,
+                          proxyMode,
+                        )}
                       />
                     </div>
                   </div>
@@ -751,7 +774,10 @@ export function GuidePage() {
                   <li key={point}>{t(point)}</li>
                 ))}
               </ul>
-              <nav className="guide-practice-links" aria-label={`${t(activePracticeStep.title)} ${t('guide.practice.linksAria')}`}>
+              <nav
+                className="guide-practice-links"
+                aria-label={`${t(activePracticeStep.title)} ${t('guide.practice.linksAria')}`}
+              >
                 <span>{t('guide.practice.related')}</span>
                 {activePracticeStep.links.map((link) => (
                   <button type="button" key={link.path} onClick={() => navigate(link.path)}>

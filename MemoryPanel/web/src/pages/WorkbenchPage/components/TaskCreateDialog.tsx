@@ -31,6 +31,7 @@ export interface TaskDraft {
 
 export default function TaskCreateDialog(props: {
   team: { team_id: string; name: string };
+  projectName?: string;
   onClose: () => void;
   onCreate: (draft: TaskDraft) => Promise<void> | void;
 }) {
@@ -40,7 +41,7 @@ export default function TaskCreateDialog(props: {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = title.trim().length > 0 && description.trim().length > 0;
+  const canSubmit = !submitting && title.trim().length > 0 && description.trim().length > 0;
 
   async function submit() {
     if (!canSubmit) return;
@@ -57,17 +58,26 @@ export default function TaskCreateDialog(props: {
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
+    } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <Modal visible caption={t('taskCreate.caption')} size="m" onClose={props.onClose} disableEscape={submitting}>
+    <Modal
+      visible
+      caption={t('taskCreate.caption')}
+      size="m"
+      onClose={props.onClose}
+      disableEscape={submitting}
+    >
       <Modal.Body>
         <Form>
           <Form.Item label={t('taskCreate.team')}>
             <div className="_memory-tcd-team-row">
-              <span className="_memory-tcd-team-avatar">{props.team.name.slice(0, 1).toUpperCase()}</span>
+              <span className="_memory-tcd-team-avatar">
+                {props.team.name.slice(0, 1).toUpperCase()}
+              </span>
               <div className="_memory-tcd-team-meta">
                 <div className="_memory-tcd-team-label">{t('taskCreate.teamLabel')}</div>
                 <div className="_memory-tcd-team-name-row">
@@ -77,6 +87,11 @@ export default function TaskCreateDialog(props: {
               </div>
             </div>
           </Form.Item>
+          {props.projectName && (
+            <Form.Item label="Project">
+              <strong>{props.projectName}</strong>
+            </Form.Item>
+          )}
           <Form.Item label={t('taskCreate.title')} required>
             <Input
               autoFocus
@@ -86,7 +101,11 @@ export default function TaskCreateDialog(props: {
               placeholder={t('taskCreate.titlePlaceholder')}
             />
           </Form.Item>
-          <Form.Item label={t('taskCreate.description')} required extra={t('taskCreate.descriptionExtra')}>
+          <Form.Item
+            label={t('taskCreate.description')}
+            required
+            extra={t('taskCreate.descriptionExtra')}
+          >
             <Input.TextArea
               size="full"
               value={description}
@@ -95,12 +114,25 @@ export default function TaskCreateDialog(props: {
               placeholder={t('taskCreate.descriptionPlaceholder')}
             />
           </Form.Item>
-          {error && <Form.Item><Alert type="error">{error}</Alert></Form.Item>}
+          {error && (
+            <Form.Item>
+              <Alert type="error">{error}</Alert>
+            </Form.Item>
+          )}
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="primary" onClick={() => void submit()} disabled={!canSubmit} loading={submitting}>{t('taskCreate.submit')}</Button>
-        <Button onClick={props.onClose} disabled={submitting}>{t('taskCreate.cancel')}</Button>
+        <Button
+          type="primary"
+          onClick={() => void submit()}
+          disabled={!canSubmit}
+          loading={submitting}
+        >
+          {t('taskCreate.submit')}
+        </Button>
+        <Button onClick={props.onClose} disabled={submitting}>
+          {t('taskCreate.cancel')}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

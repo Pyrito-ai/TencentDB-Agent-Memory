@@ -53,6 +53,28 @@ jobs:
           key: deps-npm11.19.1-${{ runner.os }}-${{ hashFiles('MemoryCore/package.json') }}
       - run: npm run test:board
 
+  core-runtime-image:
+    name: Core Runtime Image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production Core image
+        env:
+          SOURCE_REVISION: ${{ github.sha }}
+        run: |
+          docker build --file deploy/pyrito-core/Dockerfile \
+            --build-arg SOURCE_REVISION="$SOURCE_REVISION" \
+            --tag tencent-core-runtime:ci .
+      - name: Test board contract with image dependencies
+        run: |
+          docker run --rm --network none --entrypoint node \
+            --mount "type=bind,source=$GITHUB_WORKSPACE/MemoryCore/tests,target=/app/tests,readonly" \
+            --workdir /app tencent-core-runtime:ci \
+            --import tsx --test tests/task-board-transitions.test.ts tests/task-board-http.test.ts
+
   panel-tests:
     name: Panel Typecheck and Tests
     needs: install

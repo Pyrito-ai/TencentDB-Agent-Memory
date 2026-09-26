@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+import { taskBoardRevision, taskBoardMetadata, objectValue, BOARD_STATUSES, type BoardStatus } from "./task-board.js";
 /**
  * MetadataService — 元数据业务编排层。
  *
@@ -1882,16 +1884,112 @@ export class MetadataService {
     await this.assertTeamExists(input.team_id);
     await this.requireActiveTeamMember(ctx, input.team_id);
     this.assertCallerIsResourceOwner(ctx, input.creator_user_id);
+    if (input.metadata_json !== undefined) {
+      let metadata: Record<string, unknown>;
+      try {
+        const value: unknown = JSON.parse(input.metadata_json);
+        if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error();
+        metadata = value as Record<string, unknown>;
+      } catch { throw new MetadataError("invalid_request", "Task metadata must be a JSON object"); }
+      delete metadata.execution_service_grant;
+      delete metadata.board_revision;
+      input = { ...input, metadata_json: JSON.stringify(metadata) };
+    }
     return this.createTask(input);
+  }
+
+  private async authorizedBoardTask(taskId: string, ctx: V3AuthContext): Promise<TaskEntity> {
+    const task = await this.getTaskById(taskId);
+    if (!task) throw new MetadataError("task_not_found", "task not found");
+    await this.requireActiveTeamMember(ctx, task.team_id);
+    const metadata = this.parseBoardMetadata(task);
+    if (ctx.userId !== task.creator_user_id) {
+      const creator = await this.store.getTeamMember(task.team_id, task.creator_user_id);
+      if (!creator || creator.status !== "active") throw new MetadataError("permission_denied", "Execution grant owner is no longer an active team member");
+    }
+    const grant = objectValue(metadata.execution_service_grant);
+    if (ctx.userId !== task.creator_user_id && grant.service_user_id !== ctx.userId) {
+      throw new MetadataError("permission_denied", "task creator or explicit execution grant required");
+    }
+    return task;
+  }
+
+  private parseBoardMetadata(task: TaskEntity): Record<string, unknown> {
+    try { return taskBoardMetadata(task); }
+    catch { throw new MetadataError("invalid_request", "Task metadata must be a JSON object"); }
+  }
+
+  async getTaskBoardForCaller(taskId: string, ctx: V3AuthContext) {
+    const task = await this.authorizedBoardTask(taskId, ctx);
+    return { task, revision: taskBoardRevision(task) };
+  }
+
+  private async saveTaskBoard(task: TaskEntity, expectedRevision: string, metadata: Record<string, unknown>, status: TaskEntity["status"], ctx: V3AuthContext) {
+    if (taskBoardRevision(task) !== expectedRevision) throw new MetadataError("revision_conflict", "Task changed; reread and reconcile");
+    metadata.board_revision = randomUUID();
+    const updated = await this.store.compareAndSetTaskBoard(task, JSON.stringify(metadata), status, this.requireCallerId(ctx));
+    if (!updated) throw new MetadataError("revision_conflict", "Task or membership changed; reread and reconcile");
+    return { task: updated, revision: taskBoardRevision(updated) };
+  }
+
+  async transitionTaskBoardForCaller(taskId: string, expectedRevision: string, status: BoardStatus, ctx: V3AuthContext) {
+    const task = await this.authorizedBoardTask(taskId, ctx);
+    if (!BOARD_STATUSES.includes(status)) throw new MetadataError("invalid_request", "Unknown board status");
+    const metadata = this.parseBoardMetadata(task);
+    const board = objectValue(metadata.project_board);
+    const service = ctx.userId !== task.creator_user_id;
+    if (service && (!(["in_progress", "review"] as string[]).includes(status)
+      || !(["ready", "in_progress", "review"] as unknown[]).includes(board.status)
+      || task.status === "completed")) {
+      throw new MetadataError("permission_denied", "Execution service may only advance active work to in_progress or review; acceptance remains human");
+    }
+    metadata.project_board = { ...board, status };
+    return this.saveTaskBoard(task, expectedRevision, metadata, status === "done" ? "completed" : "running", ctx);
+  }
+
+  async grantTaskExecutionForCaller(taskId: string, expectedRevision: string, serviceUserId: string | null, ctx: V3AuthContext) {
+    const task = await this.assertCallerIsTaskCreator(ctx, taskId);
+    await this.requireActiveTeamMember(ctx, task.team_id);
+    if (serviceUserId) {
+      if (serviceUserId === task.creator_user_id) throw new MetadataError("invalid_request", "Use a dedicated execution service user");
+      const member = await this.store.getTeamMember(task.team_id, serviceUserId);
+      if (!member || member.status !== "active") throw new MetadataError("permission_denied", "Service user must be an active team member");
+    }
+    const metadata = this.parseBoardMetadata(task);
+    if (serviceUserId) metadata.execution_service_grant = { service_user_id: serviceUserId, granted_by: task.creator_user_id };
+    else delete metadata.execution_service_grant;
+    return this.saveTaskBoard(task, expectedRevision, metadata, task.status, ctx);
   }
 
   async updateTaskForCaller(
     taskId: string,
     patch: Partial<TaskEntity>,
     ctx: V3AuthContext,
+    expectedRevision?: string,
   ): Promise<TaskEntity> {
-    await this.assertCallerIsTaskCreator(ctx, taskId);
-    return this.updateTask(taskId, patch);
+    const task = await this.assertCallerIsTaskCreator(ctx, taskId);
+    const current = this.parseBoardMetadata(task);
+    // Execution authority is only writable through the dedicated grant endpoint.
+    const metadata = patch.metadata_json === undefined ? current : this.parseBoardMetadata({ ...task, metadata_json: patch.metadata_json });
+    for (const key of ["execution_service_grant", "board_revision"]) {
+      if (Object.prototype.hasOwnProperty.call(current, key)) metadata[key] = current[key];
+      else delete metadata[key];
+    }
+    const protectedTask = !!(current.board_revision || current.execution_service_grant);
+    if (protectedTask && !expectedRevision) throw new MetadataError("revision_conflict", "Versioned task edits require expected_revision");
+    if (expectedRevision) {
+      await this.requireActiveTeamMember(ctx, task.team_id);
+      if (taskBoardRevision(task) !== expectedRevision) throw new MetadataError("revision_conflict", "Task changed; reread and reconcile");
+      metadata.board_revision = randomUUID();
+      const updated = await this.store.compareAndSetTaskBoard(task, JSON.stringify(metadata), patch.status ?? task.status, this.requireCallerId(ctx), patch);
+      if (!updated) throw new MetadataError("revision_conflict", "Task or membership changed; reread and reconcile");
+      return updated;
+    }
+    // Even an unversioned legacy edit must contend with a concurrent new grant.
+    await this.requireActiveTeamMember(ctx, task.team_id);
+    const updated = await this.store.compareAndSetTaskBoard(task, JSON.stringify(metadata), patch.status ?? task.status, this.requireCallerId(ctx), patch);
+    if (!updated) throw new MetadataError("revision_conflict", "Task changed; reread and reconcile");
+    return updated;
   }
 
   async deleteTasksForCaller(taskIds: string[], ctx: V3AuthContext): Promise<BatchDeleteResult> {
@@ -1901,9 +1999,8 @@ export class MetadataService {
     return this.deleteTasks(taskIds);
   }
 
-  async archiveTaskForCaller(taskId: string, ctx: V3AuthContext): Promise<TaskEntity> {
-    await this.assertCallerIsTaskCreator(ctx, taskId);
-    return this.archiveTask(taskId);
+  async archiveTaskForCaller(taskId: string, ctx: V3AuthContext, expectedRevision?: string): Promise<TaskEntity> {
+    return this.updateTaskForCaller(taskId, { status: "completed" }, ctx, expectedRevision);
   }
 
   async linkTaskAgentForCaller(

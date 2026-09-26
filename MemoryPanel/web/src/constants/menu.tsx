@@ -17,6 +17,8 @@ import {
 } from 'tea-icons-react';
 
 export type PageId =
+  | 'projects'
+  | 'orca_workbench'
   | 'workbench_board'
   | 'today'
   | 'upcoming'
@@ -49,11 +51,13 @@ export interface PageMeta {
 export function usePageMeta(): Record<PageId, PageMeta> {
   const { t } = useTranslation();
   return {
+    projects: { id: 'projects', label: 'Projects', group: t('menu.group.workbench'), order: 0.5 },
+    orca_workbench: { id: 'orca_workbench', label: 'Workbench', desc: 'Coordinate subscription workers with Orca', group: t('menu.group.workbench'), order: 3 },
     workbench_board: { id: 'workbench_board', label: t('menu.workbench_board'), desc: t('menu.desc.workbench_board'), group: t('menu.group.workbench'), order: 0, affix: true },
     today: { id: 'today', label: 'Today', group: t('menu.group.workbench'), order: -2 },
     upcoming: { id: 'upcoming', label: 'Upcoming', group: t('menu.group.workbench'), order: -1 },
-    timesheets: { id: 'timesheets', label: t('menu.timesheets'), group: t('menu.group.workbench'), order: 1 },
-    areas: { id: 'areas', label: 'Areas', group: t('menu.group.workbench'), order: 3 },
+    timesheets: { id: 'timesheets', label: t('menu.timesheets'), group: t('menu.group.workbench'), order: 4 },
+    areas: { id: 'areas', label: 'Areas', group: t('menu.group.workbench'), order: 1 },
     loops: { id: 'loops', label: t('menu.loops'), group: t('menu.group.workbench'), order: 2 },
     analytics:      { id: 'analytics',      label: t('menu.analytics'), desc: t('menu.desc.analytics'), group: t('menu.group.observability'), order: 0 },
     wiki:            { id: 'wiki',            label: t('menu.wiki'), desc: t('menu.desc.wiki'), group: t('menu.group.assets'), order: 2 },
@@ -71,7 +75,9 @@ export const GROUP_ORDER_KEYS = ['workbench', 'observability', 'organization', '
 
 /** 每个页面在侧边栏菜单中的图标（Tea 官方图标，size 16） */
 export const ITEM_ICON: Record<PageId, JSX.Element> = {
-  workbench_board: <DashboardIcon size={16} />,
+  projects: <BooksIcon size={16} />,
+  orca_workbench: <ToolsIcon size={16} />,
+  workbench_board: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M6 7v5M12 7v9M18 7v3"/></svg>,
   today: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg>,
   upcoming: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18m-14 5h3m4 0h3"/></svg>,
   timesheets: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>,

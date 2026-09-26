@@ -67,7 +67,7 @@ import type {
 } from "../types.js";
 import { DEFAULT_PAGINATION } from "../pagination.js";
 import { buildChatMemoryAssetId } from "../utils/chat-memory-asset.js";
-import { DuplicateUserKeyError } from "./interface.js";
+import { DuplicateUserKeyError, type IMetadataStore } from "./interface.js";
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -893,6 +893,26 @@ export class MongoMetadataStore implements IMetadataStore {
   async updateTask(taskId: string, patch: Partial<TaskEntity>): Promise<TaskEntity | null> {
     await this.patchOne("meta_tasks", { task_id: taskId }, patch, ["title", "description", "source_type", "source_url", "status", "auto_assign_floating_assets", "risk_level", "metadata_json"], true);
     return this.getTaskById(taskId);
+  }
+
+  async compareAndSetTaskBoard(snapshot: TaskEntity, metadataJson: string, status: TaskEntity["status"], callerId: string, patch: Partial<TaskEntity> = {}): Promise<TaskEntity | null> {
+    const fields: Record<string, unknown> = {};
+    for (const key of ["title", "description", "source_type", "source_url", "auto_assign_floating_assets", "risk_level"] as const) {
+      if (patch[key] !== undefined) fields[key] = patch[key];
+    }
+    return this.withTx(async (session) => {
+      const member = await this.col("meta_team_members").findOne({ team_id: snapshot.team_id, user_id: callerId, status: "active" }, { session });
+      if (!member) return null;
+      const creator = await this.col("meta_team_members").findOne({ team_id: snapshot.team_id, user_id: snapshot.creator_user_id, status: "active" }, { session });
+      if (!creator) return null;
+      // The grant lives in metadata_json: its revocation and this write contend on the same document.
+      return this.col<TaskEntity>("meta_tasks").findOneAndUpdate({
+        task_id: snapshot.task_id, team_id: snapshot.team_id, creator_user_id: snapshot.creator_user_id,
+        title: snapshot.title, description: snapshot.description ?? null,
+        status: snapshot.status, metadata_json: snapshot.metadata_json,
+      } as Document, { $set: { ...fields, metadata_json: metadataJson, status, updated_at: nowIso() } },
+      { session, returnDocument: "after", includeResultMetadata: false, projection: { _id: 0 } }) as Promise<TaskEntity | null>;
+    });
   }
 
   async deleteTasks(taskIds: string[]): Promise<BatchDeleteResult> {

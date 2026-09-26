@@ -377,21 +377,9 @@ export async function deleteTaskAsync(taskId: string): Promise<void> {
   invalidateBackendCache();
 }
 
-export async function updateTaskStatusAsync(taskId: string, status: TaskStatus, actorUserId?: string): Promise<void> {
-  const patch: Record<string, unknown> = { status };
-  if (actorUserId) {
-    // 参与者留痕：读一次当前 task 详情，把 actor 并入 participants 再写回 metadata_json
-    try {
-      const current = await tasksApi.get(taskId);
-      const ui = readTaskUiMeta(current.metadata_json, current.creator_user_id);
-      if (!ui.participants.includes(actorUserId)) {
-        patch.metadata_json = writeTaskUiMeta(current.metadata_json, {
-          participants: [...ui.participants, actorUserId],
-        });
-      }
-    } catch { /* 参与者留痕失败不阻断状态切换 */ }
-  }
-  await tasksApi.update(taskId, patch as Parameters<typeof tasksApi.update>[1]);
+export async function updateTaskStatusAsync(taskId: string, status: TaskStatus, _actorUserId?: string): Promise<void> {
+  const current = await tasksApi.boardState(taskId);
+  await tasksApi.boardTransition(taskId, current.revision, status === 'completed' ? 'done' : 'in_progress');
   invalidateBackendCache();
 }
 
@@ -400,7 +388,8 @@ export async function updateTaskAsync(
   patch: TaskPatch,
   actorUserId?: string
 ): Promise<void> {
-  const current = await tasksApi.get(taskId);
+  const { task: snapshot, revision } = await tasksApi.boardState(taskId);
+  const current = snapshot;
   const updatePayload: Record<string, unknown> = {};
   if (patch.title !== undefined) updatePayload.title = patch.title;
   if (patch.description !== undefined) updatePayload.description = patch.description;
@@ -418,11 +407,12 @@ export async function updateTaskAsync(
     if (patch.board.status) updatePayload.status = patch.board.status === 'done' ? 'completed' : 'running';
   }
   if (Object.keys(updatePayload).length > 0) {
-    await tasksApi.update(taskId, updatePayload as Parameters<typeof tasksApi.update>[1]);
+    await tasksApi.update(taskId, { ...updatePayload, expected_revision: revision } as Parameters<typeof tasksApi.update>[1]);
   }
 
   if (patch.linked_agents) {
-    const before = new Set(current.agents.filter((a) => a.status === 'active').map((a) => a.agent_id));
+    const linked = await tasksApi.get(taskId);
+    const before = new Set(linked.agents.filter((a) => a.status === 'active').map((a) => a.agent_id));
     const after = new Set(patch.linked_agents);
     const toLink = [...after].filter((id) => !before.has(id));
     const toUnlink = [...before].filter((id) => !after.has(id));

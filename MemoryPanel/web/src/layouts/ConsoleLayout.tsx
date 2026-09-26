@@ -1,3 +1,4 @@
+import { GlobalCoordinator } from '@/components/GlobalCoordinator';
 /**
  * ConsoleLayout — 主布局壳。
  *
@@ -9,7 +10,10 @@ import { Layout, Menu } from 'tea-component';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/auth';
 import { useCurrentRole, type TeamRole } from '@/services/useCurrentRole';
-import { usePanelAnalyticsEnabled, useAnalyticsChConfigured } from '@/services/usePanelCapabilities';
+import {
+  usePanelAnalyticsEnabled,
+  useAnalyticsChConfigured,
+} from '@/services/usePanelCapabilities';
 import { GlobalHeader } from '@/layouts/GlobalHeader';
 import { TabBar } from '@/layouts/TabBar';
 import { OnboardingGuide, shouldShowOnboarding, resetOnboarding } from '@/layouts/OnboardingGuide';
@@ -20,6 +24,8 @@ const { Body, Sider, Content } = Layout;
 /** 路由 path → PageId */
 const PATH_TO_PAGE: Record<string, PageId> = {
   '/': 'workbench_board',
+  '/projects': 'projects',
+  '/workbench': 'orca_workbench',
   '/today': 'today',
   '/upcoming': 'upcoming',
   '/timesheets': 'timesheets',
@@ -87,6 +93,12 @@ export function ConsoleLayout() {
     setOpenPages((prev) => (prev.includes(activePage) ? prev : [...prev, activePage]));
   }, [activePage, isGuide]);
 
+  const [refreshRevision, setRefreshRevision] = useState(0);
+  useEffect(() => {
+    const refresh = () => setRefreshRevision((n) => n + 1);
+    window.addEventListener('coordinator-changed', refresh);
+    return () => window.removeEventListener('coordinator-changed', refresh);
+  }, []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // 首次使用引导：登录后按「每用户仅首次」判定自动弹出
@@ -152,8 +164,7 @@ export function ConsoleLayout() {
   //      （探测中先保持展示，确认未配置后收敛隐藏，避免闪烁）
   const analyticsSwitchOn = usePanelAnalyticsEnabled();
   const analyticsChConfigured = useAnalyticsChConfigured(analyticsSwitchOn === true);
-  const analyticsVisible =
-    analyticsSwitchOn === true && analyticsChConfigured !== false;
+  const analyticsVisible = analyticsSwitchOn === true && analyticsChConfigured !== false;
 
   const menuGroups = useMemo(() => {
     const byGroup = new Map<string, (typeof PAGE_META)[PageId][]>();
@@ -232,8 +243,9 @@ export function ConsoleLayout() {
               />
             )}
             <Content.Body className="_memory-content-body">
+              <GlobalCoordinator />
               {/* key 绑定 pathname：路由切换时重挂载页面帧，触发 _page-enter 过渡，保持跨页连续性 */}
-              <main key={location.pathname} className="_memory-page-frame">
+              <main key={location.pathname + refreshRevision} className="_memory-page-frame">
                 <Outlet />
               </main>
             </Content.Body>
@@ -243,4 +255,3 @@ export function ConsoleLayout() {
     </div>
   );
 }
- 

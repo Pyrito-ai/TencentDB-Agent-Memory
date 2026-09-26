@@ -63,7 +63,7 @@ import type {
 } from "../types.js";
 import { DEFAULT_PAGINATION } from "../pagination.js";
 import { buildChatMemoryAssetId } from "../utils/chat-memory-asset.js";
-import { DuplicateUserKeyError } from "./interface.js";
+import { DuplicateUserKeyError, type IMetadataStore } from "./interface.js";
 
 const require = createRequire(import.meta.url);
 function requireNodeSqlite(): typeof import("node:sqlite") {
@@ -1086,6 +1086,22 @@ export class SqliteMetadataStore implements IMetadataStore {
     }
     this.applyUpdateRaw("meta_tasks", "task_id", taskId, normalized);
     return this.getTaskById(taskId);
+  }
+
+  compareAndSetTaskBoard(snapshot: TaskEntity, metadataJson: string, status: TaskEntity["status"], callerId: string, patch: Partial<TaskEntity> = {}): TaskEntity | null {
+    const allowed = ["title", "description", "source_type", "source_url", "auto_assign_floating_assets", "risk_level"] as const;
+    const fields = allowed.filter(key => patch[key] !== undefined);
+    const extraSql = fields.map(key => `, ${key} = ?`).join("");
+    const values = fields.map(key => key === "auto_assign_floating_assets" ? (patch[key] ? 1 : 0) : patch[key] as SQLInputValue);
+    const result = this.db.prepare(`UPDATE meta_tasks SET metadata_json = ?, status = ?, updated_at = ?${extraSql}
+      WHERE task_id = ? AND team_id = ? AND creator_user_id = ? AND title = ?
+      AND COALESCE(description, '') = ? AND status = ? AND metadata_json = ?
+      AND EXISTS (SELECT 1 FROM meta_team_members WHERE team_id = ? AND user_id = ? AND status = 'active')
+      AND EXISTS (SELECT 1 FROM meta_team_members WHERE team_id = ? AND user_id = ? AND status = 'active')
+      RETURNING *`).get(metadataJson, status, nowIso(), ...values, snapshot.task_id, snapshot.team_id,
+        snapshot.creator_user_id, snapshot.title, snapshot.description ?? "", snapshot.status,
+        snapshot.metadata_json, snapshot.team_id, callerId, snapshot.team_id, snapshot.creator_user_id) as Row | undefined;
+    return this.mapTask(result ?? null);
   }
 
   deleteTasks(taskIds: string[]): BatchDeleteResult {

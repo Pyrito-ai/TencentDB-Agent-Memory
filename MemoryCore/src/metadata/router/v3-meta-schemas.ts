@@ -216,6 +216,7 @@ export const taskCreateSchema = z.object({
 export const taskGetSchema = z.object({ task_id: nonEmpty });
 export const taskUpdateSchema = z.object({
   task_id: nonEmpty,
+  expected_revision: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   title: z.string().optional(),
   description: z.string().optional(),
   source_type: taskSourceType.optional(),
@@ -225,6 +226,15 @@ export const taskUpdateSchema = z.object({
   risk_level: z.string().optional(),
   metadata_json: z.string().optional(),
 });
+export const taskBoardStateSchema = z.object({ task_id: nonEmpty }).strict();
+export const taskBoardTransitionSchema = z.object({
+  task_id: nonEmpty, expected_revision: z.string().regex(/^[a-f0-9]{64}$/),
+  status: z.enum(["backlog", "ready", "in_progress", "review", "done"]),
+}).strict();
+export const taskExecutionGrantSchema = z.object({
+  task_id: nonEmpty, expected_revision: z.string().regex(/^[a-f0-9]{64}$/),
+  service_user_id: nonEmpty.nullable(),
+}).strict();
 export const taskDeleteSchema = z.object({ task_ids: idList });
 const taskListFields = z.object({
   team_id: nonEmpty.optional(),
@@ -244,7 +254,7 @@ export const taskListSchema = taskListFields
   .refine(requireTaskListFilter, {
     message: "team_id, creator_user_id, or creator_user_key required",
   });
-export const taskArchiveSchema = z.object({ task_id: nonEmpty });
+export const taskArchiveSchema = z.object({ task_id: nonEmpty, expected_revision: z.string().regex(/^[a-f0-9]{64}$/).optional() });
 
 // ── TaskAgent ──
 export const taskAgentLinkSchema = z.object({
@@ -490,6 +500,9 @@ export const V3_SCHEMAS = {
   "/v3/meta/task/create": taskCreateSchema,
   "/v3/meta/task/get": taskGetSchema,
   "/v3/meta/task/update": taskUpdateSchema,
+  "/v3/meta/task/board-state": taskBoardStateSchema,
+  "/v3/meta/task/board-transition": taskBoardTransitionSchema,
+  "/v3/meta/task/execution-grant": taskExecutionGrantSchema,
   "/v3/meta/task/delete": taskDeleteSchema,
   "/v3/meta/task/list": taskListSchema,
   "/v3/meta/task/archive": taskArchiveSchema,

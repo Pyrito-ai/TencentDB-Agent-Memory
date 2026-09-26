@@ -1,3 +1,5 @@
+import { ProjectsPage } from '@/pages/ProjectsPage';
+import { OrcaWorkbench } from '@/pages/OrcaWorkbench';
 /**
  * 路由表定义
  *
@@ -23,6 +25,8 @@ export const routes: RouteObject[] = [
     element: <ConsoleLayout />,
     children: [
       { index: true, element: <WorkbenchPage /> },
+      { path: 'projects', element: <ProjectsPage /> },
+      { path: 'workbench', element: <OrcaWorkbench /> },
       { path: 'today', element: <WorkbenchPage view="today" /> },
       { path: 'upcoming', element: <WorkbenchPage view="upcoming" /> },
       { path: 'timesheets', element: <WorkbenchPage view="timesheets" /> },

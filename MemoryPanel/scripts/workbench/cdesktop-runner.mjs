@@ -479,15 +479,8 @@ export async function createCdesktopBridge({
     return job;
   }
 
-  const server = http.createServer(async (req, res) => {
-    const reply = (status, data) => {
-      res.writeHead(status, {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-        "X-Content-Type-Options": "nosniff",
-      });
-      res.end(JSON.stringify(data));
-    };
+  const dispatch = async (req) => {
+    const reply = (status, data) => ({ status, body: JSON.stringify(data) });
     const expected = Buffer.from("Bearer " + token),
       supplied = Buffer.from(req.headers.authorization || "");
     if (
@@ -639,6 +632,17 @@ export async function createCdesktopBridge({
           "Runner operation failed. Inspect cdesktop locally before dispatching again.",
       });
     }
+  };
+  const server = http.createServer(async (req, res) => {
+    // Complete durable lock removal before acknowledging launch, replay, or
+    // inspection, so the client's next request can acquire the job lock.
+    const { status, body } = await dispatch(req);
+    res.writeHead(status, {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    });
+    res.end(body);
   });
   server.requestTimeout = 120000;
   server.headersTimeout = 10000;

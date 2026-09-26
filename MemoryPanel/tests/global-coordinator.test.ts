@@ -4,6 +4,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { registerCoordinatorRoutes } from "../src/panel/http/routes/coordinator.js";
+import { validatePanelMetaHeaders } from "../src/panel/http/middleware/validate-panel-headers.js";
 const cleanup: (() => void)[] = [];
 afterEach(() => cleanup.splice(0).forEach((f) => f()));
 function fixture() {
@@ -75,6 +76,73 @@ test("read results feed the model with secrets removed and per-user history", as
     (await (await req("state", undefined, "bob")).json()).messages,
   ).toEqual([]);
   expect((await req("state", undefined, "outsider")).status).toBe(403);
+});
+test("cookie-authenticated actions retain the resolved credential through internal dispatch", async () => {
+  const app = new Hono(),
+    root = mkdtempSync(path.join(tmpdir(), "coordinator-cookie-"));
+  const model = vi
+    .fn()
+    .mockResolvedValueOnce({
+      reply: "",
+      action: { name: "projects/list", args: {} },
+    })
+    .mockResolvedValueOnce({ reply: "Found the session project." });
+  const resolveSession = vi.fn((instance: string, cookie?: string) =>
+    instance === "default" && cookie === "valid-session"
+      ? { userKey: "session-user-key", coreUserId: "alice" }
+      : null,
+  );
+  const deps: any = {
+    instanceRegistry: {
+      resolve: (id: string) => ({
+        instance_id: id,
+        gateway_endpoint: "",
+        api_key: "",
+      }),
+    },
+    config: { auth: { sessionCookieName: "panel_session" } },
+    auth: { resolveSession },
+    metaKernel: {
+      invoke: async (action: string, body: any) => ({
+        code: 0,
+        data:
+          action === "auth/verify"
+            ? {
+                valid: body.user_key === "session-user-key",
+                user: { user_id: "alice" },
+              }
+            : action === "team-member/get"
+              ? { status: "active" }
+              : null,
+      }),
+    },
+  };
+  const actionCredential = vi.fn();
+  app.use("/projects/*", validatePanelMetaHeaders(deps));
+  app.get("/projects/team/list", (c) => {
+    actionCredential(c.get("panelMeta").userKey);
+    return c.json({ items: [{ name: "Session project" }] });
+  });
+  const close = registerCoordinatorRoutes(app, deps, { root, model });
+  cleanup.push(() => {
+    close();
+    rmSync(root, { recursive: true, force: true });
+  });
+  const response = await app.request("/coordinator/team/message", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Tdai-Service-Id": "default",
+      Cookie: "panel_session=valid-session",
+    },
+    body: JSON.stringify({ revision: 0, text: "List projects" }),
+  });
+  expect(response.status).toBe(200);
+  expect(resolveSession).toHaveBeenCalledWith("default", "valid-session");
+  expect(actionCredential).toHaveBeenCalledOnce();
+  expect(actionCredential).toHaveBeenCalledWith("session-user-key");
+  expect(model).toHaveBeenCalledTimes(2);
+  expect(JSON.stringify(model.mock.calls[1])).toContain("Session project");
 });
 test("writes require approval, reject stale or forged proposals and execute once", async () => {
   const { req, model, dispatch } = fixture();

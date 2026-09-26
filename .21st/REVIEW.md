@@ -4,13 +4,14 @@
 
 [Open Today](http://127.0.0.1:5191/#/today).
 
-The preview runs the real application with invented, in-memory data. Reloading resets those records. API calls cannot fall through to a backend; model calls and native runtime connections are blocked. Some advanced mutations deliberately return an unsupported-fixture error. Nothing was merged or deployed.
+The preview runs the real application with invented, in-memory data. Reloading resets those records. API calls cannot fall through to a backend; model calls and native runtime connections are blocked. Some advanced mutations deliberately return an unsupported-fixture error. This report records the original isolated review. The user approved integration and deployment on September 26; use the release pull request and deployment handoff for final release status.
 
 - Branch: `codex/baren-gui-dock`
 - Base: `c0fe398c0cbbed0964c62fb84a02442756998dd5`
 - Worktree: `/Users/johngreenhow/Documents/Codex/2026-09-20/i-wa/baren-gui-dock`
-- Changes are uncommitted and reviewable in this worktree.
-- The original `tencent-workbench` checkout is clean. It advanced independently to `2b7cbc0` during this task; this experiment remains on the explicitly requested base. No changes from those later commits were folded into this experiment.
+- GUI implementation committed as `bbdf163`.
+- The approved integration preserves remote `feat/server_team` at `935f106`, including its five newer CI, coordinator credential, and runtime lock fixes. It also merges the parallel versioned Agent package work committed as `bd53cf3`. Integration source reviews found no overlapping edits or blocking issues.
+- The check counts below describe the original GUI review, not the later combined release. Loops performance has its own [verification report](LOOPS-PERFORMANCE-QA.md).
 
 Restart from `MemoryPanel/web` if needed:
 
@@ -75,9 +76,9 @@ Detailed reports: [work pages](WORK-PAGES-QA.md), [coordinator](COORDINATOR-QA.m
 
 More responsive screenshots are in `screenshots/`, including resources, login/settings, Loops, Timesheets and actual 200% Memory.
 
-## Discard this experiment
+## Original experiment discard procedure
 
-These commands intentionally discard all uncommitted work in this experiment. Run them only if rejecting the redesign.
+This was the pre-approval discard procedure. The user has since approved the redesign for integration and deployment. Do not use this procedure as a production rollback; retain and restore the previous deployed image/configuration instead.
 
 1. Stop the dedicated preview with Ctrl+C in its terminal. If using a different terminal, inspect `lsof -nP -iTCP:5191 -sTCP:LISTEN` and stop only that verified preview process.
 2. Leave the experiment directory, then remove its worktree and branch:

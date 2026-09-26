@@ -1,3 +1,10 @@
+import {
+  validateBundle,
+  stageBundle,
+  verifyBundle,
+  bundlePrompt,
+  BUNDLE_REQUEST_LIMIT,
+} from "./agent-bundle.mjs";
 /** Private, isolated cdesktop bridge. Its journal never replays a mutation. */
 import http from "node:http";
 import path from "node:path";
@@ -409,6 +416,7 @@ export async function createCdesktopBridge({
     job.sessionId = session.id;
     await checkpoint(job, "launching_execution");
     await validateProfile(job.executor);
+    if (job.bundle) await verifyBundle(root, job.id, job.bundle);
     const execution = await api(`/api/sessions/${job.sessionId}/follow-up`, {
       prompt: spec,
       executor_config: {
@@ -541,7 +549,8 @@ export async function createCdesktopBridge({
       for await (const chunk of req) {
         chunks.push(chunk);
         size += chunk.length;
-        if (size > 100000) return reply(413, { error: "Request too large" });
+        if (size > BUNDLE_REQUEST_LIMIT)
+          return reply(413, { error: "Request too large" });
       }
       const raw = Buffer.concat(chunks).toString("utf8");
       let input;
@@ -554,11 +563,20 @@ export async function createCdesktopBridge({
         !input ||
         Array.isArray(input) ||
         Object.keys(input).some(
-          (key) => !["id", "repo", "agent", "spec", "mode"].includes(key),
+          (key) =>
+            !["id", "repo", "agent", "spec", "mode", "bundle"].includes(key),
         )
       )
         return reply(400, { error: "Invalid worker request" });
       const { id, repo, agent, spec, mode } = input;
+      let bundle;
+      if (input.bundle !== undefined) {
+        try {
+          bundle = validateBundle(input.bundle);
+        } catch {
+          return reply(400, { error: "Invalid Agent bundle" });
+        }
+      }
       if (
         !UUID.test(id || "") ||
         !approved.has(repo) ||
@@ -577,6 +595,7 @@ export async function createCdesktopBridge({
         agent,
         spec,
         mode: mode || "direct",
+        ...(bundle ? { bundleDigest: bundle.digest } : {}),
       });
       if (!(await acquire(id)))
         return reply(409, {
@@ -595,10 +614,36 @@ export async function createCdesktopBridge({
             return reply(409, {
               error: "Job ID already used for a different request",
             });
+          if (bundle) {
+            try {
+              await verifyBundle(root, id, bundle);
+            } catch {
+              return reply(409, {
+                error:
+                  "Saved Agent bundle is missing or changed. Inspect the runtime before starting another run.",
+              });
+            }
+          }
           await refresh(previous, configured);
           await persist(previous);
           return reply(200, publicJob(previous));
         }
+        let bundleDirectory;
+        if (bundle) {
+          try {
+            bundleDirectory = await stageBundle(root, id, bundle, {
+              forbiddenRoots: [...approved.values()].map((item) => item.path),
+            });
+          } catch {
+            return reply(409, {
+              error:
+                "Agent bundle could not be staged intact. No worker was launched.",
+            });
+          }
+        }
+        const prompt = bundle
+          ? bundlePrompt(spec, bundleDirectory, bundle)
+          : spec;
         const job = {
           id,
           repo,
@@ -607,7 +652,8 @@ export async function createCdesktopBridge({
           agent,
           executor: agent === "codex" ? "CODEX" : "CLAUDE_CODE",
           fingerprint,
-          promptHash: sha(spec),
+          promptHash: sha(prompt),
+          ...(bundle ? { bundle, bundleDirectory } : {}),
           identity: `tencent-${marker.namespace}-${id}`,
           state: "launching",
           lifecycle: "starting",
@@ -615,7 +661,7 @@ export async function createCdesktopBridge({
         };
         await durableWrite(file(id), job, true);
         try {
-          await launch(job, spec, configured);
+          await launch(job, prompt, configured);
         } catch {
           job.state = "unknown";
           job.lifecycle = "unknown";

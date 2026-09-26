@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { request, executionLabel, type Binding } from './api';
 import { workbenchUrl } from './RuntimePicker';
+import {
+  AgentBundlePreview,
+  AgentBundleReceipt,
+  type AgentBundleSnapshot,
+  type HandoffAgentProfile as AgentProfile,
+} from './AgentBundleSummary';
 
-type AgentProfile = {
-  id: string;
-  name: string;
-  description: string;
-  prompt: string;
-  updatedAt: string;
-};
 export type CdesktopOptions = { bindings: Binding[]; ready: boolean };
 export type CdesktopHandoff = {
   id: string;
   binding: string;
   agent: 'codex' | 'claude';
   profile?: AgentProfile;
+  bundle?: AgentBundleSnapshot;
   spec: string;
   receipt?: {
     id: string;
@@ -172,9 +172,17 @@ export function CdesktopTaskHandoff({
                 </select>
               </label>
               <small>
-                Uses the role and rules from <a href="#/agents">Agents</a>. The agent account and
-                model settings come from cdesktop.
+                {selectedProfile && (
+                  <>
+                    {selectedProfile.bundle
+                      ? 'Uses the role, rules and package from '
+                      : 'Uses the role and rules from '}
+                    <a href="#/agents">Agents</a>.{' '}
+                  </>
+                )}
+                Tool connections, account and model settings come from cdesktop.
               </small>
+              <AgentBundlePreview bundle={selectedProfile?.bundle} />
               {selectedProfile && (
                 <details>
                   <summary>Profile instructions</summary>
@@ -221,6 +229,10 @@ export function CdesktopTaskHandoff({
               <pre>{handoff.spec}</pre>
             </details>
           )}
+          <AgentBundleReceipt
+            bundle={handoff.bundle}
+            sent={handoff.receipt?.state === 'running' || handoff.receipt?.state === 'exited'}
+          />
           <details className="handoff-receipt">
             <summary>cdesktop session receipt</summary>
             <dl>

@@ -2,6 +2,7 @@ import { request as httpRequest } from "node:http";
 import type { WorkspaceSnapshot, FileContent } from "./types.js";
 import { readFileSync } from "node:fs";
 import { z } from "zod";
+import type { AgentBundle } from "./agent-bundles.js";
 const bindingSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
@@ -110,12 +111,14 @@ export interface Runner {
     id: string,
     agent: "codex" | "claude",
     spec: string,
+    bundle?: AgentBundle,
   ): Promise<Receipt>;
   launchDirect?(
     binding: Binding,
     id: string,
     agent: "codex" | "claude",
     spec: string,
+    bundle?: AgentBundle,
   ): Promise<Receipt>;
   read(binding: Binding, id: string): Promise<Receipt>;
   workspace(binding: Binding, id: string): Promise<WorkspaceSnapshot>;
@@ -281,16 +284,17 @@ export function createRunner(): Runner {
       request(b, "/projects", { name }).then((data) =>
         z.object({ id: z.string(), name: z.string() }).parse(data),
       ),
-    launchDirect: (b, id, agent, spec) =>
+    launchDirect: (b, id, agent, spec, bundle) =>
       request(b, "/jobs", {
         id,
         repo: b.repo,
         agent,
         spec,
         mode: "direct",
+        ...(bundle ? { bundle } : {}),
       }).then(receipt),
-    launch: (b, id, agent, spec) =>
-      request(b, "/jobs", { id, repo: b.repo, agent, spec }).then(receipt),
+    launch: (b, id, agent, spec, bundle) =>
+      request(b, "/jobs", { id, repo: b.repo, agent, spec, ...(bundle ? { bundle } : {}) }).then(receipt),
     read: (b, id) =>
       request(b, `/jobs/${encodeURIComponent(id)}`).then(receipt),
     workspace: (b, id) =>

@@ -1,3 +1,10 @@
+import {
+  validateBundle,
+  stageBundle,
+  verifyBundle,
+  bundlePrompt,
+  BUNDLE_REQUEST_LIMIT,
+} from "./agent-bundle.mjs";
 import { nativeOrca, canReply, redactNativeSecrets } from "./native-orca.mjs";
 import { projectManager } from "./projects.mjs";
 import { inspectWorkspace, readWorkspaceFile } from "./workspace.mjs";
@@ -51,6 +58,7 @@ export async function createBridge({
   if (typeof token !== "string" || token.length < 32)
     throw Error("A runner token of at least 32 characters is required.");
   await mkdir(root, { recursive: true, mode: 0o700 });
+  root = await realpath(root);
   const projects = await projectManager({ root, projectRoot, repos, command });
   const busy = new Set();
   const acquire = async (id) => {
@@ -94,6 +102,8 @@ export async function createBridge({
       continuations,
       pendingContinuation,
       nativeJournal,
+      bundle,
+      bundleDirectory,
       ...data
     } = job;
     return redactNativeSecrets(data);
@@ -191,6 +201,16 @@ export async function createBridge({
           });
         try {
           job = await read(job.id);
+          if (job.bundle && action !== "stop") {
+            try {
+              await verifyBundle(root, job.id, job.bundle);
+            } catch {
+              return reply(409, {
+                error:
+                  "Saved Agent bundle is missing or changed. No worker operation was submitted.",
+              });
+            }
+          }
           if (
             job.pendingContinuation &&
             (action !== "continue" ||
@@ -219,6 +239,17 @@ export async function createBridge({
               }),
             )
             .digest("hex");
+          const controlInput =
+            action === "continue" && job.bundle
+              ? {
+                  ...input,
+                  spec: bundlePrompt(
+                    input.spec,
+                    job.bundleDirectory,
+                    job.bundle,
+                  ),
+                }
+              : input;
           const previous = job.operations[input.operation];
           if (previous) {
             if (previous.fingerprint !== fingerprint)
@@ -234,7 +265,7 @@ export async function createBridge({
             }
             if (previous.state !== "done" && job.native) {
               try {
-                await nativeRunner.control(job, action, input);
+                await nativeRunner.control(job, action, controlInput);
                 previous.state = "done";
               } catch {
                 previous.state = "unknown";
@@ -259,7 +290,7 @@ export async function createBridge({
           await persist(job);
           try {
             if (job.native) {
-              await nativeRunner.control(job, action, input);
+              await nativeRunner.control(job, action, controlInput);
             } else if (action === "send") {
               if (job.state !== "running")
                 throw Error("Worker is not running.");
@@ -398,12 +429,15 @@ export async function createBridge({
       }
       if (req.method !== "POST" || req.url !== "/jobs")
         return reply(404, { error: "Not found" });
-      let raw = "";
+      const chunks = [];
+      let size = 0;
       for await (const part of req) {
-        raw += part;
-        if (Buffer.byteLength(raw) > 100000)
+        chunks.push(part);
+        size += part.length;
+        if (size > BUNDLE_REQUEST_LIMIT)
           return reply(413, { error: "Request too large" });
       }
+      const raw = Buffer.concat(chunks).toString("utf8");
       let input;
       try {
         input = JSON.parse(raw);
@@ -411,6 +445,14 @@ export async function createBridge({
         return reply(400, { error: "Invalid JSON" });
       }
       const { id, repo, agent, spec, mode } = input;
+      let bundle;
+      if (input.bundle !== undefined) {
+        try {
+          bundle = validateBundle(input.bundle);
+        } catch {
+          return reply(400, { error: "Invalid Agent bundle" });
+        }
+      }
       if (
         (mode !== undefined && mode !== "direct") ||
         typeof id !== "string" ||
@@ -429,7 +471,15 @@ export async function createBridge({
         });
       try {
         const fingerprint = createHash("sha256")
-          .update(JSON.stringify({ repo, agent, spec, ...(mode ? { mode } : {}) }))
+          .update(
+            JSON.stringify({
+              repo,
+              agent,
+              spec,
+              ...(mode ? { mode } : {}),
+              ...(bundle ? { bundleDigest: bundle.digest } : {}),
+            }),
+          )
           .digest("hex");
         let existing;
         try {
@@ -437,6 +487,19 @@ export async function createBridge({
         } catch (error) {
           if (error.code !== "ENOENT") throw error;
         }
+        if (existing && existing.fingerprint === fingerprint && bundle) {
+          try {
+            await verifyBundle(root, id, bundle);
+          } catch {
+            return reply(409, {
+              error:
+                "Saved Agent bundle is missing or changed. Inspect the runtime before starting another run.",
+            });
+          }
+        }
+        const prompt = bundle
+          ? bundlePrompt(spec, path.join(root, id + ".bundle"), bundle)
+          : spec;
         if (
           existing?.native &&
           existing.fingerprint === fingerprint &&
@@ -445,7 +508,7 @@ export async function createBridge({
           existing.controller
         ) {
           try {
-            await nativeRunner.launch(existing, spec);
+            await nativeRunner.launch(existing, prompt);
           } catch {
             existing.state = "unknown";
             existing.lifecycle = "unknown";
@@ -461,11 +524,64 @@ export async function createBridge({
               ? publicJob(existing)
               : { error: "Job ID already used for a different request" },
           );
-        const job = { id, repo, agent, fingerprint, state: "launching" };
+        let bundleDirectory;
+        if (bundle) {
+          try {
+            // Orca starts the worker during worktree create. Resolve host and
+            // source scope and prepare every byte before that mutation.
+            const shown = await command(["repo", "show", "--repo", repo]);
+            const selected = shown.repo;
+            if (
+              !selected ||
+              `id:${selected.id}` !== repo ||
+              (selected.executionHostId != null &&
+                selected.executionHostId !== "local") ||
+              selected.connectionId ||
+              !path.isAbsolute(selected.path || "")
+            )
+              throw Error();
+            const listed = await command([
+              "worktree",
+              "list",
+              "--repo",
+              repo,
+              "--limit",
+              "1000",
+            ]);
+            const primaries = listed.worktrees?.filter(
+              (item) =>
+                `id:${item.repoId}` === repo && item.isMainWorktree === true,
+            );
+            if (
+              listed.truncated ||
+              primaries?.length !== 1 ||
+              primaries[0].hostId !== "local" ||
+              (await realpath(primaries[0].path)) !==
+                (await realpath(selected.path))
+            )
+              throw Error();
+            bundleDirectory = await stageBundle(root, id, bundle, {
+              forbiddenRoots: [selected.path],
+            });
+          } catch {
+            return reply(409, {
+              error:
+                "Agent bundle requires a verified local Orca repository and intact private package files. No worker was launched.",
+            });
+          }
+        }
+        const job = {
+          id,
+          repo,
+          agent,
+          fingerprint,
+          state: "launching",
+          ...(bundle ? { bundle, bundleDirectory } : {}),
+        };
         await persist(job);
         try {
           if (native && mode !== "direct") {
-            await nativeRunner.launch(job, spec);
+            await nativeRunner.launch(job, prompt);
           } else {
             const result = await command([
               "worktree",
@@ -477,7 +593,7 @@ export async function createBridge({
               "--agent",
               agent,
               "--prompt",
-              spec,
+              prompt,
               "--setup",
               "skip",
               "--no-parent",

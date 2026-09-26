@@ -14,6 +14,13 @@ import './workbench.css';
 import { TaskExecution } from './TaskExecution';
 import { TaskPicker } from './TaskPicker';
 import { WorkerQuestions } from './WorkerQuestions';
+import { CdesktopWorkbench } from './CdesktopWorkbench';
+import {
+  RuntimePicker,
+  requestedRuntime,
+  updateWorkbenchQuery,
+  type WorkbenchRuntime,
+} from './RuntimePicker';
 
 // Keep the coordinator available in source while the simpler board-to-Orca flow is trialled.
 const SHOW_COORDINATOR = false;
@@ -48,6 +55,50 @@ export function OrcaWorkbench() {
   );
 }
 export function Workspace({ team }: { team: string }) {
+  const [runtime, setRuntime] = useState(requestedRuntime);
+  const [visited, setVisited] = useState<Record<WorkbenchRuntime, boolean>>(() => ({
+    orca: requestedRuntime() === 'orca',
+    cdesktop: requestedRuntime() === 'cdesktop',
+  }));
+  useEffect(() => {
+    const changed = () => {
+      const next = requestedRuntime();
+      setRuntime(next);
+      setVisited((current) => ({ ...current, [next]: true }));
+    };
+    window.addEventListener('hashchange', changed);
+    window.addEventListener('popstate', changed);
+    window.addEventListener('workbench-query-change', changed);
+    return () => {
+      window.removeEventListener('hashchange', changed);
+      window.removeEventListener('popstate', changed);
+      window.removeEventListener('workbench-query-change', changed);
+    };
+  }, []);
+  return (
+    <div className="runtime-workbench">
+      <header className="workbench-runtime-toolbar">
+        <strong>Workbench</strong>
+        <RuntimePicker
+          runtime={runtime}
+          onChange={(next) => updateWorkbenchQuery({ runtime: next })}
+        />
+      </header>
+      {visited.orca && (
+        <div className="workbench-runtime-pane" hidden={runtime !== 'orca'}>
+          <OrcaWorkspace team={team} visible={runtime === 'orca'} />
+        </div>
+      )}
+      {visited.cdesktop && (
+        <div className="workbench-runtime-pane" hidden={runtime !== 'cdesktop'}>
+          <CdesktopWorkbench team={team} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrcaWorkspace({ team, visible }: { team: string; visible: boolean }) {
   const [options, setOptions] = useState<Options>();
   const [runs, setRuns] = useState<Run[]>([]);
   const [selected, setSelected] = useState('');
@@ -109,7 +160,11 @@ export function Workspace({ team }: { team: string }) {
       setSelected((linked ? runs.find((item) => item.taskId === linked)?.id : undefined) || '');
     };
     window.addEventListener('hashchange', changed);
-    return () => window.removeEventListener('hashchange', changed);
+    window.addEventListener('workbench-query-change', changed);
+    return () => {
+      window.removeEventListener('hashchange', changed);
+      window.removeEventListener('workbench-query-change', changed);
+    };
   }, [runs]);
   useEffect(() => {
     if (history.current) history.current.scrollTop = history.current.scrollHeight;
@@ -152,7 +207,7 @@ export function Workspace({ team }: { team: string }) {
   }
   const hasStartedWorkers = !!run?.workers.some((worker) => worker.state !== 'proposed');
   useEffect(() => {
-    if (!selected || !hasStartedWorkers) return;
+    if (!visible || !selected || !hasStartedWorkers) return;
     let active = true;
     const timer = window.setInterval(() => {
       if (document.hidden || lock.current) return;
@@ -176,7 +231,7 @@ export function Workspace({ team }: { team: string }) {
       active = false;
       window.clearInterval(timer);
     };
-  }, [team, selected, hasStartedWorkers]);
+  }, [team, selected, hasStartedWorkers, visible]);
   function chooseTask(id: string) {
     setTaskId(id);
     setSelected(runs.find((item) => item.taskId === id)?.id || '');
@@ -733,7 +788,7 @@ export function Workspace({ team }: { team: string }) {
       )}
       <section className="native-orca" aria-label="Orca workspace">
         <header className="native-orca-toolbar">
-          <strong>Workbench</strong>
+          <strong>Orca</strong>
           {(run?.taskId || taskId) && (
             <a href={boardTaskUrl(run?.taskId || taskId)}>Back to task</a>
           )}

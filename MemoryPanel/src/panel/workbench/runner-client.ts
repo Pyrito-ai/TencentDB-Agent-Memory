@@ -16,8 +16,9 @@ const bindingSchema = z.object({
   manageProjects: z.boolean().optional(),
 });
 export type Binding = z.infer<typeof bindingSchema>;
-export function loadBindings(): Binding[] {
-  const file = process.env.WORKBENCH_BINDINGS_FILE;
+export function loadBindings(
+  file = process.env.WORKBENCH_BINDINGS_FILE,
+): Binding[] {
   if (!file) return [];
   const bindings = z
     .array(bindingSchema)
@@ -48,6 +49,12 @@ export function loadBindings(): Binding[] {
 export interface Receipt {
   id: string;
   state: "launching" | "running" | "exited" | "unknown";
+  sessionId?: string;
+  workspaceId?: string;
+  webUrl?: string;
+  executionProcessId?: string;
+  processStatus?: string;
+  stage?: string;
   worktree?: string;
   terminal?: string;
   output?: string;
@@ -196,6 +203,12 @@ export function createRunner(): Runner {
       .object({
         id: z.string(),
         state: z.enum(["launching", "running", "exited", "unknown"]),
+        sessionId: z.string().uuid().optional(),
+        workspaceId: z.string().uuid().optional(),
+        webUrl: z.string().url().optional(),
+        executionProcessId: z.string().uuid().optional(),
+        processStatus: z.string().max(50).optional(),
+        stage: z.string().max(80).optional(),
         worktree: z.string().optional(),
         terminal: z.string().optional(),
         output: z.string().max(100000).optional(),

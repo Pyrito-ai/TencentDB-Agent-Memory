@@ -498,3 +498,112 @@
   min-height: 60px;
   width: 100%;
 }
+
+.runtime-workbench {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 125px);
+  min-height: 650px;
+  color: #242428;
+  background: #fafafa;
+  font:
+    13px -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+.workbench-runtime-toolbar,
+.task-handoff-runtime-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+}
+.workbench-runtime-toolbar {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-bottom: 1px solid #dedee3;
+}
+.task-handoff-runtime-heading {
+  margin-top: 16px;
+}
+.workbench-runtime-picker {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: #ededf0;
+  border: 1px solid #dedee3;
+  border-radius: 6px;
+}
+.workbench-runtime-picker button {
+  padding: 4px 9px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #555560;
+  font: inherit;
+  cursor: pointer;
+}
+.workbench-runtime-picker button[aria-pressed='true'] {
+  background: #fff;
+  color: #242428;
+  box-shadow: 0 1px 3px #00000012;
+}
+.workbench-runtime-picker button:focus-visible {
+  outline: 2px solid #7474b6;
+  outline-offset: 2px;
+}
+.workbench-runtime-picker button span,
+.runtime-trial {
+  color: #777781;
+  font-size: 10px;
+  font-weight: 400;
+}
+.task-execution .runtime-trial {
+  display: inline;
+}
+.workbench-runtime-pane {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.workbench-runtime-pane[hidden],
+.cdesktop-handoff-panel[hidden] {
+  display: none;
+}
+.workbench-runtime-pane > .native-workbench {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+.cdesktop-task-picker {
+  padding-top: 12px;
+}
+.cdesktop-handoff-panel {
+  max-height: 55%;
+  overflow: auto;
+  padding: 0 12px;
+}
+.cdesktop-handoff-panel > .task-execution {
+  max-width: 760px;
+}
+.handoff-receipt dl {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 5px 12px;
+  font-size: 11px;
+}
+.handoff-receipt dt {
+  color: #777781;
+}
+.handoff-receipt dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.handoff-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

@@ -79,6 +79,7 @@ export function registerWorkbenchRoutes(
   options: {
     root?: string;
     bindings?: Binding[];
+    cdesktopBindings?: Binding[];
     runner?: Runner;
     coordinator?: Coordinator;
     boardRoot?: string;
@@ -96,6 +97,9 @@ export function registerWorkbenchRoutes(
   );
   db.exec(
     "CREATE TABLE IF NOT EXISTS orca_handoffs(instance TEXT,team TEXT,task TEXT,owner TEXT,body TEXT NOT NULL,PRIMARY KEY(instance,team,task))",
+  );
+  db.exec(
+    "CREATE TABLE IF NOT EXISTS cdesktop_handoffs(instance TEXT,team TEXT,task TEXT,owner TEXT,body TEXT NOT NULL,PRIMARY KEY(instance,team,task))",
   );
   const runner = options.runner || createRunner(),
     coordinator = options.coordinator || createCoordinator();
@@ -177,7 +181,21 @@ export function registerWorkbenchRoutes(
   api.all("/workbench/:team/:action", async (c) => {
     const ctx = buildCtx(c),
       team = c.req.param("team"),
-      action = c.req.param("action");
+      requestedAction = c.req.param("action");
+    const cdesktop = requestedAction.startsWith("cdesktop-");
+    const action = cdesktop
+      ? requestedAction.slice("cdesktop-".length)
+      : requestedAction;
+    // cdesktop is an independent direct-handoff trial, not an Orca orchestration alias.
+    if (
+      cdesktop &&
+      !["options", "handoff-get", "handoff-launch", "handoff-sync"].includes(
+        action,
+      )
+    )
+      return c.json({ error: "Unknown cdesktop operation." }, 404);
+    const runtimeLabel = cdesktop ? "cdesktop" : "Orca";
+    const handoffTable = cdesktop ? "cdesktop_handoffs" : "orca_handoffs";
     const user = await resolveCallerUserId(deps, ctx);
     if (!user) return c.json({ error: "Please sign in." }, 401);
     const membership = await deps.metaKernel.invoke(
@@ -222,7 +240,12 @@ export function registerWorkbenchRoutes(
         return c.json({ error: "Agent profiles could not be loaded." }, 503);
       }
     }
-    const configuredBindings = (options.bindings || loadBindings()).filter(
+    const configuredBindings = (
+      cdesktop
+        ? options.cdesktopBindings ||
+          loadBindings(process.env.CDESKTOP_BINDINGS_FILE || "")
+        : options.bindings || loadBindings()
+    ).filter(
       (b) =>
         b.instance === ctx.instanceId && b.team === team && b.user === user,
     );
@@ -385,6 +408,7 @@ export function registerWorkbenchRoutes(
           label: b.label,
           ...(b.webUrl ? { webUrl: b.webUrl } : {}),
         })),
+        ...(cdesktop ? { ready: bindings.length > 0 } : {}),
         projectRuntimes: configuredBindings
           .filter((b) => b.manageProjects)
           .map((b) => ({ id: b.id, label: b.label })),
@@ -436,10 +460,12 @@ export function registerWorkbenchRoutes(
         task.creator_user_id !== user
       )
         return c.json(
-          { error: "Only the task creator can send this task to Orca." },
+          {
+            error: `Only the task creator can send this task to ${runtimeLabel}.`,
+          },
           403,
         );
-      const key = `handoff:${ctx.instanceId}:${team}:${input.taskId}`;
+      const key = `${handoffTable}:${ctx.instanceId}:${team}:${input.taskId}`;
       if (busy.has(key))
         return c.json(
           { error: "A handoff is already in progress. Refresh its status." },
@@ -449,7 +475,7 @@ export function registerWorkbenchRoutes(
       try {
         const row = db
           .prepare(
-            "SELECT owner,body FROM orca_handoffs WHERE instance=? AND team=? AND task=?",
+            `SELECT owner,body FROM ${handoffTable} WHERE instance=? AND team=? AND task=?`,
           )
           .get(ctx.instanceId, team, input.taskId);
         if (row && row.owner !== user)
@@ -514,8 +540,7 @@ export function registerWorkbenchRoutes(
         )
           return c.json(
             {
-              error:
-                "A handoff already exists. Open it in Orca or refresh its status.",
+              error: `A handoff already exists. Open it in ${runtimeLabel} or refresh its status.`,
             },
             409,
           );
@@ -526,13 +551,13 @@ export function registerWorkbenchRoutes(
         );
         if (!binding || (!handoff && !input.agent))
           return c.json(
-            { error: "Choose an available Orca project and agent." },
+            { error: `Choose an available ${runtimeLabel} project and agent.` },
             400,
           );
         const save = () =>
           db
             .prepare(
-              "INSERT INTO orca_handoffs VALUES(?,?,?,?,?) ON CONFLICT(instance,team,task) DO UPDATE SET body=excluded.body",
+              `INSERT INTO ${handoffTable} VALUES(?,?,?,?,?) ON CONFLICT(instance,team,task) DO UPDATE SET body=excluded.body`,
             )
             .run(
               ctx.instanceId,
@@ -625,11 +650,17 @@ export function registerWorkbenchRoutes(
               : await runner.read(binding, handoff.id);
           if (receipt.id !== handoff.id)
             throw Error("Receipt identity mismatch");
+          if (cdesktop && receipt.webUrl) {
+            if (
+              !binding.webUrl ||
+              new URL(receipt.webUrl).origin !== new URL(binding.webUrl).origin
+            )
+              throw Error("Unexpected cdesktop session origin");
+          }
           handoff.receipt = receipt;
           delete handoff.error;
         } catch {
-          handoff.error =
-            "Orca has not confirmed the handoff. Retry this saved handoff; it will reuse the same worktree request.";
+          handoff.error = `${runtimeLabel} has not confirmed the handoff. Retry this saved handoff; it will reuse the same worktree request.`;
         }
         save();
         return c.json({ handoff });

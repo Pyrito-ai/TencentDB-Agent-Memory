@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { request, type Options, type WorkerReceipt } from './api';
+import { CdesktopTaskHandoff } from './CdesktopTaskHandoff';
+import { RuntimePicker, type WorkbenchRuntime } from './RuntimePicker';
 import './workbench.css';
 
 type AgentProfile = {
@@ -19,6 +21,33 @@ type Handoff = {
   error?: string;
 };
 export function TaskHandoff({ team, taskId }: { team: string; taskId: string }) {
+  const [runtime, setRuntime] = useState<WorkbenchRuntime>('orca');
+  const [visitedCdesktop, setVisitedCdesktop] = useState(false);
+  return (
+    <div className="task-handoff-runtimes">
+      <div className="task-handoff-runtime-heading">
+        <strong>Open a work session</strong>
+        <RuntimePicker
+          runtime={runtime}
+          onChange={(next) => {
+            setRuntime(next);
+            if (next === 'cdesktop') setVisitedCdesktop(true);
+          }}
+        />
+      </div>
+      <div hidden={runtime !== 'orca'}>
+        <OrcaTaskHandoff team={team} taskId={taskId} />
+      </div>
+      {visitedCdesktop && (
+        <div hidden={runtime !== 'cdesktop'}>
+          <CdesktopTaskHandoff team={team} taskId={taskId} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function OrcaTaskHandoff({ team, taskId }: { team: string; taskId: string }) {
   const [options, setOptions] = useState<Options>();
   const [handoff, setHandoff] = useState<Handoff | null>(null);
   const [binding, setBinding] = useState('');
@@ -290,6 +319,37 @@ export function TaskHandoff({ team, taskId }: { team: string; taskId: string }) 
               {handoff.error && <p role="alert">{handoff.error}</p>}
               {handoff.receipt?.worktree && <p>Worktree: {handoff.receipt.worktree}</p>}
               {handoff.receipt?.notice && <p>{handoff.receipt.notice}</p>}
+              <details className="handoff-receipt">
+                <summary>Orca session receipt</summary>
+                <dl>
+                  <dt>Handoff</dt>
+                  <dd>{handoff.id}</dd>
+                  {handoff.receipt?.id && (
+                    <>
+                      <dt>Receipt</dt>
+                      <dd>{handoff.receipt.id}</dd>
+                    </>
+                  )}
+                  {handoff.receipt?.native?.runId && (
+                    <>
+                      <dt>Run</dt>
+                      <dd>{handoff.receipt.native.runId}</dd>
+                    </>
+                  )}
+                  {handoff.receipt?.native?.taskId && (
+                    <>
+                      <dt>Task</dt>
+                      <dd>{handoff.receipt.native.taskId}</dd>
+                    </>
+                  )}
+                  {handoff.receipt?.native?.dispatchId && (
+                    <>
+                      <dt>Dispatch</dt>
+                      <dd>{handoff.receipt.native.dispatchId}</dd>
+                    </>
+                  )}
+                </dl>
+              </details>
               {!handoff.receipt && (
                 <button disabled={busy} onClick={() => void act('handoff-launch')}>
                   Retry saved handoff

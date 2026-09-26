@@ -146,6 +146,19 @@ beforeEach(async () => {
   close = registerWorkbenchRoutes(app, deps, {
     root,
     boardRoot: root,
+    cdesktopBindings: [
+      {
+        id: "cd1",
+        label: "cdesktop trial",
+        instance: "default",
+        team: "team",
+        user: "alice",
+        repo: "trial-repo",
+        url: "http://127.0.0.1:8793",
+        token: "c".repeat(32),
+        webUrl: "http://127.0.0.1:5190",
+      },
+    ],
     bindings: [
       {
         id: "r1",
@@ -161,6 +174,98 @@ beforeEach(async () => {
     runner: { launch, read },
     coordinator: { plan, review },
   });
+});
+
+test("same task can be compared in Orca and cdesktop without replacing either handoff", async () => {
+  const orca = await (
+    await req("handoff-launch", {
+      taskId: "task",
+      binding: "r1",
+      agent: "codex",
+      profileId: "designer",
+    })
+  ).json();
+  const trial = await (
+    await req("cdesktop-handoff-launch", {
+      taskId: "task",
+      binding: "cd1",
+      agent: "codex",
+      profileId: "designer",
+    })
+  ).json();
+  expect(trial.handoff.id).not.toBe(orca.handoff.id);
+  expect(trial.handoff.spec).toBe(orca.handoff.spec);
+  expect(trial.handoff.spec).toContain(profilePrompt);
+  expect(launch).toHaveBeenNthCalledWith(
+    2,
+    expect.objectContaining({ id: "cd1" }),
+    trial.handoff.id,
+    "codex",
+    trial.handoff.spec,
+  );
+  expect(
+    (await (await req("handoff-get", { taskId: "task" })).json()).handoff.id,
+  ).toBe(orca.handoff.id);
+  expect(
+    (await (await req("cdesktop-handoff-get", { taskId: "task" })).json())
+      .handoff.id,
+  ).toBe(trial.handoff.id);
+  await req("cdesktop-handoff-launch", {
+    taskId: "task",
+    binding: "cd1",
+    agent: "codex",
+    profileId: "designer",
+  });
+  expect(launch).toHaveBeenCalledTimes(2);
+  expect(plan).not.toHaveBeenCalled();
+});
+
+test("cdesktop trial enforces its own runtime, owner and action boundary", async () => {
+  expect(
+    (
+      await req("cdesktop-handoff-launch", {
+        taskId: "task",
+        binding: "r1",
+        agent: "codex",
+      })
+    ).status,
+  ).toBe(400);
+  expect(
+    (
+      await req("cdesktop-handoff-launch", {
+        taskId: "foreign",
+        binding: "cd1",
+        agent: "codex",
+      })
+    ).status,
+  ).toBe(403);
+  expect(
+    (await req("cdesktop-handoff-get", { taskId: "task" }, "outsider")).status,
+  ).toBe(403);
+  expect(
+    (await req("cdesktop-plan", { objective: "Bypass direct trial" })).status,
+  ).toBe(404);
+  expect(
+    (await (await req("cdesktop-options", undefined, "bob")).json()).bindings,
+  ).toEqual([]);
+  expect(launch).not.toHaveBeenCalled();
+});
+
+test("cdesktop does not expose an untrusted receipt origin", async () => {
+  launch.mockImplementation(async (_binding, id) => ({
+    id,
+    state: "running",
+    webUrl: "https://foreign.example/session",
+  }));
+  const result = await (
+    await req("cdesktop-handoff-launch", {
+      taskId: "task",
+      binding: "cd1",
+      agent: "codex",
+    })
+  ).json();
+  expect(result.handoff.error).toContain("has not confirmed");
+  expect(result.handoff.receipt).toBeUndefined();
 });
 afterEach(async () => {
   close();
@@ -681,69 +786,79 @@ test("direct handoff rejects mismatched worker evidence", async () => {
   expect(saved.error).toBeTruthy();
 });
 
-test("direct handoff includes inherited and task Wiki pages and refuses revoked sources", async () => {
-  const ref = (path: string) => ({
-    kind: "wiki_page",
-    wikiId: "wiki",
-    ref: path,
-  });
-  expect(
-    (
-      await req("context-save", {
-        kind: "project",
-        id: "p",
-        revision: 0,
-        references: [ref("project.md")],
-      })
-    ).status,
-  ).toBe(200);
-  expect(
-    (
-      await req("context-save", {
-        kind: "task",
-        id: "task",
-        revision: 0,
-        references: [ref("task.md")],
-      })
-    ).status,
-  ).toBe(200);
-  wikiAllowed = false;
-  expect(
-    (
-      await req("handoff-launch", {
-        taskId: "task",
-        binding: "r1",
-        agent: "claude",
-      })
-    ).status,
-  ).toBe(409);
-  expect(launch).not.toHaveBeenCalled();
-  wikiAllowed = true;
-  const response = await req("handoff-launch", {
-    taskId: "task",
-    binding: "r1",
-    agent: "claude",
-  });
-  expect(response.status).toBe(200);
-  const handoff = (await response.json()).handoff;
-  expect(launch.mock.calls[0][3]).toContain("Verified Wiki context project.md");
-  expect(launch.mock.calls[0][3]).toContain("Verified Wiki context task.md");
-  expect(handoff.context.references).toHaveLength(2);
-  expect(handoff.context.hash).toHaveLength(64);
-  wikiAllowed = false;
-  expect((await req("handoff-get", { taskId: "task" })).status).toBe(409);
-  expect(
-    (
-      await req("handoff-launch", {
-        taskId: "task",
-        binding: "r1",
-        agent: "claude",
-      })
-    ).status,
-  ).toBe(409);
-  expect(launch).toHaveBeenCalledTimes(1);
-  expect(plan).not.toHaveBeenCalled();
-});
+test.each([
+  ["", "r1"],
+  ["cdesktop-", "cd1"],
+])(
+  "%s direct handoff includes inherited and task Wiki pages and refuses revoked sources",
+  async (prefix, binding) => {
+    const ref = (path: string) => ({
+      kind: "wiki_page",
+      wikiId: "wiki",
+      ref: path,
+    });
+    expect(
+      (
+        await req("context-save", {
+          kind: "project",
+          id: "p",
+          revision: 0,
+          references: [ref("project.md")],
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await req("context-save", {
+          kind: "task",
+          id: "task",
+          revision: 0,
+          references: [ref("task.md")],
+        })
+      ).status,
+    ).toBe(200);
+    wikiAllowed = false;
+    expect(
+      (
+        await req(`${prefix}handoff-launch`, {
+          taskId: "task",
+          binding,
+          agent: "claude",
+        })
+      ).status,
+    ).toBe(409);
+    expect(launch).not.toHaveBeenCalled();
+    wikiAllowed = true;
+    const response = await req(`${prefix}handoff-launch`, {
+      taskId: "task",
+      binding,
+      agent: "claude",
+    });
+    expect(response.status).toBe(200);
+    const handoff = (await response.json()).handoff;
+    expect(launch.mock.calls[0][3]).toContain(
+      "Verified Wiki context project.md",
+    );
+    expect(launch.mock.calls[0][3]).toContain("Verified Wiki context task.md");
+    expect(handoff.context.references).toHaveLength(2);
+    expect(handoff.context.hash).toHaveLength(64);
+    wikiAllowed = false;
+    expect((await req(`${prefix}handoff-get`, { taskId: "task" })).status).toBe(
+      409,
+    );
+    expect(
+      (
+        await req(`${prefix}handoff-launch`, {
+          taskId: "task",
+          binding,
+          agent: "claude",
+        })
+      ).status,
+    ).toBe(409);
+    expect(launch).toHaveBeenCalledTimes(1);
+    expect(plan).not.toHaveBeenCalled();
+  },
+);
 
 test("direct handoff snapshots the selected profile and preserves it on retry", async () => {
   launch.mockRejectedValueOnce(Error("unconfirmed"));

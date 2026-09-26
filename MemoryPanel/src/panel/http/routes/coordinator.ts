@@ -210,7 +210,7 @@ export function registerCoordinatorRoutes(
         headers: {
           "Content-Type": "application/json",
           "X-Tdai-Service-Id": ctx.instanceId,
-          "X-Tdai-User-Key": c.req.header("X-Tdai-User-Key") || "",
+          "X-Tdai-User-Key": ctx.userKey || "",
         },
         ...(a.method === "POST" ? { body: JSON.stringify(args) } : {}),
       });

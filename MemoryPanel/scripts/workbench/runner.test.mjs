@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -8,6 +9,7 @@ import { createBridge } from "./runner.mjs";
 test("private runner enforces allowlist, persists idempotency, and reads the Orca envelope", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "orca-bridge-"));
   const calls = [];
+  const responseLocks = [];
   const token = "x".repeat(32);
   const command = async (args) => {
     calls.push(args);
@@ -24,6 +26,18 @@ test("private runner enforces allowlist, persists idempotency, and reads the Orc
       root,
       repos: ["id:repo"],
       command,
+    });
+    // Observe the exact response boundary, so the regression does not depend
+    // on a client retry winning a race against asynchronous lock removal.
+    server.prependListener("request", (_req, res) => {
+      const end = res.end;
+      res.end = function (...args) {
+        if (res.statusCode === 200)
+          responseLocks.push(
+            readdirSync(root).some((name) => name.endsWith(".lock")),
+          );
+        return end.apply(this, args);
+      };
     });
     await new Promise((r) => server.listen(0, "127.0.0.1", r));
     base = `http://127.0.0.1:${server.address().port}`;
@@ -53,6 +67,11 @@ test("private runner enforces allowlist, persists idempotency, and reads the Orc
     );
     const first = await (await post(input)).json();
     assert.equal(first.state, "running");
+    assert.equal(
+      responseLocks.at(-1),
+      false,
+      "release the job lock before acknowledging launch",
+    );
     assert.equal(calls.length, 1);
     assert.ok(calls[0].includes(input.spec));
     assert.ok(calls[0].includes("--no-parent"));
@@ -71,6 +90,7 @@ test("private runner enforces allowlist, persists idempotency, and reads the Orc
     assert.equal(read.output, "evidence line");
     assert.equal(read.state, "running");
     assert.equal(read.fingerprint, undefined);
+    assert.deepEqual(responseLocks, [false, false, false, false]);
   } finally {
     await stop();
     await rm(root, { recursive: true, force: true });

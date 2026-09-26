@@ -98,14 +98,8 @@ export async function createBridge({
     } = job;
     return redactNativeSecrets(data);
   };
-  return http.createServer(async (req, res) => {
-    const reply = (status, data) => {
-      res.writeHead(status, {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      });
-      res.end(JSON.stringify(data));
-    };
+  const dispatch = async (req) => {
+    const reply = (status, data) => ({ status, body: JSON.stringify(data) });
     const supplied = Buffer.from(req.headers.authorization || "");
     const expected = Buffer.from("Bearer " + token);
     if (
@@ -515,6 +509,16 @@ export async function createBridge({
         error: "Runner operation failed. Inspect the runtime locally.",
       });
     }
+  };
+  return http.createServer(async (req, res) => {
+    // Complete the handler's finally blocks (including durable lock removal)
+    // before acknowledging it, so an immediate retry can read its receipt.
+    const { status, body } = await dispatch(req);
+    res.writeHead(status, {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    });
+    res.end(body);
   });
 }
 if (

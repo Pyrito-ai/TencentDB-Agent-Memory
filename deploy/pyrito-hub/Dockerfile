@@ -1,4 +1,5 @@
 # Build our Panel while retaining the pinned upstream Knowledge runtime.
+# Deploy with deploy/pyrito-core/Dockerfile; upstream Core lacks the board API.
 FROM node:22-slim AS panel
 WORKDIR /build/panel
 COPY MemoryPanel/package.json MemoryPanel/package-lock.json ./

@@ -96,7 +96,7 @@ jobs:
         run: python3 scripts/workbench/ssh-runtime-tunnel.test.py
 
   web-build:
-    name: Web Production Build
+    name: Web Lint and Production Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -109,6 +109,7 @@ jobs:
           cache: npm
           cache-dependency-path: MemoryPanel/web/package-lock.json
       - run: npm ci
+      - run: npm run lint:check
       - run: npm run build
 
   # ── 2. Pack validation ─────────────────────────────────────

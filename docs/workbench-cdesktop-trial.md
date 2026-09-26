@@ -36,10 +36,11 @@ handoffs do not invoke the Coordinator model or OpenRouter.
 - Process completion means review is required. No automatic task completion,
   merge, push or deployment occurs.
 
-This is a **single-owner local trial**. cdesktop's native API assumes a trusted
+This is a **single-owner runtime trial**. cdesktop's native API assumes a trusted
 local user; do not expose its port publicly or treat an iframe as tenant
-isolation. Hosted embedding needs an authenticated transport for assets, API,
-WebSocket traffic and reconnects before rollout to the hosted Tencent app.
+isolation. The hosted Tencent page can embed this owner's loopback UI on the
+same Mac (deployment below). Access from another device would need an
+authenticated transport for assets, API, WebSocket traffic and reconnects.
 
 ## Runtime configuration
 
@@ -105,8 +106,8 @@ bridge and handoff table throughout; there is no cutover to reverse.
 
 ## Live comparison, 2026-09-26
 
-The local app at `http://127.0.0.1:5187` has both runtimes enabled. Production
-Tencent has not been changed by this trial. cdesktop's frontend runs on 5190,
+The initial local comparison at `http://127.0.0.1:5187` enabled both runtimes
+before the subsequent hosted deployment below. cdesktop's frontend runs on 5190,
 native API on 8131, preview proxy on 8132, and authenticated bridge on 8793.
 Orca retains its original bridge on 8791 and web surface on 5188.
 
@@ -140,8 +141,8 @@ Existing global Codex MCP and skill configuration produces startup warnings in
 the cdesktop transcript. They did not prevent this task completing. Global
 credentials and MCP configuration were not modified. Handoff status tracks the
 initial dispatched process; subsequent native chat turns are viewed in
-cdesktop. Public hosting and multi-user runtime access remain outside this
-local trial.
+cdesktop. Public runtime exposure and multi-user runtime access remain outside
+this trial.
 
 ### Checks and limits
 
@@ -158,8 +159,75 @@ format/lint checks were used. Repository-wide Rust formatting reports existing
 unrelated upstream differences, and the unused remote-web package has existing
 type errors. Those packages/files were not expanded into this trial.
 
-Browser automation could read the embedded cdesktop session but could not click
+During the initial local check, browser automation could read the embedded cdesktop session but could not click
 its cross-origin controls in this tool environment. Diff and follow-up actions
 were therefore verified in a temporary direct tab against the same embedded
 route and session. The user-facing Workbench retains the session in its iframe;
 ordinary workflow navigation does not open another browser window.
+
+## Hosted deployment, 2026-09-26
+
+Tencent Hub now serves the comparison build at
+`https://tencent.167.235.234.97.sslip.io/`. Hub image:
+`pyrito/tencent-memory-hub:cdesktop-6eb0887`, source `6eb0887`. The local
+cdesktop fork is checkpoint `ef0014d` on `workbench-embed`. Core and Model Proxy
+retain their existing images and data. Coolify service remains
+`7gz2gpmjasxuzhuxowhe7yxd`.
+
+The hosted Panel reaches the bearer-authenticated local cdesktop bridge through
+the private SSH-forwarded Unix socket
+`/data/knowledge/workbench/cdesktop.sock`. Its new binding file is
+`/data/knowledge/workbench/cdesktop-bindings.json`, scoped to the existing owner
+and team. Orca retains its own socket, token, and handoff records. The existing
+comparison task's two receipts were imported additively; no existing production
+handoff was overwritten or relaunched.
+
+The browser loads cdesktop from `http://127.0.0.1:5190` inside the hosted page.
+Its API and WebSockets remain on the Mac. The existing Orca binding also exposes
+its loopback web view at `http://127.0.0.1:5188/web-index.html`. Orca's browser
+view may require its normal pairing in this hosted-page browser context;
+desktop dispatch remains independent of that pairing.
+
+**Testing requirements:** use this Mac, keep the local runtimes/bridges and SSH
+tunnels running, and keep the Mac awake. Another device's `127.0.0.1` does not
+reach this Mac. No automatic Mac-login startup is configured. Browser local
+network permission, if requested, belongs to the user; no browser protections
+were disabled. The Codex in-app browser loaded cdesktop without a prompt.
+
+The two tunnel commands in the parent workspace remain
+`python3 work/run-production-orca-tunnel.py` and
+`python3 work/run-production-cdesktop-tunnel.py`. They invoke the tested
+`MemoryPanel/scripts/workbench/ssh-runtime-tunnel.py` with private configuration
+files. The launcher verifies the pinned SSH host key, holds a per-destination
+lock, preserves active/non-socket paths, and removes only an unchanged, refused,
+unbound stale socket before reconnecting. The server's effective
+`StreamLocalBindUnlink` is `no`. Twenty-two focused launcher tests pass.
+
+Verified on the live HTTPS app:
+
+- Healthy replacement Hub container and exact new frontend bundle.
+- Four owner-scoped cdesktop bindings and the original Orca project catalog.
+- Both comparison receipt IDs preserved; read-only sync reaches both bridges.
+- Existing Baren Orca handoff retained. Missing/invalid credentials cannot read
+  cdesktop bindings (400 missing required auth context / 401 invalid key).
+- cdesktop rendered under the global Coordinator and navigation. Clicking
+  Changes inside the iframe showed `WORKBENCH_COMPARISON_OK`.
+- Sending a read-only message inside that same iframe returned
+  `DEPLOYED_WORKBENCH_OK`, using `gpt-5.6-sol` medium with the Workbench profile.
+
+### Recovery
+
+Consistent pre-release Hub volume archive and configuration are under
+`/opt/tencent-workbench/6eb0887/backup/`:
+`hub-data.tgz`, `rendered-compose.yml`, `cdesktop-compose-before.yml`, and
+`orca-bindings-before.json`. The previous image
+`pyrito/tencent-memory-hub:icon-ec9d3c9` is retained. These are on-server release
+backups, not a scheduled/off-server backup system.
+
+For application rollback, restore the saved raw service definition through
+Coolify, restore the rendered compose and prior Orca binding, then recreate
+only `memory-hub` with `--no-deps --pull never`. Preserve current data unless a
+data rollback is specifically necessary; restoring the archive discards writes
+made since deployment. The new handoff table is additive and can remain in the
+database when running the previous image. Stop only the cdesktop tunnel to
+disable its remote handoff connection while preserving Orca.

@@ -26,6 +26,11 @@
 
 set -euo pipefail
 
+# Git reports repository-relative paths, while this guard's rules are relative
+# to MemoryCore. Anchor both the working directory and changed paths to Core.
+CORE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$CORE_ROOT"
+
 if [[ "${SKIP_SKILL_QUEUE_ISOLATION:-0}" == "1" ]]; then
   echo "[skill-queue-isolation] SKIP_SKILL_QUEUE_ISOLATION=1，跳过红线检查（不推荐）"
   exit 0
@@ -72,6 +77,9 @@ case "$MODE" in
     fi
     ;;
 esac
+
+CORE_PREFIX="$(git rev-parse --show-prefix)"
+CHANGED=$(printf '%s\n' "$CHANGED" | awk -v prefix="$CORE_PREFIX" 'index($0, prefix) == 1 { print substr($0, length(prefix) + 1) }')
 
 if [[ -z "$CHANGED" ]]; then
   echo "[skill-queue-isolation] 无文件变更，pass"

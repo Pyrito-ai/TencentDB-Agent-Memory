@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, feat/server_team]
 
 # Cancel previous runs for the same PR / branch
 concurrency:
@@ -35,6 +35,81 @@ jobs:
       - name: npm install
         if: steps.cache-deps.outputs.cache-hit != 'true'
         run: npm install --ignore-scripts
+
+  core-tests:
+    name: Core Task Board
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Restore Core dependencies
+        uses: actions/cache@v4
+        with:
+          path: MemoryCore/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('MemoryCore/package.json') }}
+      - run: npm run test:board
+
+  panel-tests:
+    name: Panel Typecheck and Tests
+    needs: install
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MemoryPanel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: MemoryPanel/package-lock.json
+      # Panel tests import schemas from Core, which resolve Core's dependencies.
+      - name: Restore Core dependencies
+        uses: actions/cache@v4
+        with:
+          path: MemoryCore/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('MemoryCore/package.json') }}
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  bridge-tests:
+    name: Workbench Bridge Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MemoryPanel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Node bridge tests
+        run: node --test scripts/workbench/*.test.mjs
+      - name: SSH runtime tunnel tests
+        run: python3 scripts/workbench/ssh-runtime-tunnel.test.py
+
+  web-build:
+    name: Web Production Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MemoryPanel/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: MemoryPanel/web/package-lock.json
+      - run: npm ci
+      - run: npm run build
 
   # ── 2. Pack validation ─────────────────────────────────────
   pack:
@@ -153,7 +228,7 @@ jobs:
       - name: Run isolation guard
         env:
           BASE_REF: origin/${{ github.base_ref || 'main' }}
+          MODE: base-diff
         run: |
           git fetch origin "${{ github.base_ref || 'main' }}" --depth=50 || true
           bash scripts/ci/check-skill-queue-isolation.sh
-

@@ -60,9 +60,7 @@ function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
     <div className="native-workbench cdesktop-workbench">
       <section className="native-orca" aria-label="cdesktop workspace">
         <header className="native-orca-toolbar">
-          <strong>
-            cdesktop <span className="runtime-trial">trial</span>
-          </strong>
+          <strong>cdesktop</strong>
           {taskId && <a href={boardTaskUrl(taskId)}>Back to task</a>}
           <div />
           {handoff && (
@@ -111,7 +109,7 @@ function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
           <div className="orca-connection-empty">
             <PanelsTopLeft size={28} aria-hidden="true" />
             <strong>
-              {handoff?.receipt ? 'cdesktop session saved' : 'Try a task in cdesktop'}
+              {handoff?.receipt ? 'cdesktop session saved' : 'Open a task in cdesktop'}
             </strong>
             <p>
               {handoff?.receipt

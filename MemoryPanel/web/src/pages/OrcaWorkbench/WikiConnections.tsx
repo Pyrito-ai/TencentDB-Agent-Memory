@@ -123,7 +123,7 @@ export function WikiConnections({
       </div>
       <p>
         {kind === 'project'
-          ? 'These pages are included when a task in this project is sent to Orca.'
+          ? 'These pages are included when a task in this project is sent to a worker.'
           : 'Project links are inherited. Add pages specific to this task below.'}
       </p>
       {error && <p role="alert">{error}</p>}

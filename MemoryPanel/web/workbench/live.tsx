@@ -21,7 +21,7 @@ function Live() {
   return (
     <>
       <header style={{ font: '12px system-ui', padding: '10px', background: '#eef6ef' }}>
-        LIVE WORKBENCH · Coordinator calls use API billing · Approved workers execute in Orca{' '}
+        LIVE WORKBENCH · Coordinator calls use API billing · Approved workers execute in cdesktop{' '}
         <select aria-label="Tencent team" value={team} onChange={(e) => setTeam(e.target.value)}>
           {teams.map((t) => (
             <option key={t.id} value={t.id}>

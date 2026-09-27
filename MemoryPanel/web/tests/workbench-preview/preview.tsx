@@ -350,7 +350,7 @@ createRoot(document.getElementById('root')!).render(
         font: '11px system-ui',
       }}
     >
-      DEMO ONLY · This coordinator never sends tasks to Orca.{' '}
+      DEMO ONLY · This coordinator never launches workers.{' '}
       <a href="/workbench/index.html">Open live Workbench</a>
     </div>
     <Workspace team="preview" />

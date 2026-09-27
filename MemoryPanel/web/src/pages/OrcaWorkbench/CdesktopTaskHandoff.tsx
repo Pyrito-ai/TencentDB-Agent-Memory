@@ -105,10 +105,7 @@ export function CdesktopTaskHandoff({
   return (
     <section className="task-execution cdesktop-handoff" aria-label="Send task to cdesktop">
       <div className="task-execution-heading">
-        <strong>
-          {handoff ? 'cdesktop session' : 'Send to cdesktop'}{' '}
-          <small className="runtime-trial">trial</small>
-        </strong>
+        <strong>{handoff ? 'cdesktop session' : 'Send to cdesktop'}</strong>
         {!embedded && <a href={workbenchUrl('cdesktop', taskId)}>Open Workbench</a>}
       </div>
       {error && <p role="alert">{error}</p>}
@@ -122,8 +119,8 @@ export function CdesktopTaskHandoff({
         <>
           {!options?.ready || !options.bindings.length ? (
             <p>
-              cdesktop is not connected for this team yet. Configure a cdesktop project to try it
-              here.
+              cdesktop is not connected for this team yet. Configure a cdesktop project to open work
+              sessions here.
             </p>
           ) : (
             <>

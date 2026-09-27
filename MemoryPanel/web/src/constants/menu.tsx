@@ -52,7 +52,7 @@ export function usePageMeta(): Record<PageId, PageMeta> {
   const { t } = useTranslation();
   return {
     projects: { id: 'projects', label: 'Projects', group: t('menu.group.workbench'), order: 0.5 },
-    orca_workbench: { id: 'orca_workbench', label: 'Workbench', desc: 'Coordinate subscription workers with Orca', group: t('menu.group.workbench'), order: 3 },
+    orca_workbench: { id: 'orca_workbench', label: 'Workbench', desc: 'Work with connected subscription workers', group: t('menu.group.workbench'), order: 3 },
     workbench_board: { id: 'workbench_board', label: t('menu.workbench_board'), desc: t('menu.desc.workbench_board'), group: t('menu.group.workbench'), order: 0, affix: true },
     today: { id: 'today', label: 'Today', group: t('menu.group.workbench'), order: -2 },
     upcoming: { id: 'upcoming', label: 'Upcoming', group: t('menu.group.workbench'), order: -1 },

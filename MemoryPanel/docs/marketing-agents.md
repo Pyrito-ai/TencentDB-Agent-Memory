@@ -38,6 +38,10 @@ handoff. Package/resource integrity is checked before delivery.
 
 ## Tools, Wiki, and memory boundaries
 
+The proposed connection-management work is recorded separately in the
+[Agent Connections & MCP Access build specification](agent-connections-mcp-build-spec.md).
+It is a plan, not functionality supplied by this catalog or importer.
+
 Importing these packages creates instructions and native resources. It does not
 install global skills, connectors, MCP servers, runtime dependencies, credentials,
 or paid service subscriptions. Included scripts are source files until a worker

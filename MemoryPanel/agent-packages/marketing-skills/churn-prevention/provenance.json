@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "package": "churn-prevention",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/churn-prevention",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "e4c2ea2466eaeeaede223377160c2278c0d975eb6d6d2616a689213cc19da9c7",
+      "bytes": 2799,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "e4f65802e5417b0c17c714bdc0545c27bbdfd6d94bf09ba39bb674b7a4873a34",
+      "bytes": 6410,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "88fd25b77e44ef3689d68d54091df9659a40f5e905c8bdeb09bdeed3f049ad67",
+      "bytes": 18420,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/churn-prevention/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "212ed9215b39190ac30bbb186f62ff343233b68d7b9d4a4ebd740cda290cda7d",
+      "bytes": 6662,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/churn-prevention/evals/evals.json"
+    },
+    "skill/references/cancel-flow-patterns.md": {
+      "sha256": "d64b9282b956da6831ec97a1fffda5841c5c43a71721b512b66b04bde104c139",
+      "bytes": 10650,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/churn-prevention/references/cancel-flow-patterns.md"
+    },
+    "skill/references/dunning-playbook.md": {
+      "sha256": "95afe21035cb81769ef0024de08806fec31073eb507a806f05b6b18b70e259a1",
+      "bytes": 12688,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/churn-prevention/references/dunning-playbook.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/integrations/posthog.md": {
+      "sha256": "892190695fa7978e18c1ee1a8bad089e6a57226701b8899479702e1f202f401c",
+      "bytes": 2869,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/posthog.md"
+    }
+  }
+}

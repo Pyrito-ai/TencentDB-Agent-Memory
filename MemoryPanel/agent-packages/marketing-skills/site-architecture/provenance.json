@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "package": "site-architecture",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/site-architecture",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "5f54b8f16b531487349df6ec043efda21cec4a03e85a1bba3fe92d2302184396",
+      "bytes": 2777,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "dfb59cb80fd82c3f3e5faa6c4ad4dd6483932d8308f5ee612b9e541dd523dcbc",
+      "bytes": 5989,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "a47f693c6a4f45db89276d8c341b3aa3054090cc8002dd4a2635448d7d152492",
+      "bytes": 13668,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/site-architecture/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "64b76ab82488fd168919fad1b038b7117392ff9748a835104ddde95aac4a5cee",
+      "bytes": 6089,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/site-architecture/evals/evals.json"
+    },
+    "skill/references/mermaid-templates.md": {
+      "sha256": "362190c7d3f419d5f445170f1fb17beecc163937d2068922893b7a69eeb25f0f",
+      "bytes": 4922,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/site-architecture/references/mermaid-templates.md"
+    },
+    "skill/references/navigation-patterns.md": {
+      "sha256": "2efa772709b753e33d5018c007147ca30aaa95a04b04dc0df6227ea5a053078b",
+      "bytes": 10733,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/site-architecture/references/navigation-patterns.md"
+    },
+    "skill/references/site-type-templates.md": {
+      "sha256": "3c3cd7ce5e31c502dc071baf82bb58cb30f5edf4a2fd8ca052fbc8f3777db140",
+      "bytes": 9624,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/site-architecture/references/site-type-templates.md"
+    }
+  }
+}

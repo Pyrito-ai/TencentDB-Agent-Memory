@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "package": "marketing-loops",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/marketing-loops",
+    "skillVersion": "1.2.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "741fc576b7a3448dad1a8ee46f2f0569e617ff4334b1ccbfd605c456b86bbebd",
+      "bytes": 2877,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "6daf64835875e0d0c5f7b82427c917786f820ba4e60f5461581ec99f9e57b5de",
+      "bytes": 12034,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "db4ba419ee74c7ef4c6dacffdf92fa4038e720640a4b4b95e8766ad9ff269898",
+      "bytes": 9044,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "07a7b55804fa86e3111e45f36f5c363afa6e00b67d3fcadfa37b0e26aba56892",
+      "bytes": 7983,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/evals/evals.json"
+    },
+    "skill/references/loop-catalog.md": {
+      "sha256": "1b3116585d8098157606c8e93cc05ef23d947537364f487331c05b85bb7bbd4e",
+      "bytes": 45458,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/references/loop-catalog.md"
+    },
+    "skill/references/loop-guardrails.md": {
+      "sha256": "a93cdb67d28773d72e789c937a26f3062129c8a0076018ac24269d52e7a31e46",
+      "bytes": 4998,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/references/loop-guardrails.md"
+    },
+    "skill/references/loop-orchestration.md": {
+      "sha256": "9b09e6c8ed7d6f9c1e035d110b1d2289d89c2102247acf5ba6bcc959a62b628a",
+      "bytes": 4813,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/references/loop-orchestration.md"
+    },
+    "skill/references/loop-state.md": {
+      "sha256": "ecb863ecc44944afe7dbb789d4b16a1ea80f045713b8d443bdcb414a4d17547e",
+      "bytes": 3818,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/references/loop-state.md"
+    },
+    "skill/references/loop-template.md": {
+      "sha256": "695fde57b9b0735e49b5fc718b0e8eb726808c08b19bea89056f8913cf1bff26",
+      "bytes": 5122,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-loops/references/loop-template.md"
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "package": "marketing-plan",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/marketing-plan",
+    "skillVersion": "1.1.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "8095580802f4f699942f4f6be65b64759f7e13d338a31f470e327296c82f7776",
+      "bytes": 2737,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "547df3f3d2aba8d6af96339e7281bff08182a24c9ac3f2d3eac8477a78543fbd",
+      "bytes": 13224,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "95722fc0566e139db44ab5d5b5e0f1174a0a2344baca6a3b266f86f8a266e88c",
+      "bytes": 24521,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "fb692a2620d3d5a0fdda319b6e00485a8c88ac95fe32ff3f4a8a441997c31609",
+      "bytes": 9693,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/evals/evals.json"
+    },
+    "skill/references/aarrr-framework.md": {
+      "sha256": "5c7bf583c2aa62e193789b6b1a88a978bf3ba9dc0c8c6653b53f7f62c0c1a0e3",
+      "bytes": 10766,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/aarrr-framework.md"
+    },
+    "skill/references/budget-planning.md": {
+      "sha256": "8f2a8870df26f713967abafad5b7869bedb7ed5e19840b7b712d23d15d4857a6",
+      "bytes": 8571,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/budget-planning.md"
+    },
+    "skill/references/client-types.md": {
+      "sha256": "06e3d0a6f3e9b7195a8c0b43d5186769d1554d1dfd8b1212aca220f9ce09fc01",
+      "bytes": 11386,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/client-types.md"
+    },
+    "skill/references/current-state-rubric.md": {
+      "sha256": "8ab1d4a4d16ec01c2bf61d83807c0abd857aadd82f3eeaf4e4842b4bbeff1f03",
+      "bytes": 11656,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/current-state-rubric.md"
+    },
+    "skill/references/example-quietude.md": {
+      "sha256": "63c002257ee1f6eaeb7c99c4ab9c650ea8bd8f7586c75e4565c2322faef82a04",
+      "bytes": 69116,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/example-quietude.md"
+    },
+    "skill/references/funding-stage-unlocks.md": {
+      "sha256": "49f073653ac32dd42b7e5e10c3deabd7adae8120c41baf0cf813ec20164c6488",
+      "bytes": 9797,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/funding-stage-unlocks.md"
+    },
+    "skill/references/growth-patterns.md": {
+      "sha256": "fafa84b8c3a62ed9c33c30fc25c7422e0d87b935de990d0acbf91889e1a053de",
+      "bytes": 13419,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/growth-patterns.md"
+    },
+    "skill/references/idea-cross-reference.md": {
+      "sha256": "350fa9c6f4cb4cd8f23698adb8479ae94cd6564a06b2b7cfcdf1430448e68d2f",
+      "bytes": 13418,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/idea-cross-reference.md"
+    },
+    "skill/references/measurement-framework.md": {
+      "sha256": "93d9bf9d9e624a6031a27ce61cf1617e3aa5a8fff57e1c6f80194f847234b745",
+      "bytes": 10845,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/measurement-framework.md"
+    },
+    "skill/references/methodology.md": {
+      "sha256": "59fd621b7fb694b9bbceaeb69f3711e4621d1a594598942e636058e2aa4afcc1",
+      "bytes": 16577,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/methodology.md"
+    },
+    "skill/references/ops-stack-mapping.md": {
+      "sha256": "9a506816d87ed176c0578d13bbf25c5f8398872d9002b3589e2dfa42ad17c907",
+      "bytes": 12221,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/ops-stack-mapping.md"
+    },
+    "skill/references/plan-template.md": {
+      "sha256": "bce84c2c3c31c9163a0849a1371aadb13f6ab8b29402e64b7d5b95c316a79656",
+      "bytes": 18735,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/plan-template.md"
+    },
+    "skill/references/team-and-agency-model.md": {
+      "sha256": "0c5e55c0992de4d5d24cd299eb46765a8986cb204ebd7c65bce32c868ae0d5f7",
+      "bytes": 14537,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-plan/references/team-and-agency-model.md"
+    }
+  }
+}

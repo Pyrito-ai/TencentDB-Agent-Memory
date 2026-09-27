@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "package": "pricing",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/pricing",
+    "skillVersion": "2.1.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "9518a6b42f21664d7a2774b5993931db27f0214032a0ba6d85569eb61eaeaeee",
+      "bytes": 2654,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "be44620c2558850ba0922d06f9d529ac14c69124b7fabd85c90a33119b7404b7",
+      "bytes": 6977,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "6cb88c2e944331c12f2fb83341ff16aba85a34629df11f4cffc7f611e4df6868",
+      "bytes": 13253,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/pricing/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "b0c88f299db5223ca2a9f27a9f61800bc63ee21fd845a53f5c92bb5695d0995f",
+      "bytes": 10154,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/pricing/evals/evals.json"
+    },
+    "skill/references/pricing-models.md": {
+      "sha256": "2cdb900b74f56a796c0331725e73eff4ecd84f8021b42efbb0a5b4903d1d9b16",
+      "bytes": 4681,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/pricing/references/pricing-models.md"
+    },
+    "skill/references/pricing-page-teardown.md": {
+      "sha256": "850b018a6b224bc9bd4149edb3f1cbae41991ba6ef1d9efb616dba9328790c4b",
+      "bytes": 7129,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/pricing/references/pricing-page-teardown.md"
+    },
+    "skill/references/research-methods.md": {
+      "sha256": "b6aab09860dbab2f11d69cc9c179cc7f6e1a100ede28e5c49b59070a2caaeb15",
+      "bytes": 4780,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/pricing/references/research-methods.md"
+    },
+    "skill/references/tier-structure.md": {
+      "sha256": "b59910d37cceb74484f28b065963daa60f5c4fb1ffc36a0584d0f3cad11f3e30",
+      "bytes": 7199,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/pricing/references/tier-structure.md"
+    }
+  }
+}

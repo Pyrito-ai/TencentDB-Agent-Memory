@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "package": "offers",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/offers",
+    "skillVersion": "1.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "6e0dafec81618d9780fd2dd8f06b5be745537c524a4dd6ed8f3b419157174f56",
+      "bytes": 2885,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "aa8ee1c3323ed8cd1e871438ee32e63734e86499ec8a9944a56919966cec6c6f",
+      "bytes": 7419,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "f27239be82e5d4ad42daa944fad7d0a640b80ca82697ba7399843437a001e5aa",
+      "bytes": 10006,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "b87e20bf1f392e216fea6f586befe632dd9d45895998108864a705fc8a4bc607",
+      "bytes": 2091,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/evals/evals.json"
+    },
+    "skill/references/bonus-stacking.md": {
+      "sha256": "872abbfd14501fd0b097f5ae62b9931571152d43b6690b57df5e65ab48aedfbd",
+      "bytes": 7758,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/bonus-stacking.md"
+    },
+    "skill/references/examples.md": {
+      "sha256": "f1033e181845effe8c659800aaf68523686be6bdcb1c5e256c87008e8ea638af",
+      "bytes": 10203,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/examples.md"
+    },
+    "skill/references/guarantee-design.md": {
+      "sha256": "daa421558b664fe5a335c6cb764d47755799662c79606551a848bba864255c29",
+      "bytes": 8173,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/guarantee-design.md"
+    },
+    "skill/references/offer-anatomy.md": {
+      "sha256": "0810080788bedc9b40dc0aba53109991aa816397f4b45e813289985eb8a64cad",
+      "bytes": 8857,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/offer-anatomy.md"
+    },
+    "skill/references/offer-formats.md": {
+      "sha256": "667d87198dcd3b5892151d33a917919141bc718822a2a4add3e9c100891755bb",
+      "bytes": 10557,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/offer-formats.md"
+    },
+    "skill/references/saas-offers.md": {
+      "sha256": "1b21638f0fd2e623f638c13f4b82e2d8c8ecb79d1324f0183f8322db5f5ceea3",
+      "bytes": 7869,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/saas-offers.md"
+    },
+    "skill/references/scarcity-urgency.md": {
+      "sha256": "4abe51a54188e6c93feb6cface92abc5c8e03212b8ade5bd9366ed159ad3f8f8",
+      "bytes": 7106,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/scarcity-urgency.md"
+    },
+    "skill/references/value-equation.md": {
+      "sha256": "4610ff358be2be643e7783884e628f01e1e0c56915a7924e5ccb92c096121eff",
+      "bytes": 7883,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/offers/references/value-equation.md"
+    }
+  }
+}

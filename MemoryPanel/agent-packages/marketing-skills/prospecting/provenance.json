@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "package": "prospecting",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/prospecting",
+    "skillVersion": "1.1.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "1967977602d8bfb9831aadf2335bcee66966743a17c5df0b618cbd2e794ec1d3",
+      "bytes": 2773,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "4109ba3a788129856b51f479273c24a3e0601d6535207919b4fc3a57c53b3a91",
+      "bytes": 13109,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "beabb53a99b4df893216c18ba84198d7f2622cc83ef35043c09b218840498356",
+      "bytes": 17022,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "8ebd8ab4c0d660c263f4adfa3f05fc5920881997e2ab0c5b98b7cec39d7532fd",
+      "bytes": 11960,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/evals/evals.json"
+    },
+    "skill/references/b2b-prospecting.md": {
+      "sha256": "abb7e697bc357856a585bcb7896b75895be06c4629b33558f67e418f6abc45ca",
+      "bytes": 4960,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/references/b2b-prospecting.md"
+    },
+    "skill/references/compliance.md": {
+      "sha256": "e39f980e026f28767d66addd9c28014b3968667e11d776d0480df4d569c6e4b3",
+      "bytes": 6232,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/references/compliance.md"
+    },
+    "skill/references/data-sources.md": {
+      "sha256": "c05f1e85b89093e1ac3f8691b9b692b737bc9ed8b81db7cff5bf6f73ebf17b6c",
+      "bytes": 11400,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/references/data-sources.md"
+    },
+    "skill/references/demand-signals.md": {
+      "sha256": "250ae03c7b01cd7866b6e3958f384a74cffad58e5d207693e8fa6fd237faf66a",
+      "bytes": 9985,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/references/demand-signals.md"
+    },
+    "skill/references/local-prospecting.md": {
+      "sha256": "1dd71471a3413d5b0a9d230b1e42ca95469c617285bf7e2abdfa463428367fc3",
+      "bytes": 8150,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/references/local-prospecting.md"
+    },
+    "skill/references/saas-prospecting.md": {
+      "sha256": "24a42d2b770a9727d5e88ca01352c80f350822304855818a468f72a3df8a1f3d",
+      "bytes": 6051,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/prospecting/references/saas-prospecting.md"
+    },
+    "skill/supporting/skills/ad-creative/assets/creative-review-template.html": {
+      "sha256": "12f7ec21a574efeb24af9b672fd46bab7ce7bc6c3afcfed8a12fa108e385cefb",
+      "bytes": 24459,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/assets/creative-review-template.html"
+    },
+    "skill/supporting/skills/ad-creative/references/creative-review-page.md": {
+      "sha256": "dbf69e95e79cd06b48a878077ccec66f0b84932372b7c63396b6648b55aa34b1",
+      "bytes": 9103,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/creative-review-page.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/apollo.js": {
+      "sha256": "9178f2c4b53b1b53014546d954ea73a5e7d3db4e181fcbefbea6ee164c46a71d",
+      "bytes": 5007,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/apollo.js"
+    },
+    "skill/supporting/tools/clis/clay.js": {
+      "sha256": "a5c5cd5cc9dd477fa3e0660bf7d4aea8687b331e72642d3dec14e9bc275afddc",
+      "bytes": 4822,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/clay.js"
+    },
+    "skill/supporting/tools/clis/clearbit.js": {
+      "sha256": "50892bb5a8bbe21eced51a8d329ad661a85851e772cc7c24fb9afd938d1c059d",
+      "bytes": 5070,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/clearbit.js"
+    },
+    "skill/supporting/tools/clis/github-prospects.js": {
+      "sha256": "087dd10460b0c73ec96dc9e6539182eaa59c88f7abf25774d95de8e1e0087fa9",
+      "bytes": 9575,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/github-prospects.js"
+    },
+    "skill/supporting/tools/clis/hunter.js": {
+      "sha256": "b295260e4f93c249bcdb6e5eeccb3050a6b7744f75f8aaf9409f3525b57adf04",
+      "bytes": 8139,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/hunter.js"
+    },
+    "skill/supporting/tools/clis/instantly.js": {
+      "sha256": "d344aaa9c30aaa27ee6f0f370bb2c04bfba612b328ee13e4068ee15c47206df7",
+      "bytes": 10326,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/instantly.js"
+    },
+    "skill/supporting/tools/clis/lemlist.js": {
+      "sha256": "86a3da83870f9c5b01f086b8357062b104926a9e3c600e1c8bd9c73920e3e90f",
+      "bytes": 7739,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/lemlist.js"
+    },
+    "skill/supporting/tools/clis/outreach.js": {
+      "sha256": "25a5696761528632825cdb26db6ce0a1ffb5e97f17d4396ea0228d3d76988fd2",
+      "bytes": 6354,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/outreach.js"
+    },
+    "skill/supporting/tools/clis/snov.js": {
+      "sha256": "ff69f61a3d4f21044c1817f2baf0a47934cbe4ea89c53fe417fcfec22d09b71e",
+      "bytes": 7805,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/snov.js"
+    },
+    "skill/supporting/tools/clis/zoominfo.js": {
+      "sha256": "79826c4089cf1e8012bd664fb7ef80e6b5e0e2179a4e18bdb9899e18f93f8bd0",
+      "bytes": 7337,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/zoominfo.js"
+    },
+    "skill/supporting/tools/integrations/apollo.md": {
+      "sha256": "3b32d01a1e72b919e1de513c457d789bb9e56a313b03440e2dfdc93b9a337eaf",
+      "bytes": 3503,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/apollo.md"
+    },
+    "skill/supporting/tools/integrations/browserbase.md": {
+      "sha256": "2003fc31e5a96058ee8b097f1e78bb319b144d6887b3a93366f0c4832820a47d",
+      "bytes": 4130,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/browserbase.md"
+    },
+    "skill/supporting/tools/integrations/clay.md": {
+      "sha256": "60aa6cf7750b175143ae252187358660e11d7cb5e812b3719166b4646b0577d3",
+      "bytes": 3258,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/clay.md"
+    },
+    "skill/supporting/tools/integrations/clearbit.md": {
+      "sha256": "2b09ab688a49d5c731d9a83f344cb11d34de70dc5827a81f4952209c29669e2e",
+      "bytes": 4061,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/clearbit.md"
+    },
+    "skill/supporting/tools/integrations/firecrawl.md": {
+      "sha256": "5e5ef490b05e5a1fdf4df2a57753097c4b4770a00b761283c2642ff41a4a6103",
+      "bytes": 4537,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/firecrawl.md"
+    },
+    "skill/supporting/tools/integrations/github.md": {
+      "sha256": "72dd59bb347285cc7dec393433e63d2bbbaf17da15d0739402f007861083b4ba",
+      "bytes": 7574,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/github.md"
+    },
+    "skill/supporting/tools/integrations/hunter.md": {
+      "sha256": "9b16f2d7478ba50481edd8157775961c067ac97a547f30f048114d20d3325ac6",
+      "bytes": 2077,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/hunter.md"
+    },
+    "skill/supporting/tools/integrations/instantly.md": {
+      "sha256": "bbd8acc251a5d9cba1615cc23e48be4ea0fd6783cd99d60032b5c48385ee7c6c",
+      "bytes": 2912,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/instantly.md"
+    },
+    "skill/supporting/tools/integrations/lemlist.md": {
+      "sha256": "e01cf4a648e4a22a59e5645337fd7ef032092eec7f5cd0755036e18832048b3f",
+      "bytes": 2805,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/lemlist.md"
+    },
+    "skill/supporting/tools/integrations/outreach.md": {
+      "sha256": "ad903ce534b3dcebc5310b3e060b5172f6a6cde2fc74ea994b357efc59ecd629",
+      "bytes": 4580,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/outreach.md"
+    },
+    "skill/supporting/tools/integrations/rb2b.md": {
+      "sha256": "fa18f83fb593e59593765722daca4fa7079ec655ca4e50be936dd919468c7c88",
+      "bytes": 3785,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/rb2b.md"
+    },
+    "skill/supporting/tools/integrations/snov.md": {
+      "sha256": "b025bce8a06918dd52c24f4cc03eabe85952f61fe0880bac766374025bf0c95d",
+      "bytes": 2283,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/snov.md"
+    },
+    "skill/supporting/tools/integrations/truelist.md": {
+      "sha256": "9c334b23c2867ff9665d99508cbb93688936ffe6744a3fbf743d2c6d526a3b30",
+      "bytes": 7608,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/truelist.md"
+    },
+    "skill/supporting/tools/integrations/zoominfo.md": {
+      "sha256": "e954f0369664678339b4edb1c93347866291083aed200ec3808998b8f1b77019",
+      "bytes": 4476,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/zoominfo.md"
+    }
+  }
+}

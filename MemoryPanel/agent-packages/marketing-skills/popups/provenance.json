@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "package": "popups",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/popups",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "cf814c8a429176da76628a64e730487e42140e3625c604c0d465bb2f1db07642",
+      "bytes": 2692,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "216ad50b13c2a5d73750c8ffed4978d2b1806319aa174e35216ae873be83edee",
+      "bytes": 4751,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "6c66e7f923c1eebc7eb7b94971af2e8016d3b5316e14bb1ad4b15ed3522084ce",
+      "bytes": 11805,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/popups/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "dca07b13560aea57cb0739235390c420f82c45d4e6ce01c6f7fb59fc225d2c00",
+      "bytes": 6585,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/popups/evals/evals.json"
+    }
+  }
+}

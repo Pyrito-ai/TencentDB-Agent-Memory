@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "package": "ai-seo",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/ai-seo",
+    "skillVersion": "2.5.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "6664f14439a20075c485e9f499756932e657f4fb1526edadf1c8432cc9b305d8",
+      "bytes": 2687,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "203f156c4bfb68c8970a8f62c89196d24ed10b9d01802762fca099b91d1deb9b",
+      "bytes": 7710,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "b1ecd93ebc65af886f81bc0a90645c8fd4ffdf68c5b3d4495a9e61481d954d00",
+      "bytes": 29455,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "010677ebde7b375f5569d5ef654c15edfc50f44efc55f9ca2f70a02a1ff1ab17",
+      "bytes": 14200,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/evals/evals.json"
+    },
+    "skill/references/agent-readiness.md": {
+      "sha256": "4753dc17755cacba2bf783373399baaf98c82a5d45c645848465ab6a11331cd9",
+      "bytes": 6534,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/agent-readiness.md"
+    },
+    "skill/references/citations-vs-recommendations.md": {
+      "sha256": "88016418b43b7e798dd950eb1240f76dec08c3408038f9a5d83005aff5a4daa3",
+      "bytes": 9091,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/citations-vs-recommendations.md"
+    },
+    "skill/references/content-patterns.md": {
+      "sha256": "8adcfcc020a3529eda71f783e4893d3e39e8b0f503fd2fa126e8b75a80963824",
+      "bytes": 10432,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/content-patterns.md"
+    },
+    "skill/references/content-types.md": {
+      "sha256": "9ad0a871f866efa307fc0d6fe2bd19d443a2276cb396afdd5b4d81fe9b4167e3",
+      "bytes": 2716,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/content-types.md"
+    },
+    "skill/references/format-volatility.md": {
+      "sha256": "4d16bbf46b9702b7ee9cf968005dc21cdd74821d5d8e31bb8dcc52b09457ae59",
+      "bytes": 6855,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/format-volatility.md"
+    },
+    "skill/references/okf.md": {
+      "sha256": "4abcab5b8ee90b63c5d09c98387a8ec3cdb8f5df33e75d3b4b91eb817283bfd8",
+      "bytes": 5952,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/okf.md"
+    },
+    "skill/references/platform-ranking-factors.md": {
+      "sha256": "ca3fb8c09fec3445abe611bab2cd1b5f20751c5d51a3a5c63ecd2b85cd458ee8",
+      "bytes": 11182,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/platform-ranking-factors.md"
+    },
+    "skill/references/youtube-ai-citations.md": {
+      "sha256": "e4e3356d4c813e460f29dd37a46a212f9d3f3f06e35320cf62bc3e621e1a53b2",
+      "bytes": 3758,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ai-seo/references/youtube-ai-citations.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    }
+  }
+}

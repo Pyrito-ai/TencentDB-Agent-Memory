@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "ab-testing",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/ab-testing",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "447b6c0d17da3f3b2d67ec297cbb6a274882fbfbeadbd34b79deafb6b1fa71e6",
+      "bytes": 2720,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "f8ba5fdec574f84674676a53af45c54098f6ccc3fd7f00d446765f037b5867c3",
+      "bytes": 5234,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "1fd229160f6014f3f2d7c92cc7d2f991fbf8dc9ed68aac9793c71b408a6d1144",
+      "bytes": 11162,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ab-testing/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "215cb581a3ef018365a4c9a9145ee5ae8bfc93e48ebeab9417224ccf3e89c6b8",
+      "bytes": 7922,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ab-testing/evals/evals.json"
+    },
+    "skill/references/sample-size-guide.md": {
+      "sha256": "96aef9d20c4607662beb924fa31260dee4c0db0c1dd6b607cdb3c4c701f9efd2",
+      "bytes": 7453,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ab-testing/references/sample-size-guide.md"
+    },
+    "skill/references/test-templates.md": {
+      "sha256": "761a40b9de8d16f18fa7f60b59e77aa749607ac8014af43e0b022f47fa87c812",
+      "bytes": 6473,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ab-testing/references/test-templates.md"
+    }
+  }
+}

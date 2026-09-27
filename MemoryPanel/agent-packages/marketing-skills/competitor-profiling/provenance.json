@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "competitor-profiling",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/competitor-profiling",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "575219960779d318de24d19abfe30744cf833f3c09bd9a15b8abc2c3c29b8f32",
+      "bytes": 2701,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "f6d9742f7408a282734546f3fd53f8da0a7add4999b072da9335293c98b7c8db",
+      "bytes": 6336,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "3e775491484a9e6fddce1db4e03415a900a5026d898ef146161f6fea017eafcf",
+      "bytes": 14558,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/competitor-profiling/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "53c34c29378d3c16db7a43189e4d6903a4740bedc09e576246243434d4b6d89a",
+      "bytes": 7496,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/competitor-profiling/evals/evals.json"
+    },
+    "skill/references/templates.md": {
+      "sha256": "710d78cb519012eb7e39f63643e22d7b9026c91c569262b44c45535c10717a91",
+      "bytes": 4668,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/competitor-profiling/references/templates.md"
+    },
+    "skill/references/tool-reference.md": {
+      "sha256": "37defe4f29d15a74b10e9b0c17d798f62effaa025e2ff8fece377171adbb658a",
+      "bytes": 7082,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/competitor-profiling/references/tool-reference.md"
+    }
+  }
+}

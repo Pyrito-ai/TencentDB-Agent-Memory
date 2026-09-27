@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "package": "events",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/events",
+    "skillVersion": "1.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "d13b57910631cdd92e3f5d9c1179167cddd8d196db697a45e8b9720db015bd9c",
+      "bytes": 2856,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "dc1bc4059a1105e294b732d76a86a254d37060e33b1f7408f4d1799da0c122fd",
+      "bytes": 8230,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "2861ad31d71db0f9fd067303993d3386958eba57799aa9ece902163244dcdfbd",
+      "bytes": 12140,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/events/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "f1177b2d7ab68d09805b69d37ae7294b9ba789b6a2915f9eb50187d6d1a8447b",
+      "bytes": 11178,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/events/evals/evals.json"
+    },
+    "skill/references/event-portfolio-strategy.md": {
+      "sha256": "460429f1d0cfa50ccab66593306e68e11a73f2238f5719502f833b88a35fd4f1",
+      "bytes": 7981,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/events/references/event-portfolio-strategy.md"
+    },
+    "skill/references/speaking.md": {
+      "sha256": "c5b04daf23d1e884132877e0d0b3ea9d036bc7b3e002f4c78c8f0f38c99cf1e9",
+      "bytes": 5348,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/events/references/speaking.md"
+    },
+    "skill/references/sponsorship-roi.md": {
+      "sha256": "fbf4d70b0224c4dd0b6af7c8e2ec5b15b01d80768fa251e0ff4d5e03e8be4636",
+      "bytes": 6243,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/events/references/sponsorship-roi.md"
+    },
+    "skill/references/webinar-funnel.md": {
+      "sha256": "cc66ed229d890d19dc3b212d24ee45f9b2a3b5afa0c7a69da10c70c81255bcd8",
+      "bytes": 8191,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/events/references/webinar-funnel.md"
+    }
+  }
+}

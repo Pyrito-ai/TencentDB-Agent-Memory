@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "package": "copy-editing",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/copy-editing",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "5310495dcbba2eab074e2b44e7e047cda341fbbd90166b57894cb1237d09fb4e",
+      "bytes": 2693,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "a287b234bf496e7347327ce6e2c005011c27ec0f79b8293ac613c8c462749751",
+      "bytes": 6073,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "9b5a20be3dc5513c8f0b4f4c4960857e4d28ed83698a5b33c8dde9dc75a47bf6",
+      "bytes": 15000,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copy-editing/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "49881baea09fd93a03da69ab249a7d37a93b1fa015debce320b5861c606593ef",
+      "bytes": 7547,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copy-editing/evals/evals.json"
+    },
+    "skill/references/checklist.md": {
+      "sha256": "db143b969b45b0933fe6eb772992890d1472d036a6c887fc98665e4fb48da43c",
+      "bytes": 1728,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copy-editing/references/checklist.md"
+    },
+    "skill/references/content-refresh.md": {
+      "sha256": "8a3a2d301bb2b8b2a780f5bef43093ab42295041b2fea2a9caeca2421ef3c79b",
+      "bytes": 2298,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copy-editing/references/content-refresh.md"
+    },
+    "skill/references/plain-english-alternatives.md": {
+      "sha256": "df4f820d4c63ae8a517c64a243c101658352cd07d002355bf3c97de0a00f3775",
+      "bytes": 8258,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copy-editing/references/plain-english-alternatives.md"
+    }
+  }
+}

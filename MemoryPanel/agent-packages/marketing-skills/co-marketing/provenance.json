@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "package": "co-marketing",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/co-marketing",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "6015b6c138c83e3a6619bd03bcff82840d9771d52f4473e3a7df3b6cf9dbb5c1",
+      "bytes": 2717,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "b80de99e0aad56a3c90037fabba1c3e1b73751de07abe8ea22f56669cd9946c5",
+      "bytes": 6589,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "5fe1124e8b6ff64ad0644d1483bed2cc6598c6f0cf6d89219c3198b6b066f1fb",
+      "bytes": 11822,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/co-marketing/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "4d6693bf2d8490435814090ba204cee5c10648998f5b5699815476736b391d78",
+      "bytes": 8934,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/co-marketing/evals/evals.json"
+    },
+    "skill/references/partnership-types.md": {
+      "sha256": "58f73473ab3a903c5c74a963b11e9b2d0710b856b5644ca914ecb88ad67030aa",
+      "bytes": 7366,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/co-marketing/references/partnership-types.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/crossbeam.js": {
+      "sha256": "7de4adb7962689e270783a9234188293a77e10aa6008b47ab2c4bf52f9700736",
+      "bytes": 5128,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/crossbeam.js"
+    },
+    "skill/supporting/tools/clis/partnerstack.js": {
+      "sha256": "f5222506be36650cefdf96cda805298abb739834ca45be70f131d72ccd02fe89",
+      "bytes": 13988,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/partnerstack.js"
+    },
+    "skill/supporting/tools/integrations/crossbeam.md": {
+      "sha256": "0721600e99da5a54ee5abc7bcc71739b42fe8aec9129973cdd9101cdf9c5bb8d",
+      "bytes": 3255,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/crossbeam.md"
+    },
+    "skill/supporting/tools/integrations/introw.md": {
+      "sha256": "5b893d2e95993fe8da7383801989d7e791aab732c5a306632a69d9bc7d4f47ae",
+      "bytes": 4846,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/introw.md"
+    },
+    "skill/supporting/tools/integrations/partnerstack.md": {
+      "sha256": "0245f1c76582e244f0c8aed7882604d55c441d5781d9e27339b6c6e861222fb1",
+      "bytes": 4670,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/partnerstack.md"
+    }
+  }
+}

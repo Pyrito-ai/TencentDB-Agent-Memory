@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "lead-magnets",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/lead-magnets",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "9c7219f443fbe47d1fb4fa8892ec2ae88997ff18c0752ffede9959ed34810d62",
+      "bytes": 2691,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "84847e796efe3e287888567343bf96111d8b3bb18fc987173ceab1e23e122e4b",
+      "bytes": 6134,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "bfb1e260e56fb11611bfac94236e7ebf79433e3350012ecce2379eef0af25af8",
+      "bytes": 10925,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/lead-magnets/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "3edb81ddb30746a37bf7d35681cd405d28702ad9243c1bec130435f180e1f24f",
+      "bytes": 8044,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/lead-magnets/evals/evals.json"
+    },
+    "skill/references/benchmarks.md": {
+      "sha256": "becdf4bcde17e788ead10794c797294548c712ea1074e042336da93433a61187",
+      "bytes": 4234,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/lead-magnets/references/benchmarks.md"
+    },
+    "skill/references/format-guide.md": {
+      "sha256": "401f65d709cefbd7ee2df11273e0b616ec50e37e71d914556c800067fdcdef8e",
+      "bytes": 5826,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/lead-magnets/references/format-guide.md"
+    }
+  }
+}

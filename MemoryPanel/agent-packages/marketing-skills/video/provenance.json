@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "package": "video",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/video",
+    "skillVersion": "2.1.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "c9d51459d37cb0ebcb3d7736d9075d1a93d7a42620508139d8d37d87e21549e9",
+      "bytes": 2695,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "a61fd39794f6f60f3dfd3f32abbe5645bc7206baa274111b760b690cb92241f1",
+      "bytes": 5638,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "3b6d4864bae49dd3d60e7f6218e0de0803633989d68bdcf093a3771307387ac2",
+      "bytes": 14392,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/video/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "9f935c91490d5fe9e0170e360baa69edac8dd586921ff631e0a83991b5afe636",
+      "bytes": 9800,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/video/evals/evals.json"
+    },
+    "skill/references/ai-video-prompting.md": {
+      "sha256": "210eaecc05367aacbaf35660ed7352809e31fb326123d0cfd6ab03c09681d13e",
+      "bytes": 5258,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/video/references/ai-video-prompting.md"
+    },
+    "skill/references/edit-anatomy.md": {
+      "sha256": "51319196939e75b29fd1f00ef393e1772043e79dbf0a19c82145060cc62fde7f",
+      "bytes": 7394,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/video/references/edit-anatomy.md"
+    },
+    "skill/supporting/tools/integrations/heygen.md": {
+      "sha256": "96dd28e8761ab84bb2de296163ba8207900eeeb56cc4db54cd9f033583752f73",
+      "bytes": 2998,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/heygen.md"
+    },
+    "skill/supporting/tools/integrations/hyperframes.md": {
+      "sha256": "440a2fb3105c350a58e3b422f3dc4dc391db6a4a5a5d8ccad8aa643f13326078",
+      "bytes": 4822,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/hyperframes.md"
+    }
+  }
+}

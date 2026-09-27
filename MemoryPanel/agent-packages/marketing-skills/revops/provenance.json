@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "package": "revops",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/revops",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "d333a01b8e7bfd64638106c208b48e7ee77084f604ba38c45524e1a56ee87b72",
+      "bytes": 2721,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "c0a00de024d9a93175d97a60f24d319e42b5d154c3e011c79a6cf3ceebb67519",
+      "bytes": 10121,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "bb27b16ad41c5c2d4fea14c12359c6a01fc755f2bb91140f0c2c43b05b3adb10",
+      "bytes": 15341,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/revops/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "bda1dd0d19785c8d5f71370fba0cab11c9af16c06813dcee2157e559dafbefc1",
+      "bytes": 6143,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/revops/evals/evals.json"
+    },
+    "skill/references/automation-playbooks.md": {
+      "sha256": "567efd379af6102e7eec95b7a630f29451c5a16ad93c4ae91a97d52ccb8428ea",
+      "bytes": 10861,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/revops/references/automation-playbooks.md"
+    },
+    "skill/references/lifecycle-definitions.md": {
+      "sha256": "210c730e815b82f6c06d67482e667c40f9ae2179886e318ccb25f1e31e09ca1f",
+      "bytes": 7019,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/revops/references/lifecycle-definitions.md"
+    },
+    "skill/references/routing-rules.md": {
+      "sha256": "9057c207550ff289e84d6b25ca9d38b436c98a517e0aa4f30c2ff8f09f5d8370",
+      "bytes": 6792,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/revops/references/routing-rules.md"
+    },
+    "skill/references/scoring-models.md": {
+      "sha256": "923062ddfd0e0eab5fbdb51286c484afd3fee6d42b10eb91b40a39e764b1beb5",
+      "bytes": 7450,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/revops/references/scoring-models.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/activecampaign.js": {
+      "sha256": "2d98d037d9463b042ce79853eb05ab8773aa5f67837afa2265962e4c83aeb135",
+      "bytes": 15801,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/activecampaign.js"
+    },
+    "skill/supporting/tools/clis/apollo.js": {
+      "sha256": "9178f2c4b53b1b53014546d954ea73a5e7d3db4e181fcbefbea6ee164c46a71d",
+      "bytes": 5007,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/apollo.js"
+    },
+    "skill/supporting/tools/clis/calendly.js": {
+      "sha256": "5aa3f985363bc22db97b6a4231cbf69863c78c8b9eaf26ed53e1776f8dbf153f",
+      "bytes": 9117,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/calendly.js"
+    },
+    "skill/supporting/tools/clis/clearbit.js": {
+      "sha256": "50892bb5a8bbe21eced51a8d329ad661a85851e772cc7c24fb9afd938d1c059d",
+      "bytes": 5070,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/clearbit.js"
+    },
+    "skill/supporting/tools/clis/crossbeam.js": {
+      "sha256": "7de4adb7962689e270783a9234188293a77e10aa6008b47ab2c4bf52f9700736",
+      "bytes": 5128,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/crossbeam.js"
+    },
+    "skill/supporting/tools/clis/savvycal.js": {
+      "sha256": "c10d99a7efe3dde7768dc830094a08c54349b0a1eb1cd8a65c506f2de58abe6e",
+      "bytes": 7393,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/savvycal.js"
+    },
+    "skill/supporting/tools/clis/zapier.js": {
+      "sha256": "037cfa797e188a544bd97cd5d8a5b2f5ecca571993ddbcb8b25f0df4a6aa1306",
+      "bytes": 4454,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/zapier.js"
+    },
+    "skill/supporting/tools/integrations/activecampaign.md": {
+      "sha256": "df8ffd96ca9e7370e3bcb3972626f3d717a8979b5e2f73e2c9738beb95ddefe2",
+      "bytes": 6376,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/activecampaign.md"
+    },
+    "skill/supporting/tools/integrations/apollo.md": {
+      "sha256": "3b32d01a1e72b919e1de513c457d789bb9e56a313b03440e2dfdc93b9a337eaf",
+      "bytes": 3503,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/apollo.md"
+    },
+    "skill/supporting/tools/integrations/calendly.md": {
+      "sha256": "7cacab6aee43b1b98767cbf736718094c7e7fedd92da15245502ab02697cb48c",
+      "bytes": 4041,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/calendly.md"
+    },
+    "skill/supporting/tools/integrations/clearbit.md": {
+      "sha256": "2b09ab688a49d5c731d9a83f344cb11d34de70dc5827a81f4952209c29669e2e",
+      "bytes": 4061,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/clearbit.md"
+    },
+    "skill/supporting/tools/integrations/crossbeam.md": {
+      "sha256": "0721600e99da5a54ee5abc7bcc71739b42fe8aec9129973cdd9101cdf9c5bb8d",
+      "bytes": 3255,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/crossbeam.md"
+    },
+    "skill/supporting/tools/integrations/hubspot.md": {
+      "sha256": "098dc54dd48630acfafe0a3eb46c81c2a44a2b32abcd97d2a78042bcfd44b312",
+      "bytes": 3117,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/hubspot.md"
+    },
+    "skill/supporting/tools/integrations/introw.md": {
+      "sha256": "5b893d2e95993fe8da7383801989d7e791aab732c5a306632a69d9bc7d4f47ae",
+      "bytes": 4846,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/introw.md"
+    },
+    "skill/supporting/tools/integrations/salesforce.md": {
+      "sha256": "0ef71c8affc317244ba8c70aac11f9b21d13aa486150e94fd0c81b2dc1733232",
+      "bytes": 3030,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/salesforce.md"
+    },
+    "skill/supporting/tools/integrations/savvycal.md": {
+      "sha256": "4158cdeb61c41b37d900cd8887a33d887f0b64f2cad50510ee14a49ba5659e16",
+      "bytes": 3442,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/savvycal.md"
+    },
+    "skill/supporting/tools/integrations/zapier.md": {
+      "sha256": "abe4f082f4c0527661a1e0ac157331d1707541263962afb1c5bb9fb8e2f1a3b1",
+      "bytes": 5714,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/zapier.md"
+    }
+  }
+}

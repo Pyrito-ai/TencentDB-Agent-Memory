@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 1,
+  "package": "attribution",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/attribution",
+    "skillVersion": "1.1.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "fe5cb5aa812af30e33bd0c4aeff7b867e13d9bb8fd2d825facf841ca57fa181c",
+      "bytes": 2843,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "bd3d475053b6f26b4bb2c23b9cacca693d5dce04146b0deed2b63b28efac097d",
+      "bytes": 8617,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "eccc43eb93fed8fa871205fc441830ee020bcfce8b78a645e6e679c3f6099ac6",
+      "bytes": 20912,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/attribution/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "ad5831809092f4e788d83a41f43012869ff1bc1afcff7eb30b08103c834bba7d",
+      "bytes": 10370,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/attribution/evals/evals.json"
+    },
+    "skill/references/attribution-models.md": {
+      "sha256": "5dcdf4e6693e90ec31a2de773846c5e2c66c5f871832875f854755a83cb47d12",
+      "bytes": 6265,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/attribution/references/attribution-models.md"
+    },
+    "skill/references/by-business-type.md": {
+      "sha256": "56eeabaa3f6d4934ec30a8e33ad87e8e2fd1455a07e118a8cc4182f5a54a7314",
+      "bytes": 7866,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/attribution/references/by-business-type.md"
+    },
+    "skill/references/first-party-tracking.md": {
+      "sha256": "b8a615c3ec53f40d737c57ccf5c9aa4a7deede3c70485fdf19dd8a1573857b90",
+      "bytes": 18693,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/attribution/references/first-party-tracking.md"
+    },
+    "skill/references/measurement-paradigms.md": {
+      "sha256": "581571c0e4ad985f63f9637b17b7dd462aec544e1b9bf9fb2fe98d1e747e1b1a",
+      "bytes": 8178,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/attribution/references/measurement-paradigms.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/dub.js": {
+      "sha256": "78af54c4d63ec7f5b946ec015d4fdd16fe0f55960776994638c4fcd782cdbca1",
+      "bytes": 5053,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/dub.js"
+    },
+    "skill/supporting/tools/clis/ga4.js": {
+      "sha256": "abbf28a901674ad12a77ca61e80a7f38a95bb5ebd3448f2ad968a986fc044d23",
+      "bytes": 6472,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/ga4.js"
+    },
+    "skill/supporting/tools/clis/segment.js": {
+      "sha256": "0054f8f954da67fd4ec06df62f179251e46837339407e91906e5d8ef737c3bff",
+      "bytes": 6275,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/segment.js"
+    },
+    "skill/supporting/tools/clis/supermetrics.js": {
+      "sha256": "b62cb39b423ee6605a9ba8125627021a01e147f9324f09ffd0e8754164bc9c8d",
+      "bytes": 4931,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/supermetrics.js"
+    },
+    "skill/supporting/tools/integrations/dub-co.md": {
+      "sha256": "6d718923510574b0ac9f6840ab7cb6f948fdc95a8b402bfdc6d32d7fdbf6ea8b",
+      "bytes": 3127,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/dub-co.md"
+    },
+    "skill/supporting/tools/integrations/ga4.md": {
+      "sha256": "aeb8a06cfa71901647b267e8587406cfed674e7c4604a12868d7eef775bced29",
+      "bytes": 2878,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/ga4.md"
+    },
+    "skill/supporting/tools/integrations/hubspot.md": {
+      "sha256": "098dc54dd48630acfafe0a3eb46c81c2a44a2b32abcd97d2a78042bcfd44b312",
+      "bytes": 3117,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/hubspot.md"
+    },
+    "skill/supporting/tools/integrations/posthog.md": {
+      "sha256": "892190695fa7978e18c1ee1a8bad089e6a57226701b8899479702e1f202f401c",
+      "bytes": 2869,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/posthog.md"
+    },
+    "skill/supporting/tools/integrations/rb2b.md": {
+      "sha256": "fa18f83fb593e59593765722daca4fa7079ec655ca4e50be936dd919468c7c88",
+      "bytes": 3785,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/rb2b.md"
+    },
+    "skill/supporting/tools/integrations/salesforce.md": {
+      "sha256": "0ef71c8affc317244ba8c70aac11f9b21d13aa486150e94fd0c81b2dc1733232",
+      "bytes": 3030,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/salesforce.md"
+    },
+    "skill/supporting/tools/integrations/segment.md": {
+      "sha256": "0efae9508d5625072623812cff02906d9d3779495332c9ed76ec147bddfd8484",
+      "bytes": 3032,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/segment.md"
+    },
+    "skill/supporting/tools/integrations/supermetrics.md": {
+      "sha256": "63308dcd8a11bb3bc00d11d4aee75b541e4fc66b4eb5b8dc3e1c40e85077f63b",
+      "bytes": 3862,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/supermetrics.md"
+    }
+  }
+}

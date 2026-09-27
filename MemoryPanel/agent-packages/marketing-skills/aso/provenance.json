@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "package": "aso",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/aso",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "624a643640256680a13caadeb971ed272ea5ef24188f265ff615f10efb0fe9d0",
+      "bytes": 2648,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "640b51596099f62cd16713de5ecfba114337fe9b377ddafe9322d21093fc537d",
+      "bytes": 6177,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "09ea96274ae075eaf10b39fdb2749d3f272c13cbd8070d1524a4648c101d8b51",
+      "bytes": 15777,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "d1eae32a46bec9e915c5fb6b4aba7752db699523fdf1fbce638865d2201640a9",
+      "bytes": 7400,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/evals/evals.json"
+    },
+    "skill/references/apple-specs.md": {
+      "sha256": "b2f9d3efc041624dd8f2392cad34533fa5f889a171957eb47000a6a057dcd13a",
+      "bytes": 6089,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/references/apple-specs.md"
+    },
+    "skill/references/benchmarks.md": {
+      "sha256": "0aa61c7a793605504b2768c7e4a1dc4ec2637a19bcc016494cd7ee2906d73f6d",
+      "bytes": 5033,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/references/benchmarks.md"
+    },
+    "skill/references/google-play-specs.md": {
+      "sha256": "bf10c6d4d5319c41443bd9ecb5830715c5dadb6dda248e2ced21d99dce0ff775",
+      "bytes": 6008,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/references/google-play-specs.md"
+    },
+    "skill/references/report-template.md": {
+      "sha256": "f67c8827c4600cb1e392c8cad05ed5740f9cd01321fd715a9e851e37ec0047b2",
+      "bytes": 5124,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/references/report-template.md"
+    },
+    "skill/references/scoring-criteria.md": {
+      "sha256": "e821093e54db5b6f3eb9c932eef57ec47b6e0bb1aad2fe0ae6f524a217713591",
+      "bytes": 13667,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/aso/references/scoring-criteria.md"
+    }
+  }
+}

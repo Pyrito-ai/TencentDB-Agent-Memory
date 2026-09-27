@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "package": "cold-email",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/cold-email",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "97c588cb3204db4e0a6f775723021850d9fd069031cac6cd26879879df4837ab",
+      "bytes": 2653,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "a885f02772cd8696338fb1e8420f3a02b175e1941813b7b10d99c48944007edc",
+      "bytes": 6480,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "b7f8d793169a5111c857e5720c6b80028686cc95d5a0d0d6570957c2710aff9e",
+      "bytes": 7350,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "e760f7766434923508d6491be56be68e3d19e2ed2508b075b37601d62c95dd98",
+      "bytes": 7025,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/evals/evals.json"
+    },
+    "skill/references/benchmarks.md": {
+      "sha256": "3dc1d38a2d1f4fbb2706be7ca3d40156b66a3d7078c183a930ff373c3bb04c09",
+      "bytes": 5817,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/references/benchmarks.md"
+    },
+    "skill/references/follow-up-sequences.md": {
+      "sha256": "87e14749104b0c5bcd865e55d33513a161edb8e6773b2a2d9802b5460f2f7369",
+      "bytes": 3875,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/references/follow-up-sequences.md"
+    },
+    "skill/references/frameworks.md": {
+      "sha256": "b29fb89922f96ae1c6911675a7e173a8f7c6a40999c9a18b14ac7f357b5f5a03",
+      "bytes": 5403,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/references/frameworks.md"
+    },
+    "skill/references/personalization.md": {
+      "sha256": "08f18652938e14143402786fbdb8e1a6269650bb5eef9106898f1cdf31e47e36",
+      "bytes": 4437,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/references/personalization.md"
+    },
+    "skill/references/subject-lines.md": {
+      "sha256": "f71f31b1151d972bb19ff03791ffb9d24941a8ccea8b913e5a5c7aca439b45ce",
+      "bytes": 3015,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cold-email/references/subject-lines.md"
+    }
+  }
+}

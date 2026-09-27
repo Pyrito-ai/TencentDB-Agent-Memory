@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "package": "public-relations",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/public-relations",
+    "skillVersion": "1.1.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "6e565ba029693eabae4bca6945d54c7b61e8f5fb7479744748123755999cf259",
+      "bytes": 2830,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "371b3a047e5b2c9ad07e8c88b0597a37287a67abbc3259065074d1a08f3256c2",
+      "bytes": 6458,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "36fe43e755d951a9e05a268319e6089e7727dcd9de0a9ab6c4ec56768e4190ed",
+      "bytes": 8831,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "8dd86b864c7bd1559c64a09826829ce0185f26c18e095fef7ee47bdbd0728540",
+      "bytes": 1907,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/evals/evals.json"
+    },
+    "skill/references/journalist-pitching.md": {
+      "sha256": "ba0b853771cbf6eb29540694b0dee72a393cd79b46d7fd2d9b70c8bbcf85c663",
+      "bytes": 11065,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/references/journalist-pitching.md"
+    },
+    "skill/references/media-outlets.md": {
+      "sha256": "49c727db10a86d0d227275b970a131d677961ef7cf16e0fc8ced588688133899",
+      "bytes": 9307,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/references/media-outlets.md"
+    },
+    "skill/references/newsjacking.md": {
+      "sha256": "257b85f668db57b3a0294409920538f85a56c3a0414fb1e5841e71d1234a9892",
+      "bytes": 8459,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/references/newsjacking.md"
+    },
+    "skill/references/podcast-guest-prep.md": {
+      "sha256": "cd6dba9a9961a74777a0c7e7df1e7132264aa7e04f93375f092fb826ec720b19",
+      "bytes": 5593,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/references/podcast-guest-prep.md"
+    },
+    "skill/references/press-platforms.md": {
+      "sha256": "e999335222a30df0954e324e6d35ea269c5d9228c609c0f33bc1d2bb528fb244",
+      "bytes": 6909,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/references/press-platforms.md"
+    },
+    "skill/references/story-angles.md": {
+      "sha256": "2fc3597707d8eab35dc021e2e0e79af82b56283cb8bc024011e78b995e56db07",
+      "bytes": 6509,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/public-relations/references/story-angles.md"
+    }
+  }
+}

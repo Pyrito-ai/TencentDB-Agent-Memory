@@ -27,6 +27,7 @@ import { WorkerQuestions } from './WorkerQuestions';
 import { CdesktopWorkbench } from './CdesktopWorkbench';
 import {
   RuntimePicker,
+  isRuntimeVisible,
   requestedRuntime,
   updateWorkbenchQuery,
   type WorkbenchRuntime,
@@ -103,7 +104,7 @@ export function Workspace({ team }: { team: string }) {
           }
         />
       </div>
-      {visited.orca && (
+      {isRuntimeVisible('orca') && visited.orca && (
         <div className="workbench-runtime-pane" hidden={runtime !== 'orca'}>
           <OrcaWorkspace team={team} visible={runtime === 'orca'} />
         </div>

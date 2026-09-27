@@ -1,12 +1,24 @@
 export type WorkbenchRuntime = 'orca' | 'cdesktop';
 
+// Presentation policy only: keep both runtime integrations and saved receipts intact.
+export const DEFAULT_RUNTIME: WorkbenchRuntime = 'cdesktop';
+export const VISIBLE_RUNTIMES: readonly WorkbenchRuntime[] = ['cdesktop'];
+
+export function isRuntimeVisible(runtime: WorkbenchRuntime): boolean {
+  return VISIBLE_RUNTIMES.includes(runtime);
+}
+
+function visibleRuntime(runtime: string | null): WorkbenchRuntime {
+  return VISIBLE_RUNTIMES.find((candidate) => candidate === runtime) ?? DEFAULT_RUNTIME;
+}
+
 export function requestedRuntime(): WorkbenchRuntime {
   const query = window.location.hash.split('?')[1] || window.location.search;
-  return new URLSearchParams(query).get('runtime') === 'cdesktop' ? 'cdesktop' : 'orca';
+  return visibleRuntime(new URLSearchParams(query).get('runtime'));
 }
 
 export function workbenchUrl(runtime: WorkbenchRuntime, taskId: string): string {
-  const query = new URLSearchParams({ runtime });
+  const query = new URLSearchParams({ runtime: visibleRuntime(runtime) });
   if (taskId) query.set('task', taskId);
   return `/#/workbench?${query}`;
 }
@@ -32,18 +44,20 @@ export function RuntimePicker({
   runtime: WorkbenchRuntime;
   onChange: (runtime: WorkbenchRuntime) => void;
 }) {
+  if (VISIBLE_RUNTIMES.length < 2) return null;
+  const labels: Record<WorkbenchRuntime, string> = { orca: 'Orca', cdesktop: 'cdesktop' };
   return (
     <div className="workbench-runtime-picker" role="group" aria-label="Workbench runtime">
-      <button type="button" aria-pressed={runtime === 'orca'} onClick={() => onChange('orca')}>
-        Orca
-      </button>
-      <button
-        type="button"
-        aria-pressed={runtime === 'cdesktop'}
-        onClick={() => onChange('cdesktop')}
-      >
-        cdesktop <span>(trial)</span>
-      </button>
+      {VISIBLE_RUNTIMES.map((option) => (
+        <button
+          key={option}
+          type="button"
+          aria-pressed={runtime === option}
+          onClick={() => onChange(option)}
+        >
+          {labels[option]}
+        </button>
+      ))}
     </div>
   );
 }

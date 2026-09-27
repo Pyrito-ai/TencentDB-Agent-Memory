@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { request, type Options, type WorkerReceipt } from './api';
 import { CdesktopTaskHandoff } from './CdesktopTaskHandoff';
-import { RuntimePicker, type WorkbenchRuntime } from './RuntimePicker';
+import {
+  DEFAULT_RUNTIME,
+  isRuntimeVisible,
+  RuntimePicker,
+  type WorkbenchRuntime,
+} from './RuntimePicker';
 import {
   AgentBundlePreview,
   AgentBundleReceipt,
@@ -21,8 +26,10 @@ type Handoff = {
   error?: string;
 };
 export function TaskHandoff({ team, taskId }: { team: string; taskId: string }) {
-  const [runtime, setRuntime] = useState<WorkbenchRuntime>('orca');
-  const [visitedCdesktop, setVisitedCdesktop] = useState(false);
+  const [runtime, setRuntime] = useState<WorkbenchRuntime>(DEFAULT_RUNTIME);
+  const [visited, setVisited] = useState<Partial<Record<WorkbenchRuntime, boolean>>>(() => ({
+    [DEFAULT_RUNTIME]: true,
+  }));
   return (
     <div className="task-handoff-runtimes">
       <div className="task-handoff-runtime-heading">
@@ -31,14 +38,16 @@ export function TaskHandoff({ team, taskId }: { team: string; taskId: string }) 
           runtime={runtime}
           onChange={(next) => {
             setRuntime(next);
-            if (next === 'cdesktop') setVisitedCdesktop(true);
+            setVisited((current) => ({ ...current, [next]: true }));
           }}
         />
       </div>
-      <div hidden={runtime !== 'orca'}>
-        <OrcaTaskHandoff team={team} taskId={taskId} />
-      </div>
-      {visitedCdesktop && (
+      {isRuntimeVisible('orca') && visited.orca && (
+        <div hidden={runtime !== 'orca'}>
+          <OrcaTaskHandoff team={team} taskId={taskId} />
+        </div>
+      )}
+      {visited.cdesktop && (
         <div hidden={runtime !== 'cdesktop'}>
           <CdesktopTaskHandoff team={team} taskId={taskId} />
         </div>

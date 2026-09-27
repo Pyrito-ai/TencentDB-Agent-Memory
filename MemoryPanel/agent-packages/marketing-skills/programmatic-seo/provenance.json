@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "package": "programmatic-seo",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/programmatic-seo",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "2289864ad52cd0740b8cf3e4be92ea2c13fedd8628dd3962528465d47112693c",
+      "bytes": 2677,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "de2c59a3c3361fdc316e971b413c94bb6374a98ef78dd1eb1599df38df775579",
+      "bytes": 5276,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "15cb5979cab5263ede902a830e03342869256ece17905bff240eef498e27cde1",
+      "bytes": 7098,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/programmatic-seo/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "e76b704edfc50210224aa82131dc4e917d6daa3a1467b9f7fe54b2d42af2a264",
+      "bytes": 6877,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/programmatic-seo/evals/evals.json"
+    },
+    "skill/references/playbooks.md": {
+      "sha256": "b2b3fd7c58c686f0670b94cf7192ff79436ccf0d602650b33a83a9d01102f11d",
+      "bytes": 8304,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/programmatic-seo/references/playbooks.md"
+    }
+  }
+}

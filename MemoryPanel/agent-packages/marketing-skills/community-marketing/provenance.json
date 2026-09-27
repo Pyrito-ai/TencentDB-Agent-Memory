@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "package": "community-marketing",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/community-marketing",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "795fb467fdaebca42b3a24060eaa6397271b5537906e7caa086b5f3b13ba5f3d",
+      "bytes": 2717,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "74e41ce1afa69b712fabe4d070dcd4370f3dccfe46fee96fced5f63250e5422d",
+      "bytes": 5114,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "e4c4a21e82a04e8ef6e2845fa34ebaf5512ba59ae1c9c74d8caa9f045628f4da",
+      "bytes": 9826,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/community-marketing/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "fa15fb195c71bd91099919f5a736007362a2b7c0574ffb4692eb300f213bd22f",
+      "bytes": 9451,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/community-marketing/evals/evals.json"
+    },
+    "skill/references/community-models.md": {
+      "sha256": "85e8d154751d136591d4a39886c37cbf3535dabec823d62c3ae0df16b852b7f3",
+      "bytes": 4049,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/community-marketing/references/community-models.md"
+    }
+  }
+}

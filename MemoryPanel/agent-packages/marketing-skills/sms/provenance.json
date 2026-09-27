@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "package": "sms",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/sms",
+    "skillVersion": "1.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "ab58d2fb82dd691a1e5347df5bf8e760666a0c146b98dd55fd95a61bb9697228",
+      "bytes": 2847,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "2f7978f28bd7b2a6404e30ce7a18dfdac6c437ee359355bb02a6ab70e4f46884",
+      "bytes": 8842,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "bf649cfac0e3851f28b4746dc0dccb51c7526935b64cae7dd237b1b948c58842",
+      "bytes": 16809,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sms/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "af9f0d11e5a7ccf4f409b0e887832452e4197d25d13a90bb4fac1469695c304f",
+      "bytes": 8891,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sms/evals/evals.json"
+    },
+    "skill/references/compliance.md": {
+      "sha256": "bbfb8f7c359cad650b7b2d27108e2bb12365a6c604e464ba3e94195b3938f149",
+      "bytes": 7833,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sms/references/compliance.md"
+    },
+    "skill/references/platforms.md": {
+      "sha256": "3f3e54cae72bb722703be6bae76dc1f6fa2312d5541105d425bcc07cd7a3ff12",
+      "bytes": 9865,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sms/references/platforms.md"
+    },
+    "skill/references/sequence-templates.md": {
+      "sha256": "c61e72b00bfbe80e87a771840164a2a487585f202bbd3f010d8c60485339b220",
+      "bytes": 7070,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sms/references/sequence-templates.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/brevo.js": {
+      "sha256": "423f7bd65b8d456c11ad3c4056849ebe4a2280413c151f0378a75e9f820deaf1",
+      "bytes": 13764,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/brevo.js"
+    },
+    "skill/supporting/tools/clis/customer-io.js": {
+      "sha256": "e968a94beba015ed8ec5354d8ec4c06a565d43b9a5c8fe3cd5252e2a7fb97a96",
+      "bytes": 7331,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/customer-io.js"
+    },
+    "skill/supporting/tools/clis/klaviyo.js": {
+      "sha256": "5595aea90b552c258fac9a79f28542a20bc2f777fb10df7465ed33811c31027b",
+      "bytes": 12041,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/klaviyo.js"
+    },
+    "skill/supporting/tools/integrations/attentive.md": {
+      "sha256": "9c5fa0040662c519debc83737581124a0a123e6a8cecd7a4346809aa6a02b855",
+      "bytes": 3856,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/attentive.md"
+    },
+    "skill/supporting/tools/integrations/audiencetap.md": {
+      "sha256": "ec888ef74e237dad5d92be2e58b21a09e4bb4ae79c370aa6e14bc50fa2d3c545",
+      "bytes": 3653,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/audiencetap.md"
+    },
+    "skill/supporting/tools/integrations/brevo.md": {
+      "sha256": "98ccea598372aeb788a24e5d9d33fe7f031c994c64e576882af9b357896e883d",
+      "bytes": 5643,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/brevo.md"
+    },
+    "skill/supporting/tools/integrations/customer-io.md": {
+      "sha256": "43bee99a2659ffa8c96834a27f8a64e7bc7798c3962828db42f4112720516056",
+      "bytes": 3232,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/customer-io.md"
+    },
+    "skill/supporting/tools/integrations/klaviyo.md": {
+      "sha256": "494cc1b5bf474ffcf38c960947146db045e74a110a06db5c377f9e66d9a6083e",
+      "bytes": 4858,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/klaviyo.md"
+    },
+    "skill/supporting/tools/integrations/plivo.md": {
+      "sha256": "9de9b6c9a81a88f0b1ce0a5daaa2c1d82ade4fd34dd46271bf8a26ac2aaea7eb",
+      "bytes": 3643,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/plivo.md"
+    },
+    "skill/supporting/tools/integrations/postscript.md": {
+      "sha256": "83c047392038ef9f55583e06b9d0e9dd413640c0be7f9342f0b931cb984e3f1e",
+      "bytes": 3265,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/postscript.md"
+    },
+    "skill/supporting/tools/integrations/twilio.md": {
+      "sha256": "2d86b0653e5613365566a37938a89b1a548f89b8f192678bf2130b112d65d86f",
+      "bytes": 4604,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/twilio.md"
+    }
+  }
+}

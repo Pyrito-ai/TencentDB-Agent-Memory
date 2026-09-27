@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "package": "onboarding",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/onboarding",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "57a85e586708a565cf4c2c9046670f22e37a7c8a8d68ba37a1a48c3196197668",
+      "bytes": 2715,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "68574496252041ba66d1a0a1c385cbb85d89efa7cf46f60403ebf7bf012ba018",
+      "bytes": 5475,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "ca219e0ba8f931888e2a634624ab927206f8ef26aeca2250399c3c48da0341e0",
+      "bytes": 10234,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/onboarding/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "6086b1c34a6f171800bf32bf569ff08d7385c3c36637ce9f1a4cc2527bb36b47",
+      "bytes": 8036,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/onboarding/evals/evals.json"
+    },
+    "skill/references/activation-models.md": {
+      "sha256": "a13e82d8e3ebf810a0f0fb51fe91bbe349d8175baee5a97a85934fa20f63a8f7",
+      "bytes": 3258,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/onboarding/references/activation-models.md"
+    },
+    "skill/references/experiments.md": {
+      "sha256": "b4caad0b50ca9483a6a79846d0b24a7bab62850b45a3f2232d73f78629468932",
+      "bytes": 7796,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/onboarding/references/experiments.md"
+    },
+    "skill/references/minimum-path-to-value.md": {
+      "sha256": "c2b7c71b8436a1456888a26b9c8892c33cd9e1b1bf758f6fd7282c00f87dcdc3",
+      "bytes": 3152,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/onboarding/references/minimum-path-to-value.md"
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "package": "sales-enablement",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/sales-enablement",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "7e2ac2fa322f599d0dd43413d5982e42e7ed7555c02458b99633355a2c8d5bc9",
+      "bytes": 2743,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "b5094568424a3123f76fb5841e85fc25be3f7411ac38371bbdc97ffbb34eded3",
+      "bytes": 6896,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "d83c3244dd8e2e64d585f1ff0d760eff181587f06b90ceaf8127a4ce618265dd",
+      "bytes": 14721,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sales-enablement/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "734702bc1a437360fbac100a77a53ec83465ef1fb2364ecfc922b5381ddf342b",
+      "bytes": 6412,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sales-enablement/evals/evals.json"
+    },
+    "skill/references/deck-frameworks.md": {
+      "sha256": "265eea6c1b358d10f2dd22fd987789a9d115c14d30bf77a9086734ac60659336",
+      "bytes": 7730,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sales-enablement/references/deck-frameworks.md"
+    },
+    "skill/references/demo-scripts.md": {
+      "sha256": "505616ebf73d30fe84a844540727ab8f3aeae29ebcda8c8ace28a18ada003da3",
+      "bytes": 11769,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sales-enablement/references/demo-scripts.md"
+    },
+    "skill/references/objection-library.md": {
+      "sha256": "e0cdfeffc41afbdbe2c014bcd9b3c024318eac9bd23159e871ec796aba29e0b2",
+      "bytes": 13393,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sales-enablement/references/objection-library.md"
+    },
+    "skill/references/one-pager-templates.md": {
+      "sha256": "2197326faff4ede03fb40e332e9c80a4e084d8efd48c74df8720d70817ac5ded",
+      "bytes": 5823,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/sales-enablement/references/one-pager-templates.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/integrations/introw.md": {
+      "sha256": "5b893d2e95993fe8da7383801989d7e791aab732c5a306632a69d9bc7d4f47ae",
+      "bytes": 4846,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/introw.md"
+    }
+  }
+}

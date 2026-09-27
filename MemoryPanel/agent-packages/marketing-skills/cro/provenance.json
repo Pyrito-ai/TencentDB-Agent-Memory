@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "cro",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/cro",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "448eb6cc4f6e117dab0008dc9d346e85d5c5ba5bef332469f1bb1fa8a997bdf4",
+      "bytes": 2934,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "39c02af8afd831997b79131143fd44b25cbb83d7a89daa45c211b9928d2a5b40",
+      "bytes": 5309,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "199016bec3b44bc6a7507b111b6028f6550cc852cd54c7d0df789f15d6f814c4",
+      "bytes": 6101,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cro/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "62f3003602836e2b49d797ca582e7703629a6b07b131eb77b51b2bb39fe65775",
+      "bytes": 7656,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cro/evals/evals.json"
+    },
+    "skill/references/experiments.md": {
+      "sha256": "bbcc356c0af36cfaa4556bf9e929deac30c65cafb37f909d7c51d4777fe254ca",
+      "bytes": 7850,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cro/references/experiments.md"
+    },
+    "skill/references/form.md": {
+      "sha256": "e3115b0fdfb3968915b8e3acdc32a6e5f1d2c6a335ebbed25bee9b601ec573d7",
+      "bytes": 10312,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/cro/references/form.md"
+    }
+  }
+}

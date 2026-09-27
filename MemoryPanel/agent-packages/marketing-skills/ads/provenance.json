@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "package": "ads",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/ads",
+    "skillVersion": "2.3.2"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "dae3080d230041d3e4913fc96525acb6e90dec59e57c97a779408bab9ee0124d",
+      "bytes": 2732,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "3ce3f35d08ee027de52297086547c982d22d7ab8475f196ea191cda7c596ad45",
+      "bytes": 15059,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "5759f8e81a2fc61c135cb7e63b472e8788cf6a1a143b865b818e215d0fc02c69",
+      "bytes": 28544,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "14e4e7c6236e0294248d42b183dbbe9fe0334c97be11b9e9602b8919f6e08ca5",
+      "bytes": 15958,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/evals/evals.json"
+    },
+    "skill/references/abm-playbook.md": {
+      "sha256": "1a21370da52ec4e272ce9971b506a0ca678b18f95cdfcb7882f1a5a4568f13ea",
+      "bytes": 7162,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/abm-playbook.md"
+    },
+    "skill/references/ad-copy-templates.md": {
+      "sha256": "853ab37e23b75aa3355bdbed9a1357948e635dbdf737be5a1a7aa0126d701206",
+      "bytes": 4821,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/ad-copy-templates.md"
+    },
+    "skill/references/audience-targeting.md": {
+      "sha256": "21ed7c99fb1124ca38635d6f313cc2f3ca49a192f390cd55293b7bd5a028e1b1",
+      "bytes": 6067,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/audience-targeting.md"
+    },
+    "skill/references/audit-guardrails.md": {
+      "sha256": "c6498edd9d345dc2a6dc7011b701f61e895bd4f0171b2914bbc5583a761bb0f8",
+      "bytes": 7109,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/audit-guardrails.md"
+    },
+    "skill/references/b2b-paid-playbook.md": {
+      "sha256": "21dc1125905f8d985763996afb24a2bf54539330535b7b2b45c052901c5b2006",
+      "bytes": 7951,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/b2b-paid-playbook.md"
+    },
+    "skill/references/conversion-tracking.md": {
+      "sha256": "33da4f9bb1042c5b226459cf420b21954705fd8c1d885e67326b1e57492561d8",
+      "bytes": 11133,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/conversion-tracking.md"
+    },
+    "skill/references/creative-research-automation.md": {
+      "sha256": "c65c367c776b056071e2f2c96112466e31607128a8b532e126b276cf745afe97",
+      "bytes": 8457,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/creative-research-automation.md"
+    },
+    "skill/references/google-ads-audit-checklist.md": {
+      "sha256": "ad0470a25f601f42d5713089414c27f5e65adef3b250c6c0052b3e463de7700a",
+      "bytes": 9531,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/google-ads-audit-checklist.md"
+    },
+    "skill/references/google-search-playbook.md": {
+      "sha256": "72e73c57d79e141b5ed132fb7262bcc3f1af98e60e13140ab4e36932b33d9e23",
+      "bytes": 9844,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/google-search-playbook.md"
+    },
+    "skill/references/linkedin-b2b-playbook.md": {
+      "sha256": "bffa706b760c034b1a9c8f01921db6886a15db8588da9d72f1b6151c28ee02b7",
+      "bytes": 8889,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/linkedin-b2b-playbook.md"
+    },
+    "skill/references/meta-decision-system.md": {
+      "sha256": "861709bcc4e7467eac7d4de63f0bdd6709eb3c12a1d72b3855dce313ca15407f",
+      "bytes": 15663,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/meta-decision-system.md"
+    },
+    "skill/references/payback-period.md": {
+      "sha256": "498e24fd2c27eaf2880b1e1dffceaa43fb0b82df7b36132e6eca69ba9785e56c",
+      "bytes": 5661,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/payback-period.md"
+    },
+    "skill/references/platform-setup-checklists.md": {
+      "sha256": "b86e206f8c7233c235d7d385a69e17fac16ac001ab130242b7700fe650752f69",
+      "bytes": 7613,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/platform-setup-checklists.md"
+    },
+    "skill/references/rsa-output-spec.md": {
+      "sha256": "285fec5c1671c9cc1a4cdfbcf06d8a54a022cbad52693941457d90e1f2c5f503",
+      "bytes": 3689,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ads/references/rsa-output-spec.md"
+    },
+    "skill/supporting/skills/ad-creative/references/creative-roadmap.md": {
+      "sha256": "a0be737841d8a73f0cf02094c9ed1e3f7c050e1c6f867794b1fa8b64dbf3b50e",
+      "bytes": 9010,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/creative-roadmap.md"
+    },
+    "skill/supporting/skills/ad-creative/references/generative-tools.md": {
+      "sha256": "c95da2868f39eb10091898271057fa64107bff61a701a046437c8fce4026381f",
+      "bytes": 24104,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/generative-tools.md"
+    },
+    "skill/supporting/skills/ad-creative/references/hook-system.md": {
+      "sha256": "fc5db396eb43d7616ba55e58005f30fac5d0539542bd46cd60e6cf4666bd4de2",
+      "bytes": 8339,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/hook-system.md"
+    },
+    "skill/supporting/skills/ad-creative/references/imessage-video-ads.md": {
+      "sha256": "89ed0d9a8802280f36cdf35fd049ec26e4bf5a22cd68037f1b8f4ca67475d1ac",
+      "bytes": 20359,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/imessage-video-ads.md"
+    },
+    "skill/supporting/skills/ad-creative/references/meta-creative-formats.md": {
+      "sha256": "09720c4550761365a8c93c8587fe629c87718dbb331677312d93e5b2faa9761f",
+      "bytes": 10686,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/meta-creative-formats.md"
+    },
+    "skill/supporting/skills/ad-creative/references/motion-video-ads.md": {
+      "sha256": "c64e83199f0316e12e7811667f09a6475a34044c8eec2e3ba549faf9c33fc28c",
+      "bytes": 11801,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/motion-video-ads.md"
+    },
+    "skill/supporting/skills/ad-creative/references/short-form-video-specs.md": {
+      "sha256": "58220fe7abc8175f3712822960a3c7ad226421bd76c06fbc16257f0d312dd86f",
+      "bytes": 19375,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/short-form-video-specs.md"
+    },
+    "skill/supporting/skills/ad-creative/references/static-ad-templates.md": {
+      "sha256": "4eb05b2c8948ec3b76968815ee4b75039323627717289bd803729d587082d792",
+      "bytes": 23537,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/ad-creative/references/static-ad-templates.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/ga4.js": {
+      "sha256": "abbf28a901674ad12a77ca61e80a7f38a95bb5ebd3448f2ad968a986fc044d23",
+      "bytes": 6472,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/ga4.js"
+    },
+    "skill/supporting/tools/clis/google-ads.js": {
+      "sha256": "c5015f0e7e41a620de4d3c231430b7ae93ecad54908c0f1680e4d53f0a05397f",
+      "bytes": 6174,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/google-ads.js"
+    },
+    "skill/supporting/tools/clis/linkedin-ads.js": {
+      "sha256": "ac1e4580023b5125f13691bfaac7e358231cb28f258d1910fc231735c8572513",
+      "bytes": 6168,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/linkedin-ads.js"
+    },
+    "skill/supporting/tools/clis/meta-ads.js": {
+      "sha256": "f8e2293a321c6b579062f08c05ef3b92ba250a48ad8e3d3e27bdb5a11830a4c1",
+      "bytes": 6076,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/meta-ads.js"
+    },
+    "skill/supporting/tools/clis/segment.js": {
+      "sha256": "0054f8f954da67fd4ec06df62f179251e46837339407e91906e5d8ef737c3bff",
+      "bytes": 6275,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/segment.js"
+    },
+    "skill/supporting/tools/clis/tiktok-ads.js": {
+      "sha256": "a5abb9313cd1c8dc8324e0adad243993638b24a63fea436884204b04ec4bc375",
+      "bytes": 6689,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/tiktok-ads.js"
+    },
+    "skill/supporting/tools/integrations/ga4.md": {
+      "sha256": "aeb8a06cfa71901647b267e8587406cfed674e7c4604a12868d7eef775bced29",
+      "bytes": 2878,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/ga4.md"
+    },
+    "skill/supporting/tools/integrations/google-ads.md": {
+      "sha256": "82d93a6c90c797ea52fcd2fec508b9183cf8a8ad55c5b47ba6f608e6af3dc610",
+      "bytes": 3895,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/google-ads.md"
+    },
+    "skill/supporting/tools/integrations/linkedin-ads.md": {
+      "sha256": "62842e11d1e344b066aa1d33784a3cc20b726897329f041a6ae2ed3586b9dcc1",
+      "bytes": 3206,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/linkedin-ads.md"
+    },
+    "skill/supporting/tools/integrations/meta-ads.md": {
+      "sha256": "652e367aa329765218d5efb992e7cf3dfd07257790acaea1aabbb521fd69225a",
+      "bytes": 3438,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/meta-ads.md"
+    },
+    "skill/supporting/tools/integrations/segment.md": {
+      "sha256": "0efae9508d5625072623812cff02906d9d3779495332c9ed76ec147bddfd8484",
+      "bytes": 3032,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/segment.md"
+    },
+    "skill/supporting/tools/integrations/tiktok-ads.md": {
+      "sha256": "65a03753ad01dbe441b4cbb1ffb33ba4d39af90e77e6ec7f9953ec55435b9f9a",
+      "bytes": 3294,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/tiktok-ads.md"
+    }
+  }
+}

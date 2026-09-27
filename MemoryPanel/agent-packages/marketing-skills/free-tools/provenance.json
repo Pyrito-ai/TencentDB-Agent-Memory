@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "free-tools",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/free-tools",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "56bc95753e000970a3aa23bad0d867321db5d5c420e3778a85f3bafa64fbd9d9",
+      "bytes": 2771,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "76c4b65a0e8c42061d0ccb33bca2c1b397ab1565a2da5302680f558822f12cb2",
+      "bytes": 5421,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "609158ee26c6005cf6138635a1a8ac4928322651c82ba13584db19d610d61e6b",
+      "bytes": 7240,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/free-tools/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "20c37063843c199a337d48a88e583b09db2689623e7aabcae0e3c0e5b1812d10",
+      "bytes": 7617,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/free-tools/evals/evals.json"
+    },
+    "skill/references/tool-benchmarks.md": {
+      "sha256": "833f8ba49193b6b31472d02855fe72b77a659ab31f289516c7e89e3357d1fa1f",
+      "bytes": 3015,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/free-tools/references/tool-benchmarks.md"
+    },
+    "skill/references/tool-types.md": {
+      "sha256": "3869418a784ec94e95528dbe3f39cd2571cff6f7649e5e0be28d675be61d5a3f",
+      "bytes": 4012,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/free-tools/references/tool-types.md"
+    }
+  }
+}

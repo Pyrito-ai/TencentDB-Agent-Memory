@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "package": "referrals",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/referrals",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "ac5fa87d2d9d51389f5d38520f780f064c7771aa3db333b60356278a443a455e",
+      "bytes": 2767,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "42a6bf3a8e859cca929be92fabe4b1571c037d273f23563ed6d90353c6f18008",
+      "bytes": 8373,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "103bd339d6d7796fae1128487c1560f38feecd94898d0d7c44ca0383f4c809d9",
+      "bytes": 9167,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/referrals/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "4571af1f18088b12450b9a02d37ff8299e779e44b46ef6f44094119337a0a051",
+      "bytes": 7949,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/referrals/evals/evals.json"
+    },
+    "skill/references/affiliate-programs.md": {
+      "sha256": "3479ba24987c24654191f02bbf57fa5ff89eecde8e93cf22c65538bed2c356b4",
+      "bytes": 4400,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/referrals/references/affiliate-programs.md"
+    },
+    "skill/references/program-examples.md": {
+      "sha256": "2baad60cdb251414ea559bd4dcf23d6c394ff66e593ae9392453f2e24f585c8a",
+      "bytes": 3309,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/referrals/references/program-examples.md"
+    },
+    "skill/references/viral-mechanisms.md": {
+      "sha256": "04224240fae94bcf9bc64c7d8cac507bdd570049144e4df33946ac4ae8a483e4",
+      "bytes": 6057,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/referrals/references/viral-mechanisms.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/dub.js": {
+      "sha256": "78af54c4d63ec7f5b946ec015d4fdd16fe0f55960776994638c4fcd782cdbca1",
+      "bytes": 5053,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/dub.js"
+    },
+    "skill/supporting/tools/clis/mention-me.js": {
+      "sha256": "2e178ab2d7b0d85c448bfeaa96a27155708ffaf656b3a01170f38561ae557f05",
+      "bytes": 5306,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/mention-me.js"
+    },
+    "skill/supporting/tools/clis/partnerstack.js": {
+      "sha256": "f5222506be36650cefdf96cda805298abb739834ca45be70f131d72ccd02fe89",
+      "bytes": 13988,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/partnerstack.js"
+    },
+    "skill/supporting/tools/clis/rewardful.js": {
+      "sha256": "2ffb717b361df991e5ad85679360451b42df09ccbd7355b6141ed035098b8f6e",
+      "bytes": 5088,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/rewardful.js"
+    },
+    "skill/supporting/tools/clis/tolt.js": {
+      "sha256": "9ce207d90d6cb677bcb7a273ee1d6e98a473f53b7e353331c252a7b719be45a7",
+      "bytes": 4680,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/tolt.js"
+    },
+    "skill/supporting/tools/integrations/dub-co.md": {
+      "sha256": "6d718923510574b0ac9f6840ab7cb6f948fdc95a8b402bfdc6d32d7fdbf6ea8b",
+      "bytes": 3127,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/dub-co.md"
+    },
+    "skill/supporting/tools/integrations/introw.md": {
+      "sha256": "5b893d2e95993fe8da7383801989d7e791aab732c5a306632a69d9bc7d4f47ae",
+      "bytes": 4846,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/introw.md"
+    },
+    "skill/supporting/tools/integrations/mention-me.md": {
+      "sha256": "eac6e3a89b871f795cdfab85d1cb436e6592228facc644faa788d6b5ca633802",
+      "bytes": 3220,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/mention-me.md"
+    },
+    "skill/supporting/tools/integrations/partnerstack.md": {
+      "sha256": "0245f1c76582e244f0c8aed7882604d55c441d5781d9e27339b6c6e861222fb1",
+      "bytes": 4670,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/partnerstack.md"
+    },
+    "skill/supporting/tools/integrations/rewardful.md": {
+      "sha256": "daa1c8c3f2dd32526414a371b41a77449e3c63f42a37050d7f061ac086a30300",
+      "bytes": 3240,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/rewardful.md"
+    },
+    "skill/supporting/tools/integrations/stripe.md": {
+      "sha256": "b4fdcba34141563f94ac8080df59d967c3657d13267891f152d8025f091ea5f9",
+      "bytes": 3186,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/stripe.md"
+    },
+    "skill/supporting/tools/integrations/tolt.md": {
+      "sha256": "d961d4e3544890facb6ad072f5068f222d4716078c6c272e44d8b2879c0ca740",
+      "bytes": 2858,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/tolt.md"
+    }
+  }
+}

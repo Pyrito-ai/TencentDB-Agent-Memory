@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "package": "customer-research",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/customer-research",
+    "skillVersion": "2.0.2"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "25eef1eade8131c1fa70fa54454b10e04fd5468c21f966b724d21d66913354d8",
+      "bytes": 2667,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "a798167458ab70a831fa8b1f4d8b7f5666356363ddaafd99ee2268884d4262ad",
+      "bytes": 7021,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "ae4769147f63dd5aea1308a0fddd85473601164893f58111dce738738226317e",
+      "bytes": 14878,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/customer-research/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "fc8a15d12e582b55fa52ad27925594ab796ebd6a8ea13fed13722f97e4c51f01",
+      "bytes": 12547,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/customer-research/evals/evals.json"
+    },
+    "skill/references/interviews-and-surveys.md": {
+      "sha256": "56adecdc40af1242464937100349fc1a161627394909551720494bc5ee537076",
+      "bytes": 8640,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/customer-research/references/interviews-and-surveys.md"
+    },
+    "skill/references/source-guides.md": {
+      "sha256": "56682ea98d781060396fd4009739d071671b3489a0d4c81f0a0ef3078cb5c9ee",
+      "bytes": 16190,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/customer-research/references/source-guides.md"
+    },
+    "skill/supporting/tools/integrations/sparktoro.md": {
+      "sha256": "00961feb89821d20b61ecc0a7bef196669190eac8bb2bbe8029fd596c5fd6118",
+      "bytes": 4719,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/sparktoro.md"
+    }
+  }
+}

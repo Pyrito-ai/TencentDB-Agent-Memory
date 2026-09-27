@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "package": "influencer-marketing",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/influencer-marketing",
+    "skillVersion": "1.1.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "67c59046b1186f7013cff206ac2e3fb86940801133d0982901a0b2e1471401ff",
+      "bytes": 2995,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "a25c449dc91b3f9deee32c89f3ef80f270dde4683440f3b9ddb78adcd890b995",
+      "bytes": 6409,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "45d0d36d8c418f16fa25b59c9b392c9cb9b850f764357023b2d7b4f4cd08adc1",
+      "bytes": 17819,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/influencer-marketing/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "6cf05d0a8735b3dc6a92d4789ba33515ba80c4aa1aacf60d7c3cb8b7a76f1dc5",
+      "bytes": 8676,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/influencer-marketing/evals/evals.json"
+    },
+    "skill/references/ugc-creator-program.md": {
+      "sha256": "8bb429d14c0e6a7f631a79652152de67a19e071c82d9a7b55543fd0cc7ad038b",
+      "bytes": 8908,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/influencer-marketing/references/ugc-creator-program.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/integrations/sparktoro.md": {
+      "sha256": "00961feb89821d20b61ecc0a7bef196669190eac8bb2bbe8029fd596c5fd6118",
+      "bytes": 4719,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/sparktoro.md"
+    }
+  }
+}

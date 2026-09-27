@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "package": "marketing-psychology",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/marketing-psychology",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "59b96f66274e91e34ee7ec52e08ae98f7d30ce29fa286ebb8e9072ee54adb92d",
+      "bytes": 2749,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "468255170f9a21b686c3b60a0df8ceafeeb69e8bee097b01deb776afe5265f29",
+      "bytes": 5384,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "573bbe4f6e300e7fb75299e314f56e26382d284782caa2ae0e0f33eb2e646548",
+      "bytes": 21884,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-psychology/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "c3b7d15b3008eeb493796e21affd6a0c6e7ce312f9cfeffcdef467857903c733",
+      "bytes": 6036,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-psychology/evals/evals.json"
+    }
+  }
+}

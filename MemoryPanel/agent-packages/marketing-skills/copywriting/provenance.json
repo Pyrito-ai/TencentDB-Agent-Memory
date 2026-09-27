@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "copywriting",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/copywriting",
+    "skillVersion": "2.0.2"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "0b875c95a1ba18610c52f7322d645937aa72d5017c45225fc2b90de85e0d9cd6",
+      "bytes": 2839,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "d18f06c71d7a46541374ef3f20fa4c58069a8c586fb6f38bec77a3f6ec5b9480",
+      "bytes": 6144,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "ce18137ae31ab37f261078501431649865ab6b403054d97490754e82acb002d8",
+      "bytes": 8401,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copywriting/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "f062a21fea6ec6eff7157caf051142fa376fbfe6284c7d1d185371de6acedb9b",
+      "bytes": 9921,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copywriting/evals/evals.json"
+    },
+    "skill/references/copy-frameworks.md": {
+      "sha256": "d98818886525908bf17dd6412d0b72731b313d6eef3e1ab6b365828a3a342779",
+      "bytes": 14328,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copywriting/references/copy-frameworks.md"
+    },
+    "skill/references/natural-transitions.md": {
+      "sha256": "4ff23f8943af2f65b072f26f1c53ce55f19cc26d7be211c11cae8e34b43e859f",
+      "bytes": 5684,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/copywriting/references/natural-transitions.md"
+    }
+  }
+}

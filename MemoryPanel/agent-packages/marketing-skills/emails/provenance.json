@@ -1,0 +1,159 @@
+{
+  "schemaVersion": 1,
+  "package": "emails",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/emails",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "3137af9ba90463eab051f846b11a92750d7f3e3b78030130baacf2f65c968687",
+      "bytes": 2750,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "819403c05778b3440d5b9b3c8c60e515a0c94e4db48b236a2857380f6bf958ce",
+      "bytes": 8664,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "1fbd54df4c59f48408057e7db0dfb1a53c033e6a4ca5cd1927a47c51ec28d8f1",
+      "bytes": 8562,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/emails/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "79cd94598ce73482055b94a1231f7c10003fc3e367da5a46ab2c529f061a48fe",
+      "bytes": 6666,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/emails/evals/evals.json"
+    },
+    "skill/references/copy-guidelines.md": {
+      "sha256": "02f08897e4aa99ecc4ec1893d61d0c26d0c5e62e09af26f175087455e9b68e01",
+      "bytes": 2332,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/emails/references/copy-guidelines.md"
+    },
+    "skill/references/email-types.md": {
+      "sha256": "a5dd4f0555a7b21d2ff426948d15657825b9d16265652563f5e272d2e1879bfd",
+      "bytes": 14250,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/emails/references/email-types.md"
+    },
+    "skill/references/sequence-templates.md": {
+      "sha256": "d47b12e263ad52b72ab741c490bbc98d8bf8034d61faccc50b7dbb2650a9fba0",
+      "bytes": 3918,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/emails/references/sequence-templates.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/customer-io.js": {
+      "sha256": "e968a94beba015ed8ec5354d8ec4c06a565d43b9a5c8fe3cd5252e2a7fb97a96",
+      "bytes": 7331,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/customer-io.js"
+    },
+    "skill/supporting/tools/clis/kit.js": {
+      "sha256": "cbb57c407e630d518e15f098358914d83d3f07978521634b6f7ad9c04afbc56e",
+      "bytes": 8217,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/kit.js"
+    },
+    "skill/supporting/tools/clis/mailchimp.js": {
+      "sha256": "2bc15857ead79c34a95efbe1c2b60c9ba4ba0da8162185208a19afd4ef503b0e",
+      "bytes": 7431,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/mailchimp.js"
+    },
+    "skill/supporting/tools/clis/resend.js": {
+      "sha256": "968293555a5674f978442f014c302f21c5d0fe2085547f42e266b44e6fab3bf5",
+      "bytes": 13115,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/resend.js"
+    },
+    "skill/supporting/tools/clis/sendgrid.js": {
+      "sha256": "fdc6d8e2d2a951ba503040daa83ef044f4d856a368a43a21e80004b185284160",
+      "bytes": 7065,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/sendgrid.js"
+    },
+    "skill/supporting/tools/integrations/customer-io.md": {
+      "sha256": "43bee99a2659ffa8c96834a27f8a64e7bc7798c3962828db42f4112720516056",
+      "bytes": 3232,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/customer-io.md"
+    },
+    "skill/supporting/tools/integrations/kit.md": {
+      "sha256": "5f5496507e63cfed76993c4ceab561a513aba1379ea78a74e57d7887bb3015da",
+      "bytes": 3012,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/kit.md"
+    },
+    "skill/supporting/tools/integrations/mailchimp.md": {
+      "sha256": "518afcf295289e6bf6483b584e2675195449eea6ebf5328de5721bbc3812d74e",
+      "bytes": 2874,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/mailchimp.md"
+    },
+    "skill/supporting/tools/integrations/nitrosend.md": {
+      "sha256": "147c415815703b228e876624358e6e9d2fc67f7b49cafbca2016916ae61754bd",
+      "bytes": 3871,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/nitrosend.md"
+    },
+    "skill/supporting/tools/integrations/resend.md": {
+      "sha256": "4dd1329c84a7b4730e831fe687270f8bfed410730bc15ed3334e3dddd543d6dc",
+      "bytes": 3666,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/resend.md"
+    },
+    "skill/supporting/tools/integrations/sendgrid.md": {
+      "sha256": "ab3178b4c49b8ac6c9964d4fb03d4c80828d8f71584735bf2a220ea1ae1d14e5",
+      "bytes": 2805,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/sendgrid.md"
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "package": "content-strategy",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/content-strategy",
+    "skillVersion": "2.1.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "01cc12c52e543d84533b2ba28c4eff65ce6a9671aa1d48d2df38f4c066d81879",
+      "bytes": 2743,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "d048c091d9af232dd97f5c7c93e74a9124c4a023a3340268282ea672444fc0a5",
+      "bytes": 7051,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "0ad572d607884c561668810f77cd21bbe3e0508c64090f2997661a728360f946",
+      "bytes": 18711,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/content-strategy/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "10167e7125ee77cbabe4f03953750dd99ea147f7461027fdbb0cf8e089e5506d",
+      "bytes": 10190,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/content-strategy/evals/evals.json"
+    },
+    "skill/references/content-distribution.md": {
+      "sha256": "1861a1aab0627ab29c279000879a9889242da1ba85e677acdc759c66a6241778",
+      "bytes": 5576,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/content-strategy/references/content-distribution.md"
+    },
+    "skill/references/headless-cms.md": {
+      "sha256": "c0a7b87f47c8f7af907ce73facf1ed4721ade811e53f86ddf22f4bc0d7ca324e",
+      "bytes": 8433,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/content-strategy/references/headless-cms.md"
+    },
+    "skill/supporting/tools/integrations/contentful.md": {
+      "sha256": "17526825260159bc60b3c8ba6e644acd30a7126397da1dc2b633f214037a1686",
+      "bytes": 4828,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/contentful.md"
+    },
+    "skill/supporting/tools/integrations/sanity.md": {
+      "sha256": "f084bbd1d7d38f142c67c7877e4d57fc46f0452c145741eeee293b90fd34467a",
+      "bytes": 3690,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/sanity.md"
+    },
+    "skill/supporting/tools/integrations/strapi.md": {
+      "sha256": "e78e9898f0aa05c8ef1d435a28c0c87467c8e00bfbfb9b9d7be11ff796bd654b",
+      "bytes": 4124,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/strapi.md"
+    }
+  }
+}

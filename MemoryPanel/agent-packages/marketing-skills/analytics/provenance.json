@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "package": "analytics",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/analytics",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "23d20578ada01e25c83fdab3336db5c1a133c5d677cca979244d936373ccaa71",
+      "bytes": 2668,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "6768a577c69df4b50ce30791632948fba52cf6da60f1c39f523068e199bc4b0d",
+      "bytes": 7923,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "3eda97d96b2329daa933b6fdb94bf81aaa1196e3e344e56a8805f972a7438404",
+      "bytes": 8635,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/analytics/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "56932e864114d69a61b6b55e639d207329c0a8b7df8b61a0e1188b249cbef1e8",
+      "bytes": 6365,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/analytics/evals/evals.json"
+    },
+    "skill/references/event-library.md": {
+      "sha256": "efc7bdb0a7b3efdea9e67ff0d1bc894dcf89ec9b9b8f3414f123d12bee109412",
+      "bytes": 8654,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/analytics/references/event-library.md"
+    },
+    "skill/references/ga4-implementation.md": {
+      "sha256": "f33fd6db0cbdb1bdc183af5f52bedd956d14680e54bca2e2c3917de29698636e",
+      "bytes": 6343,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/analytics/references/ga4-implementation.md"
+    },
+    "skill/references/gtm-implementation.md": {
+      "sha256": "112da33832439d2ae0b2729e5031fc927df444cd1ae8eb20542d45c1b5690f52",
+      "bytes": 7570,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/analytics/references/gtm-implementation.md"
+    },
+    "skill/supporting/tools/REGISTRY.md": {
+      "sha256": "4ff3196ae0a1c3b15987ee150c2e7a63dfa55e796b6e435aaad5886d7d781256",
+      "bytes": 32882,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/REGISTRY.md"
+    },
+    "skill/supporting/tools/clis/amplitude.js": {
+      "sha256": "46a9e65591e7c49f7df125b0a485548d988f579fa8947ba0346cd3688ec8e0d1",
+      "bytes": 5646,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/amplitude.js"
+    },
+    "skill/supporting/tools/clis/ga4.js": {
+      "sha256": "abbf28a901674ad12a77ca61e80a7f38a95bb5ebd3448f2ad968a986fc044d23",
+      "bytes": 6472,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/ga4.js"
+    },
+    "skill/supporting/tools/clis/mixpanel.js": {
+      "sha256": "eede8a9905fe2cb77688fb700c8c69e0763bd0facb5ca854673ba99216ca89b7",
+      "bytes": 8486,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/mixpanel.js"
+    },
+    "skill/supporting/tools/clis/segment.js": {
+      "sha256": "0054f8f954da67fd4ec06df62f179251e46837339407e91906e5d8ef737c3bff",
+      "bytes": 6275,
+      "origin": "upstream",
+      "executable": true,
+      "upstreamPath": "tools/clis/segment.js"
+    },
+    "skill/supporting/tools/integrations/amplitude.md": {
+      "sha256": "68da7d5dc2ffddc7d81fac1f60994c9a0df2bb180b4d60c68179e1375197e1fd",
+      "bytes": 2614,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/amplitude.md"
+    },
+    "skill/supporting/tools/integrations/ga4.md": {
+      "sha256": "aeb8a06cfa71901647b267e8587406cfed674e7c4604a12868d7eef775bced29",
+      "bytes": 2878,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/ga4.md"
+    },
+    "skill/supporting/tools/integrations/mixpanel.md": {
+      "sha256": "88b46cc326c19a0a5d24107dfd6801edd5fb09e10992a1eeaa27e95016a22d3f",
+      "bytes": 2590,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/mixpanel.md"
+    },
+    "skill/supporting/tools/integrations/posthog.md": {
+      "sha256": "892190695fa7978e18c1ee1a8bad089e6a57226701b8899479702e1f202f401c",
+      "bytes": 2869,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/posthog.md"
+    },
+    "skill/supporting/tools/integrations/segment.md": {
+      "sha256": "0efae9508d5625072623812cff02906d9d3779495332c9ed76ec147bddfd8484",
+      "bytes": 3032,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "tools/integrations/segment.md"
+    }
+  }
+}

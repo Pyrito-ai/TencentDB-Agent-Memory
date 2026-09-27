@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "package": "marketing-council",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/marketing-council",
+    "skillVersion": "1.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "01caa5d6374ac7dc0df2cfdeb0e8645fdc826a0b46e1e7913b2a8f06d95bb287",
+      "bytes": 3039,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "f2d3827882b3cec9eec7e5a25e54cc8bc57415314b901d400c37d279b3013b73",
+      "bytes": 9796,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "0b94358427c344e1f5f50169770cce44e0b065ec8b05fc887a800daed008ac31",
+      "bytes": 12480,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "c95d3d8cdaafb6ad178d5a72ee87f2ba655f41c1c7046c83705c93b2b9afa291",
+      "bytes": 5709,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/evals/evals.json"
+    },
+    "skill/references/advisor-template.md": {
+      "sha256": "e748d9f91d5b663c3cc0165c83a117833b0392fbf6c77b5a2107c49b0edd3c51",
+      "bytes": 2112,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisor-template.md"
+    },
+    "skill/references/advisors/alex-hormozi.md": {
+      "sha256": "18975ae41e73d1a95779f0bcffde5bd42f91bbb96a208d55a3fa4c0095a421da",
+      "bytes": 3987,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/alex-hormozi.md"
+    },
+    "skill/references/advisors/ann-handley.md": {
+      "sha256": "b0ad24ef9ee2965a1ee35a2208ea65897ef684baafb65557e2cc3b0aa9e5ca4e",
+      "bytes": 4064,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/ann-handley.md"
+    },
+    "skill/references/advisors/april-dunford.md": {
+      "sha256": "7abc28f3d3043f72bf8ca710c0390de4014486cffb1e6e82029581aa7ef5212f",
+      "bytes": 4410,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/april-dunford.md"
+    },
+    "skill/references/advisors/byron-sharp.md": {
+      "sha256": "fe99260a03ca0123ae1075108cb6466b0bd60ccac1b0b8d64d7b7bf1a78e17af",
+      "bytes": 4790,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/byron-sharp.md"
+    },
+    "skill/references/advisors/claude-hopkins.md": {
+      "sha256": "93366c6d6b51407fdf33308537f31e7e8667a89fecd9fa1b8ea9ac398fb80942",
+      "bytes": 3789,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/claude-hopkins.md"
+    },
+    "skill/references/advisors/david-ogilvy.md": {
+      "sha256": "868d96f850eff22a923224bf7f3b5344abdb5d4c130b77e46e4142c630c6edba",
+      "bytes": 4096,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/david-ogilvy.md"
+    },
+    "skill/references/advisors/eugene-schwartz.md": {
+      "sha256": "fef9cc5ece0ad84d5542721f9346b18e5aa44e9f1a10e62f1ed5b7e05f6ba5a5",
+      "bytes": 4184,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/eugene-schwartz.md"
+    },
+    "skill/references/advisors/gary-halbert.md": {
+      "sha256": "0db92e69da50a6372a5dc1feae2a6824fff9f1b53df92094745810c3d8375d8b",
+      "bytes": 3968,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/gary-halbert.md"
+    },
+    "skill/references/advisors/gary-vaynerchuk.md": {
+      "sha256": "256f5425b602375c83d4a6e677c7ecc97e60f3dead83f8192802b6c0c65e57e4",
+      "bytes": 4399,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/gary-vaynerchuk.md"
+    },
+    "skill/references/advisors/rory-sutherland.md": {
+      "sha256": "07a726d3f66def9722b5b3c52acc37173edc50ac880f8d1cb072424bd9b5f235",
+      "bytes": 4732,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/rory-sutherland.md"
+    },
+    "skill/references/advisors/russell-brunson.md": {
+      "sha256": "ae0cb018f48a734ec64fd087fd469a7e8170f5d2a2fea7623dfd58f35cfe739e",
+      "bytes": 4331,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/russell-brunson.md"
+    },
+    "skill/references/advisors/seth-godin.md": {
+      "sha256": "02cb1b64b1fff7eecc6ff9769b60c23ef68b03017fd3d82b1a5b544009dd79c0",
+      "bytes": 4026,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-council/references/advisors/seth-godin.md"
+    }
+  }
+}

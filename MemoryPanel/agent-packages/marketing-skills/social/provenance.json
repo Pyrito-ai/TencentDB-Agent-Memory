@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "package": "social",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/social",
+    "skillVersion": "2.2.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "759ca2d56b3483c2af1162e9969ebf37241183edf31297e34a65241886beaf03",
+      "bytes": 2905,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "9e6ebe9d5cb40719ec0b7a27759cb28d8d251508c5ef58aabbc784385e3d348b",
+      "bytes": 7153,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "8cc93d9b361622cdb640e87969747b85603bed2d268e923179f8dfb4799ec8c7",
+      "bytes": 14936,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "99b4a893db8dfa82484d0d6e1eaa730258576274de16999ba016f9906d07a36b",
+      "bytes": 7867,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/evals/evals.json"
+    },
+    "skill/references/carousel-frameworks.md": {
+      "sha256": "e7d56048a38de90f1f26f3cac8880f3d263a8bdd5fc0c9460d50aef135654768",
+      "bytes": 11174,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/carousel-frameworks.md"
+    },
+    "skill/references/listening-sources-template.md": {
+      "sha256": "c68bc6f57b0a48c432b1ce72c9324d41a04d0e7784d0bab91afb4a6065a43e38",
+      "bytes": 3479,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/listening-sources-template.md"
+    },
+    "skill/references/listening.md": {
+      "sha256": "a1049663d7ed37864bcd58e15ae5e8f03c8edcaca37d8de4f7e38896d94fbf93",
+      "bytes": 12064,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/listening.md"
+    },
+    "skill/references/platform-limits.md": {
+      "sha256": "6ecc6b40ff82b95c48906341f7d3c58337671d4d94f624c858764f1ed5a77c3c",
+      "bytes": 2830,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/platform-limits.md"
+    },
+    "skill/references/platforms.md": {
+      "sha256": "3c4e1b15717a3bcd4ed0cf29dc167dac28aa88bbf01723fde53815122396090f",
+      "bytes": 4420,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/platforms.md"
+    },
+    "skill/references/post-templates.md": {
+      "sha256": "febd0aca9557e6575188379f012b019b36839926bdf7924661f125f900b24d0f",
+      "bytes": 3951,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/post-templates.md"
+    },
+    "skill/references/reverse-engineering.md": {
+      "sha256": "c27bef59d463b3b11331c1770f4a23e9e6bbce7d7c8db1e7f7f4f14ba206243f",
+      "bytes": 5551,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/reverse-engineering.md"
+    },
+    "skill/references/short-form-video.md": {
+      "sha256": "38e7de4049f39d116b815a8d07f5e45777501e9f506e3a5fe005c5d204d32ee7",
+      "bytes": 6500,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/social/references/short-form-video.md"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "package": "directory-submissions",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/directory-submissions",
+    "skillVersion": "2.0.0"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "5bcd7410b117103ea2d3225bcf5709a39f20fb48436a8e48564e6fcb081e5368",
+      "bytes": 2851,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "64b89c2ed10d568f89ee5deef7c7a078602e7b593bc0cd86ca1591c68c3fa881",
+      "bytes": 6833,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "dd08854f5cd1e16413dd588b13e02a32ce01dd3a9f4e9b1099f92a7b635ac24a",
+      "bytes": 23361,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/directory-submissions/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "c4f9e756d22b4ff8019b183cf3ebab6a73c2c2ec9236453f5b580e03da62d5d5",
+      "bytes": 8356,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/directory-submissions/evals/evals.json"
+    },
+    "skill/references/directory-list.md": {
+      "sha256": "dac5d53f88f29717d72f6889e4dc5280373f3b27b48e21243bdb04efa9794edf",
+      "bytes": 25694,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/directory-submissions/references/directory-list.md"
+    },
+    "skill/references/positioning-variations.md": {
+      "sha256": "66b426f8b45f147410c4500e733b9140e743d7f29bc892f08d2d76f36618595c",
+      "bytes": 9348,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/directory-submissions/references/positioning-variations.md"
+    },
+    "skill/references/submission-tracker-template.csv": {
+      "sha256": "0874890cd0f1e5dcf96317d18e4bb802823c2a0761e885f72bd98d90a4007932",
+      "bytes": 19812,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/directory-submissions/references/submission-tracker-template.csv"
+    }
+  }
+}

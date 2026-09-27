@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "package": "marketing-ideas",
+  "packageVersion": "1.0.0",
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT",
+    "skillPath": "skills/marketing-ideas",
+    "skillVersion": "2.0.1"
+  },
+  "files": {
+    "LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "agent.json": {
+      "sha256": "313400c0b3aff20364b93ddc23144c68c9495d4b6dce9458fb2955bca246adb5",
+      "bytes": 2750,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/LICENSE.upstream": {
+      "sha256": "b70d71e24e40fce5da8f4b6f9cd862096a048e433db7f3c8cac5e348e6d34591",
+      "bytes": 1069,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "LICENSE"
+    },
+    "skill/PACKAGE-GUIDE.md": {
+      "sha256": "71a104a896414743679029379cf9292489cc7c59442e12c8b36487364b131c57",
+      "bytes": 6065,
+      "origin": "local",
+      "executable": false
+    },
+    "skill/SKILL.md": {
+      "sha256": "d5ea46d2d2eb2fb039494e8b545550a6bd5b5b9aedc5e65a228ac514deb018ff",
+      "bytes": 5789,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-ideas/SKILL.md"
+    },
+    "skill/evals/evals.json": {
+      "sha256": "f97f2bd1c755e6ca85ab75c500db681bd19559fb070ac249bba135ed7d8ecf60",
+      "bytes": 7490,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-ideas/evals/evals.json"
+    },
+    "skill/references/guerrilla-marketing.md": {
+      "sha256": "07b0534b579ce1916a60e79ab426cd936e78b4b261802d6486ad145f7bf552ae",
+      "bytes": 5033,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-ideas/references/guerrilla-marketing.md"
+    },
+    "skill/references/ideas-by-category.md": {
+      "sha256": "8b6aa55b3255616ea80c0ea45eca8f2bb70e528510ed76f6392e71475dd0c09b",
+      "bytes": 15400,
+      "origin": "upstream",
+      "executable": false,
+      "upstreamPath": "skills/marketing-ideas/references/ideas-by-category.md"
+    }
+  }
+}

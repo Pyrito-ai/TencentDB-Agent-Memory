@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "upstream": {
+    "repository": "https://github.com/coreyhaines31/marketingskills",
+    "commit": "5b2c0007766c6a1cf1d53fd8fc73e979e0821022",
+    "license": "MIT"
+  },
+  "excludedSkills": [
+    "seo-audit"
+  ],
+  "agents": [
+    {
+      "slug": "ab-testing",
+      "name": "A/B Testing",
+      "category": "Measurement & Sales",
+      "path": "ab-testing",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "ad-creative",
+      "name": "Ad Creative",
+      "category": "Content & Creative",
+      "path": "ad-creative",
+      "upstreamSkillVersion": "2.8.2"
+    },
+    {
+      "slug": "ads",
+      "name": "Paid Ads",
+      "category": "Acquisition & Partnerships",
+      "path": "ads",
+      "upstreamSkillVersion": "2.3.2"
+    },
+    {
+      "slug": "ai-seo",
+      "name": "AI SEO",
+      "category": "Search & Discovery",
+      "path": "ai-seo",
+      "upstreamSkillVersion": "2.5.0"
+    },
+    {
+      "slug": "analytics",
+      "name": "Analytics Tracking",
+      "category": "Measurement & Sales",
+      "path": "analytics",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "aso",
+      "name": "App Store Optimization",
+      "category": "Search & Discovery",
+      "path": "aso",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "attribution",
+      "name": "Attribution",
+      "category": "Measurement & Sales",
+      "path": "attribution",
+      "upstreamSkillVersion": "1.1.0"
+    },
+    {
+      "slug": "churn-prevention",
+      "name": "Churn Prevention",
+      "category": "Conversion & Retention",
+      "path": "churn-prevention",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "co-marketing",
+      "name": "Co-Marketing",
+      "category": "Strategy & Research",
+      "path": "co-marketing",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "cold-email",
+      "name": "Cold Email Writing",
+      "category": "Measurement & Sales",
+      "path": "cold-email",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "community-marketing",
+      "name": "Community Marketing",
+      "category": "Acquisition & Partnerships",
+      "path": "community-marketing",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "competitor-profiling",
+      "name": "Competitor Profiling",
+      "category": "Strategy & Research",
+      "path": "competitor-profiling",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "competitors",
+      "name": "Competitor & Alternative Pages",
+      "category": "Search & Discovery",
+      "path": "competitors",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "content-strategy",
+      "name": "Content Strategy",
+      "category": "Content & Creative",
+      "path": "content-strategy",
+      "upstreamSkillVersion": "2.1.1"
+    },
+    {
+      "slug": "copy-editing",
+      "name": "Copy Editing",
+      "category": "Content & Creative",
+      "path": "copy-editing",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "copywriting",
+      "name": "Copywriting",
+      "category": "Content & Creative",
+      "path": "copywriting",
+      "upstreamSkillVersion": "2.0.2"
+    },
+    {
+      "slug": "cro",
+      "name": "Conversion Rate Optimization (CRO)",
+      "category": "Conversion & Retention",
+      "path": "cro",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "customer-research",
+      "name": "Customer Research",
+      "category": "Strategy & Research",
+      "path": "customer-research",
+      "upstreamSkillVersion": "2.0.2"
+    },
+    {
+      "slug": "directory-submissions",
+      "name": "Directory Submissions",
+      "category": "Search & Discovery",
+      "path": "directory-submissions",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "emails",
+      "name": "Email Sequence Design",
+      "category": "Conversion & Retention",
+      "path": "emails",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "events",
+      "name": "Event Marketing",
+      "category": "Acquisition & Partnerships",
+      "path": "events",
+      "upstreamSkillVersion": "1.0.0"
+    },
+    {
+      "slug": "free-tools",
+      "name": "Free Tool Strategy",
+      "category": "Acquisition & Partnerships",
+      "path": "free-tools",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "image",
+      "name": "Marketing Images",
+      "category": "Content & Creative",
+      "path": "image",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "influencer-marketing",
+      "name": "Influencer & Creator Marketing",
+      "category": "Acquisition & Partnerships",
+      "path": "influencer-marketing",
+      "upstreamSkillVersion": "1.1.0"
+    },
+    {
+      "slug": "launch",
+      "name": "Launch Strategy",
+      "category": "Acquisition & Partnerships",
+      "path": "launch",
+      "upstreamSkillVersion": "2.0.2"
+    },
+    {
+      "slug": "lead-magnets",
+      "name": "Lead Magnets",
+      "category": "Acquisition & Partnerships",
+      "path": "lead-magnets",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "marketing-council",
+      "name": "Marketing Council",
+      "category": "Strategy & Research",
+      "path": "marketing-council",
+      "upstreamSkillVersion": "1.0.0"
+    },
+    {
+      "slug": "marketing-ideas",
+      "name": "Marketing Ideas for SaaS",
+      "category": "Strategy & Research",
+      "path": "marketing-ideas",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "marketing-loops",
+      "name": "Marketing Loops",
+      "category": "Strategy & Research",
+      "path": "marketing-loops",
+      "upstreamSkillVersion": "1.2.0"
+    },
+    {
+      "slug": "marketing-plan",
+      "name": "Marketing Plan",
+      "category": "Strategy & Research",
+      "path": "marketing-plan",
+      "upstreamSkillVersion": "1.1.1"
+    },
+    {
+      "slug": "marketing-psychology",
+      "name": "Marketing Psychology",
+      "category": "Strategy & Research",
+      "path": "marketing-psychology",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "offers",
+      "name": "Offer Design",
+      "category": "Strategy & Research",
+      "path": "offers",
+      "upstreamSkillVersion": "1.0.1"
+    },
+    {
+      "slug": "onboarding",
+      "name": "Onboarding CRO",
+      "category": "Conversion & Retention",
+      "path": "onboarding",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "paywalls",
+      "name": "Paywall and Upgrade Screen CRO",
+      "category": "Conversion & Retention",
+      "path": "paywalls",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "popups",
+      "name": "Popup CRO",
+      "category": "Conversion & Retention",
+      "path": "popups",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "pricing",
+      "name": "Pricing Strategy",
+      "category": "Strategy & Research",
+      "path": "pricing",
+      "upstreamSkillVersion": "2.1.1"
+    },
+    {
+      "slug": "product-marketing",
+      "name": "Product Marketing Context",
+      "category": "Strategy & Research",
+      "path": "product-marketing",
+      "upstreamSkillVersion": "2.1.0"
+    },
+    {
+      "slug": "programmatic-seo",
+      "name": "Programmatic SEO",
+      "category": "Search & Discovery",
+      "path": "programmatic-seo",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "prospecting",
+      "name": "Prospecting",
+      "category": "Acquisition & Partnerships",
+      "path": "prospecting",
+      "upstreamSkillVersion": "1.1.0"
+    },
+    {
+      "slug": "public-relations",
+      "name": "Public Relations & Earned Media",
+      "category": "Acquisition & Partnerships",
+      "path": "public-relations",
+      "upstreamSkillVersion": "1.1.1"
+    },
+    {
+      "slug": "referrals",
+      "name": "Referral & Affiliate Programs",
+      "category": "Acquisition & Partnerships",
+      "path": "referrals",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "revops",
+      "name": "Revenue Operations",
+      "category": "Measurement & Sales",
+      "path": "revops",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "sales-enablement",
+      "name": "Sales Enablement",
+      "category": "Measurement & Sales",
+      "path": "sales-enablement",
+      "upstreamSkillVersion": "2.0.1"
+    },
+    {
+      "slug": "schema",
+      "name": "Schema Markup",
+      "category": "Search & Discovery",
+      "path": "schema",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "signup",
+      "name": "Signup Flow CRO",
+      "category": "Conversion & Retention",
+      "path": "signup",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "site-architecture",
+      "name": "Site Architecture",
+      "category": "Search & Discovery",
+      "path": "site-architecture",
+      "upstreamSkillVersion": "2.0.0"
+    },
+    {
+      "slug": "sms",
+      "name": "SMS Marketing",
+      "category": "Conversion & Retention",
+      "path": "sms",
+      "upstreamSkillVersion": "1.0.0"
+    },
+    {
+      "slug": "social",
+      "name": "Social Content",
+      "category": "Content & Creative",
+      "path": "social",
+      "upstreamSkillVersion": "2.2.0"
+    },
+    {
+      "slug": "video",
+      "name": "Marketing Video",
+      "category": "Content & Creative",
+      "path": "video",
+      "upstreamSkillVersion": "2.1.0"
+    }
+  ]
+}

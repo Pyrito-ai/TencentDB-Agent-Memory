@@ -8,6 +8,8 @@ import {
 } from './CdesktopTaskHandoff';
 import { TaskPicker } from './TaskPicker';
 import { updateWorkbenchQuery } from './RuntimePicker';
+import { RuntimeGatewayFrame } from './RuntimeGatewayFrame';
+import { gatewaySessionIdentity } from './runtimeGateway';
 
 // The saved receipt names the native session. Only embed it on the configured runtime origin.
 function sessionFrameUrl(handoff: CdesktopHandoff | null, options?: CdesktopOptions) {
@@ -55,12 +57,18 @@ function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
     setHandoff(next);
     setOptions(opts);
   }, []);
-  const frameUrl = sessionFrameUrl(handoff, options);
+  const gatewayConfigured = options?.browserGateway !== undefined;
+  // An unavailable gateway must never downgrade to a saved local runtime URL.
+  const frameUrl = gatewayConfigured ? undefined : sessionFrameUrl(handoff, options);
+  const gatewaySession = gatewayConfigured && !!handoff?.receipt;
+  const hasFrame = gatewaySession || !!frameUrl;
+  const reload = () => setFrameVersion((value) => value + 1);
   return (
     <div className="native-workbench cdesktop-workbench">
       <section className="native-orca" aria-label="cdesktop workspace">
         <header className="native-orca-toolbar">
           <strong>cdesktop</strong>
+          {gatewayConfigured && <span>Development previews are not available here yet.</span>}
           {taskId && <a href={boardTaskUrl(taskId)}>Back to task</a>}
           <div />
           {handoff && (
@@ -72,12 +80,8 @@ function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
               {detailsOpen ? 'Hide handoff' : 'Session details'}
             </button>
           )}
-          {frameUrl && (
-            <button
-              type="button"
-              aria-label="Reload cdesktop interface"
-              onClick={() => setFrameVersion((value) => value + 1)}
-            >
+          {hasFrame && (
+            <button type="button" aria-label="Reload cdesktop interface" onClick={reload}>
               <RefreshCw size={14} />
             </button>
           )}
@@ -93,11 +97,19 @@ function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
           </div>
         )}
         {taskId && (
-          <div className="cdesktop-handoff-panel" hidden={!!frameUrl && !detailsOpen}>
+          <div className="cdesktop-handoff-panel" hidden={hasFrame && !detailsOpen}>
             <CdesktopTaskHandoff team={team} taskId={taskId} embedded onHandoff={receiveHandoff} />
           </div>
         )}
-        {frameUrl ? (
+        {gatewaySession && handoff ? (
+          <RuntimeGatewayFrame
+            key={`${gatewaySessionIdentity(handoff)}:${options?.browserGateway?.origin}:${frameVersion}`}
+            team={team}
+            taskId={taskId}
+            origin={options?.browserGateway?.origin || ''}
+            onReconnect={reload}
+          />
+        ) : frameUrl ? (
           <iframe
             key={`${handoff?.receipt?.sessionId || handoff?.id}:${frameVersion}`}
             title="cdesktop native session interface"

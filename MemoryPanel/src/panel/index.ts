@@ -3,11 +3,18 @@ import { loadPanelConfig } from './config/panel-config.js';
 import { buildPanelApp } from './http/app.js';
 import { buildPanelDeps } from './panel-deps.js';
 import { ensureKnowledgeLlmBindings } from './startup/ensure-knowledge-llm-binding.js';
+import { loadRuntimeGatewayConfig } from './config/runtime-gateway-config.js';
+import { createRuntimeGateway } from './runtime-gateway.js';
 
 export function main(): void {
   const config = loadPanelConfig();
+  const gatewayConfig = loadRuntimeGatewayConfig();
   const deps = buildPanelDeps(config);
+  if (gatewayConfig) deps.runtimeGateway = createRuntimeGateway(gatewayConfig);
   const app = buildPanelApp(deps);
+
+  // A second private listener shares this process; the HTTPS proxy owns the public origin.
+  deps.runtimeGateway?.start();
 
   serve(
     { fetch: app.fetch, hostname: config.server.host, port: config.server.port },
@@ -45,6 +52,7 @@ export function main(): void {
 
   const shutdown = async (): Promise<void> => {
     deps.logger.info('panel shutting down');
+    await deps.runtimeGateway?.close();
     await deps.apiCallTelemetry.shutdown();
     process.exit(0);
   };

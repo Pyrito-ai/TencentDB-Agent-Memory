@@ -262,6 +262,8 @@ export function registerAuthRoutes(api: Hono, deps: PanelDeps): void {
 
   api.post('/auth/logout', (c: Context) => {
     const token = readCookie(c.req.header('cookie'), deps.config.auth.sessionCookieName);
+    const session = deps.runtimeGateway ? deps.auth.getSession(token) : null;
+    if (session) deps.runtimeGateway?.revokeUser(session.instanceId, session.coreUserId);
     deps.auth.destroySession(token);
     c.header('Set-Cookie', buildExpiredSessionCookie(
       deps.config.auth.sessionCookieName,
@@ -274,6 +276,8 @@ export function registerAuthRoutes(api: Hono, deps: PanelDeps): void {
 
   api.get('/auth/idp/woa/logout', (c: Context) => {
     const token = readCookie(c.req.header('cookie'), deps.config.auth.sessionCookieName);
+    const session = deps.runtimeGateway ? deps.auth.getSession(token) : null;
+    if (session) deps.runtimeGateway?.revokeUser(session.instanceId, session.coreUserId);
     deps.auth.destroySession(token);
     c.header('Set-Cookie', buildExpiredSessionCookie(
       deps.config.auth.sessionCookieName,

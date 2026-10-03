@@ -51,7 +51,7 @@ export function apiCallTelemetryMiddleware(
     telemetry.record({
       timestamp: formatClickHouseTimestamp(new Date()),
       instance_id: panelMeta.instanceId ?? '',
-      user_key: panelMeta.userKey ?? '',
+      user_key: c.req.path.startsWith('/api/v1/ops/') ? '' : (panelMeta.userKey ?? ''),
       user_id: userId,
       endpoint: c.req.path,
       http_method: c.req.method,

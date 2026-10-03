@@ -1,3 +1,4 @@
+import { OpsPage } from '@/pages/OpsPage';
 import { ProjectsPage } from '@/pages/ProjectsPage';
 import { OrcaWorkbench } from '@/pages/OrcaWorkbench';
 /**
@@ -31,6 +32,7 @@ export const routes: RouteObject[] = [
       { path: 'upcoming', element: <WorkbenchPage view="upcoming" /> },
       { path: 'timesheets', element: <WorkbenchPage view="timesheets" /> },
       { path: 'areas', element: <WorkbenchPage view="areas" /> },
+      { path: 'ops', element: <OpsPage /> },
       { path: 'loops', element: <WorkbenchPage view="loops" /> },
       { path: 'wiki', element: <WikiPage /> },
       { path: 'code', element: <CodePage /> },

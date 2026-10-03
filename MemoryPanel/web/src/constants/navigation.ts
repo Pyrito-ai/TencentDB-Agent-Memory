@@ -2,6 +2,7 @@ import type { PageId } from './menu';
 
 /** Keep URLs stable: the board still lives at / and existing deep links remain valid. */
 export const PAGE_PATHS: Record<PageId, string> = {
+  ops: '/ops',
   workbench_board: '/',
   today: '/today',
   upcoming: '/upcoming',
@@ -23,6 +24,7 @@ export const PAGE_PATHS: Record<PageId, string> = {
 export const DOCK_PAGES: PageId[] = [
   'today',
   'workbench_board',
+  'ops',
   'loops',
   'orca_workbench',
   'wiki',
@@ -37,6 +39,7 @@ export const MORE_GROUPS: { label: string; pages: PageId[] }[] = [
   },
 ];
 export const NAV_LABELS: Record<PageId, string> = {
+  ops: 'Ops',
   today: 'Today',
   workbench_board: 'Task board',
   projects: 'Projects',

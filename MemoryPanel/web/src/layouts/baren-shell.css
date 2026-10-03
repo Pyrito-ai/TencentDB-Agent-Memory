@@ -57,7 +57,7 @@
   min-height: 0;
 }
 .baren-shell ._memory-global-header {
-  height: 72px;
+  height: 64px;
   padding: 0 28px;
   background: var(--card);
   border-bottom: 1px solid var(--border);
@@ -84,7 +84,7 @@
   width: 36px;
   height: 36px;
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: 5px;
 }
 .baren-shell ._memory-global-header-user-btn {
   padding: 4px;
@@ -95,9 +95,21 @@
 }
 .baren-shell ._memory-team-switcher-trigger {
   border: 1px solid var(--border);
-  border-radius: 9px;
-  background: transparent;
+  border-radius: 5px;
+  background: var(--card);
   height: 38px;
+}
+.baren-shell ._memory-global-header-icon-btn:hover,
+.baren-shell ._memory-team-switcher-trigger:hover,
+.baren-coordinator-toggle:hover {
+  background: var(--muted);
+  border-color: var(--primary);
+}
+.baren-shell ._memory-global-header-icon-btn:focus-visible,
+.baren-shell ._memory-team-switcher-trigger:focus-visible,
+.baren-coordinator-toggle:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
 }
 .baren-breadcrumb {
   display: flex;
@@ -109,7 +121,9 @@
 }
 .baren-breadcrumb strong {
   color: var(--foreground);
+  font-family: var(--font-sans);
   font-weight: 600;
+  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -117,7 +131,7 @@
 .baren-coordinator-toggle {
   display: inline-flex;
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: 5px;
   min-height: 36px;
   padding: 7px 10px;
   align-items: center;
@@ -135,7 +149,7 @@
   background: var(--primary);
   color: var(--card);
   padding: 12px 18px;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 .baren-skip-link:focus {
   top: 12px;
@@ -212,5 +226,19 @@
 @container workspace (max-width: 639px) {
   .baren-shell .baren-page-frame {
     padding: 24px 16px 112px;
+  }
+}
+
+/* Reserve room for every header control on narrow phones. */
+@media (max-width: 360px) {
+  .baren-shell ._memory-global-header-logo {
+    width: 28px;
+    justify-content: center;
+  }
+  .baren-shell ._memory-global-header-logo .pyrito-brand-wordmark {
+    display: none;
+  }
+  .baren-shell ._memory-global-header-left {
+    gap: 8px;
   }
 }

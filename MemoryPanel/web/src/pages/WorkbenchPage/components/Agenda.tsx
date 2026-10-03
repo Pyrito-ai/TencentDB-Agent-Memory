@@ -222,7 +222,8 @@ export default function Agenda({
     <section className="agenda" aria-label={view === 'today' ? 'Today' : 'Upcoming'}>
       <header className="agenda-heading work-page-header">
         <div>
-          <p className="work-eyebrow">
+          <h2>{view === 'today' ? 'Today' : 'Upcoming'}</h2>
+          <p>
             {new Intl.DateTimeFormat('en', {
               weekday: 'long',
               month: 'long',
@@ -230,12 +231,7 @@ export default function Agenda({
               timeZone: 'UTC',
             }).format(new Date(today + 'T12:00:00Z'))}
           </p>
-          <h2>{view === 'today' ? 'Today' : 'Upcoming'}</h2>
-          <p>
-            {view === 'today'
-              ? 'A little clarity. A good place to begin.'
-              : 'Plan the next six weeks, from first step to deadline.'}
-          </p>
+          {view === 'upcoming' && <p>Tasks scheduled over the next six weeks.</p>}
         </div>
         <div className="work-actions">
           <button
@@ -357,7 +353,6 @@ export default function Agenda({
                 <h3>
                   In progress <span>{focus.inProgress.length}</span>
                 </h3>
-                <span className="work-eyebrow">Keep moving</span>
               </header>
               {focus.inProgress.length ? (
                 focus.inProgress.map(row)
@@ -388,7 +383,6 @@ export default function Agenda({
                   <h3>
                     Overdue <span>{focus.overdue.length}</span>
                   </h3>
-                  <span className="work-eyebrow">Needs attention</span>
                 </header>
                 {focus.overdue.map(row)}
               </section>
@@ -410,7 +404,6 @@ export default function Agenda({
                 <h3>Schedule</h3>
                 <CalendarDays size={17} aria-hidden="true" />
               </header>
-              <p className="agenda-section-description">Today's dates, without the noise.</p>
               {focus.scheduled.length ? (
                 focus.scheduled.map((task) => {
                   const board = readTaskBoard(task);
@@ -430,7 +423,7 @@ export default function Agenda({
                   );
                 })
               ) : (
-                <p className="work-empty">A clear schedule. There are no task dates for today.</p>
+                <p className="work-empty">There are no task dates for today.</p>
               )}
               <p className="agenda-timezone">
                 Task dates · {Intl.DateTimeFormat().resolvedOptions().timeZone}
@@ -439,7 +432,7 @@ export default function Agenda({
             <section className="agenda-section agenda-responsibilities">
               <header className="agenda-section-heading">
                 <h3>Responsibilities</h3>
-                <span className="work-eyebrow">Loops</span>
+                <span>Loops</span>
               </header>
               <details className="agenda-loop-filters">
                 <summary>Owner &amp; Area</summary>

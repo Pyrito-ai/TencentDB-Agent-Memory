@@ -12,6 +12,7 @@ export function main(): void {
   const deps = buildPanelDeps(config);
   if (gatewayConfig) deps.runtimeGateway = createRuntimeGateway(gatewayConfig);
   const app = buildPanelApp(deps);
+  deps.ops?.start();
 
   // A second private listener shares this process; the HTTPS proxy owns the public origin.
   deps.runtimeGateway?.start();
@@ -52,6 +53,7 @@ export function main(): void {
 
   const shutdown = async (): Promise<void> => {
     deps.logger.info('panel shutting down');
+    deps.ops?.stop();
     await deps.runtimeGateway?.close();
     await deps.apiCallTelemetry.shutdown();
     process.exit(0);

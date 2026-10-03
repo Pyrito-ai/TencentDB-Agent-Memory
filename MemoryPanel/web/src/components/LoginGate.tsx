@@ -9,10 +9,11 @@
  *   4. 前端把 { instance_id, user_key, user } 缓存到 localStorage（见 lib/panelSession.ts），
  *      之后每个 meta 请求都从这里读出注入双 Header
  *
- * 展示使用 Baren 纸张色表面与品牌字标；所有登录方式、实例选择、
+ * 展示使用 Pyrito 表面与品牌字标；所有登录方式、实例选择、
  * 待绑定账号确认与一次性密钥展示仍使用同一登录状态流程。
  */
 
+import { PyritoBrand } from '@/components/PyritoBrand';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Button, Input, Select } from 'tea-component';
@@ -416,7 +417,7 @@ export default function LoginGate({ onLoggedIn }: { onLoggedIn: (auth: AuthState
     <div className="_tdai-login">
       <main className="_tdai-login-main">
         <div className="_tdai-login-card">
-          <img src="/baren-logo.svg" alt="Baren" className="_tdai-login-logo" />
+          <PyritoBrand className="_tdai-login-logo" />
 
           <h1 className="_tdai-login-title">{t('login.welcome')}</h1>
           <p className="_tdai-login-subtitle">{t('login.tagline')}</p>

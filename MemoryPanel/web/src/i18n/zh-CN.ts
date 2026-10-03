@@ -109,7 +109,7 @@ export const zhCN = {
   'header.profile.role.member': '普通成员',
   'header.profile.role.reviewer': '审核员',
   'header.profile.close': '关闭',
-  'header.brand': 'Baren',
+  'header.brand': 'Pyrito',
 
   // ===== TeamSwitcher =====
   'teamSwitcher.selectTeam': '选择 team',
@@ -132,12 +132,12 @@ export const zhCN = {
     '删除后将级联移除 {{members}} 名成员、{{agents}} 个 Agent，以及该 team 下的全部任务与资产，且不可恢复。',
 
   // ===== LoginGate =====
-  'login.welcome': '欢迎使用 Baren',
+  'login.welcome': '欢迎使用 Pyrito',
   'login.subtitle': '请选择记忆实例并输入你的 user_key 登录。',
   'login.tagline': '将项目、智能体与共享上下文汇聚于一处。',
   'login.field.instance': '记忆实例',
   'login.field.userKey': 'User Key',
-  'login.footer': 'Baren · 协同工作空间',
+  'login.footer': 'Pyrito · 协同工作空间',
   'login.placeholder.instance': '加载记忆实例中…',
   'login.placeholder.instanceError': '加载失败，请刷新重试',
   'login.placeholder.userKey': 'user_key，如 sk-mem-xxxxxxxxxxxxxxxx',
@@ -1360,10 +1360,10 @@ export const zhCN = {
   'onboarding.start': '开始使用',
   'onboarding.finish': '完成',
   // 欢迎（startContent，按角色区分）
-  'onboarding.guide.start.admin.title': '欢迎使用 Baren',
+  'onboarding.guide.start.admin.title': '欢迎使用 Pyrito',
   'onboarding.guide.start.admin.desc':
     '你是管理员：负责团队与成员的组织管理。接下来将带你了解面板核心能力，按「下一步」开始。',
-  'onboarding.guide.start.member.title': '欢迎使用 Baren',
+  'onboarding.guide.start.member.title': '欢迎使用 Pyrito',
   'onboarding.guide.start.member.desc':
     '你是团队成员：可在团队内管理 Agent 与资产。接下来将带你了解面板核心能力，按「下一步」开始。',
   // 登录身份（Admin / Member 共有）
@@ -1411,7 +1411,7 @@ export const zhCN = {
 
   // ===== GuidePage 使用说明页 =====
   'guide.back': '返回',
-  'guide.brand': 'Baren · 快速上手',
+  'guide.brand': 'Pyrito · 快速上手',
   'guide.title': '使用说明',
   'guide.subtitle': '先完成快速接入，再用最佳实践把团队经验变成可复用的工程资产。',
   'guide.tabs.aria': '使用说明分类',

@@ -6,7 +6,11 @@ import {
   browserGatewayBootstrapUrl,
   postBrowserGatewayGrant,
 } from './runtimeGateway';
-import { createGatewayConnection, INITIAL_GATEWAY_CONNECTION } from './runtimeGatewayConnection';
+import {
+  createGatewayConnection,
+  INITIAL_GATEWAY_CONNECTION,
+  isGatewayDocumentLoad,
+} from './runtimeGatewayConnection';
 
 export function RuntimeGatewayFrame({
   team,
@@ -20,27 +24,15 @@ export function RuntimeGatewayFrame({
   onReconnect: () => void;
 }) {
   const name = `cdesktop-${useId().replace(/:/g, '')}`;
-  const [frameReady, setFrameReady] = useState(false);
   const [state, setState] = useState(INITIAL_GATEWAY_CONNECTION);
   const connection = useRef<ReturnType<typeof createGatewayConnection> | null>(null);
 
   useEffect(() => {
     const current = createGatewayConnection(setState);
     connection.current = current;
-    return () => {
-      current.dispose();
-      if (connection.current === current) connection.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const current = connection.current;
-    if (!frameReady || !current) return;
+    setState(INITIAL_GATEWAY_CONNECTION);
     let active = true;
-    // Deferring the mutation allows StrictMode's setup/cleanup probe to cancel it.
-    // There is no grant cache: every mounted connection or manual retry gets a new grant.
-    const start = setTimeout(() => {
-      if (current.phase !== 'waiting') return;
+    current.startGrant(() => {
       try {
         browserGatewayBootstrapUrl(origin, window.location.origin);
       } catch {
@@ -52,8 +44,6 @@ export function RuntimeGatewayFrame({
       void request<unknown>(team, 'cdesktop-browser-session', { taskId })
         .then((grant) => {
           if (!active || connection.current !== current) return;
-          // The initial about:blank load has already finished. Only a subsequent
-          // load after the POST may reveal the native session (or its error page).
           try {
             current.submit(() =>
               postBrowserGatewayGrant(grant, origin, window.location.origin, name, document),
@@ -73,12 +63,13 @@ export function RuntimeGatewayFrame({
             );
           }
         });
-    }, 0);
+    });
     return () => {
       active = false;
-      clearTimeout(start);
+      current.dispose();
+      if (connection.current === current) connection.current = null;
     };
-  }, [frameReady, team, taskId, origin, name]);
+  }, [team, taskId, origin, name]);
 
   return (
     <>
@@ -110,9 +101,8 @@ export function RuntimeGatewayFrame({
         style={state.submitted ? undefined : { display: 'none' }}
         referrerPolicy="no-referrer"
         sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
-        onLoad={() => {
-          if (!connection.current || connection.current.phase === 'waiting') setFrameReady(true);
-          else connection.current.frameLoaded();
+        onLoad={(event) => {
+          if (isGatewayDocumentLoad(event.currentTarget)) connection.current?.frameLoaded();
         }}
         onError={() => connection.current?.fail('cdesktop could not load. Reconnect to try again.')}
       />

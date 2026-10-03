@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { PanelsTopLeft } from 'lucide-react';
 import { request } from './api';
 import {
@@ -6,8 +6,7 @@ import {
   browserGatewayBootstrapUrl,
   postBrowserGatewayGrant,
 } from './runtimeGateway';
-
-const CONNECTION_TIMEOUT_MS = 20_000;
+import { createGatewayConnection, INITIAL_GATEWAY_CONNECTION } from './runtimeGatewayConnection';
 
 export function RuntimeGatewayFrame({
   team,
@@ -22,50 +21,45 @@ export function RuntimeGatewayFrame({
 }) {
   const name = `cdesktop-${useId().replace(/:/g, '')}`;
   const [frameReady, setFrameReady] = useState(false);
-  const [connected, setConnected] = useState(false);
-  const [error, setError] = useState('');
-  const phase = useRef<'waiting' | 'submitted' | 'ready' | 'error'>('waiting');
-  const timeout = useRef<ReturnType<typeof setTimeout>>();
-  const fail = useCallback((message: string) => {
-    phase.current = 'error';
-    clearTimeout(timeout.current);
-    setConnected(false);
-    setError(message);
+  const [state, setState] = useState(INITIAL_GATEWAY_CONNECTION);
+  const connection = useRef<ReturnType<typeof createGatewayConnection> | null>(null);
+
+  useEffect(() => {
+    const current = createGatewayConnection(setState);
+    connection.current = current;
+    return () => {
+      current.dispose();
+      if (connection.current === current) connection.current = null;
+    };
   }, []);
 
   useEffect(() => {
-    timeout.current = setTimeout(
-      () => fail('cdesktop did not respond in time. Reconnect to try again.'),
-      CONNECTION_TIMEOUT_MS,
-    );
-    return () => clearTimeout(timeout.current);
-  }, [fail]);
-
-  useEffect(() => {
-    if (!frameReady) return;
+    const current = connection.current;
+    if (!frameReady || !current) return;
     let active = true;
     // Deferring the mutation allows StrictMode's setup/cleanup probe to cancel it.
     // There is no grant cache: every mounted connection or manual retry gets a new grant.
     const start = setTimeout(() => {
-      if (phase.current !== 'waiting') return;
+      if (current.phase !== 'waiting') return;
       try {
         browserGatewayBootstrapUrl(origin, window.location.origin);
       } catch {
-        fail(
+        current.fail(
           'The cdesktop connection is not configured correctly. Check the connection and retry.',
         );
         return;
       }
       void request<unknown>(team, 'cdesktop-browser-session', { taskId })
         .then((grant) => {
-          if (!active || phase.current !== 'waiting') return;
+          if (!active || connection.current !== current) return;
           // The initial about:blank load has already finished. Only a subsequent
           // load after the POST may reveal the native session (or its error page).
-          phase.current = 'submitted';
           try {
-            postBrowserGatewayGrant(grant, origin, window.location.origin, name, document);
+            current.submit(() =>
+              postBrowserGatewayGrant(grant, origin, window.location.origin, name, document),
+            );
           } catch (cause) {
-            fail(
+            current.fail(
               cause instanceof BrowserGatewayError
                 ? cause.message
                 : 'cdesktop could not open a secure session. Reconnect to try again.',
@@ -73,8 +67,10 @@ export function RuntimeGatewayFrame({
           }
         })
         .catch(() => {
-          if (active && phase.current === 'waiting') {
-            fail('cdesktop is unavailable or your access has changed. Reconnect to try again.');
+          if (active && connection.current === current && current.phase === 'waiting') {
+            current.fail(
+              'cdesktop is unavailable or your access has changed. Reconnect to try again.',
+            );
           }
         });
     }, 0);
@@ -82,16 +78,25 @@ export function RuntimeGatewayFrame({
       active = false;
       clearTimeout(start);
     };
-  }, [frameReady, team, taskId, origin, name, fail]);
+  }, [frameReady, team, taskId, origin, name]);
 
   return (
     <>
-      {!connected && (
-        <div className="orca-connection-empty" role={error ? 'alert' : 'status'}>
-          <PanelsTopLeft size={28} aria-hidden="true" />
-          <strong>{error ? 'Could not connect to cdesktop' : 'Connecting to cdesktop…'}</strong>
-          <p>{error || 'Opening your saved session.'}</p>
-          {error && (
+      {state.phase !== 'ready' && (
+        <div
+          className={state.submitted ? 'cdesktop-connection-status' : 'orca-connection-empty'}
+          role={state.error ? 'alert' : 'status'}
+        >
+          {!state.submitted && <PanelsTopLeft size={28} aria-hidden="true" />}
+          <strong>
+            {state.phase === 'timed-out'
+              ? 'Still loading cdesktop'
+              : state.error
+                ? 'Could not connect to cdesktop'
+                : 'Connecting to cdesktop…'}
+          </strong>
+          <p>{state.error || 'Opening your saved session.'}</p>
+          {state.error && (
             <button type="button" onClick={onReconnect}>
               Reconnect to cdesktop
             </button>
@@ -102,18 +107,14 @@ export function RuntimeGatewayFrame({
         name={name}
         title="cdesktop native session interface"
         src="about:blank"
-        style={connected ? undefined : { display: 'none' }}
+        style={state.submitted ? undefined : { display: 'none' }}
         referrerPolicy="no-referrer"
         sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
         onLoad={() => {
-          if (phase.current === 'waiting') setFrameReady(true);
-          else if (phase.current === 'submitted') {
-            phase.current = 'ready';
-            clearTimeout(timeout.current);
-            setConnected(true);
-          }
+          if (!connection.current || connection.current.phase === 'waiting') setFrameReady(true);
+          else connection.current.frameLoaded();
         }}
-        onError={() => fail('cdesktop could not load. Reconnect to try again.')}
+        onError={() => connection.current?.fail('cdesktop could not load. Reconnect to try again.')}
       />
     </>
   );

@@ -18,6 +18,7 @@ import { IngestProgressStore } from './state/ingest-progress-store.js';
 import { createPanelApiCallTelemetry, type PanelApiCallTelemetry } from './infra/api-call-telemetry.js';
 import { PanelAuthService } from './auth/service.js';
 import { PanelUserIdResolver } from './infra/user-id-resolver.js';
+import type { RuntimeGateway } from './runtime-gateway.js';
 
 export interface PanelDeps {
   config: PanelConfig;
@@ -40,6 +41,8 @@ export interface PanelDeps {
   auth: PanelAuthService;
   /** user_key → user_id 缓存解析器（telemetry 埋点用；auth/verify 后台刷新）。 */
   userIdResolver: PanelUserIdResolver;
+  /** Optional separate-origin browser access to one explicitly configured runtime owner. */
+  runtimeGateway?: RuntimeGateway;
 }
 
 export function buildPanelDeps(config: PanelConfig): PanelDeps {

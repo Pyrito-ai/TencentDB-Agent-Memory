@@ -22,6 +22,7 @@ import type { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
 import type { PanelDeps } from "../../panel-deps.js";
+import { readCookie } from "../../auth/cookies.js";
 import { validatePanelMetaHeaders } from "../middleware/validate-panel-headers.js";
 import { buildCtx, resolveCallerUserId } from "./knowledge/common.js";
 import {
@@ -190,7 +191,7 @@ export function registerWorkbenchRoutes(
     // cdesktop is an independent direct-handoff trial, not an Orca orchestration alias.
     if (
       cdesktop &&
-      !["options", "handoff-get", "handoff-launch", "handoff-sync"].includes(
+      !["options", "handoff-get", "handoff-launch", "handoff-sync", "browser-session", "browser-revoke"].includes(
         action,
       )
     )
@@ -199,6 +200,14 @@ export function registerWorkbenchRoutes(
     const handoffTable = cdesktop ? "cdesktop_handoffs" : "orca_handoffs";
     const user = await resolveCallerUserId(deps, ctx);
     if (!user) return c.json({ error: "Please sign in." }, 401);
+    c.header("Cache-Control", "private, no-store");
+    // Revocation remains available after membership removal and only affects this caller.
+    if (cdesktop && action === "browser-revoke") {
+      if (c.req.method !== "POST")
+        return c.json({ error: "Method not allowed" }, 405);
+      deps.runtimeGateway?.revokeUser(ctx.instanceId, user);
+      return c.json({ ok: true });
+    }
     const membership = await deps.metaKernel.invoke(
       "team-member/get",
       { team_id: team, user_id: user },
@@ -209,7 +218,141 @@ export function registerWorkbenchRoutes(
       (membership.data as { status?: string } | null)?.status !== "active"
     )
       return c.json({ error: "Active team membership required." }, 403);
-    c.header("Cache-Control", "private, no-store");
+    if (cdesktop && action === "browser-session") {
+      if (c.req.method !== "POST")
+        return c.json({ error: "Method not allowed" }, 405);
+      const parsed = z.object({ taskId: z.string().min(1).max(200) }).strict()
+        .safeParse(await c.req.json().catch(() => null));
+      if (!parsed.success)
+        return c.json({ error: "Choose a saved task handoff." }, 400);
+      const gateway = deps.runtimeGateway;
+      if (!gateway)
+        return c.json({ error: "Browser runtime access is not configured." }, 503);
+      if (gateway.config.ownerInstanceId !== ctx.instanceId || gateway.config.ownerUserId !== user)
+        return c.json({ error: "Browser runtime access is not available to this user." }, 403);
+
+      const taskId = parsed.data.taskId;
+      const idpSession = c.get("panelMeta").authMethod === "idp";
+      const sessionToken = idpSession
+        ? readCookie(c.req.header("cookie"), deps.config.auth.sessionCookieName)
+        : undefined;
+      const savedReceiptSchema = z.object({
+        id: z.string().uuid(),
+        workspaceId: z.string().uuid(),
+        sessionId: z.string().uuid(),
+        webUrl: z.string().url(),
+      });
+      const savedHandoffSchema = z.object({
+        id: z.string().uuid(),
+        binding: z.string().min(1),
+        receipt: savedReceiptSchema,
+      }).passthrough();
+      const authorizationIdentity = (handoff: z.infer<typeof savedHandoffSchema>) => JSON.stringify({
+        id: handoff.id, binding: handoff.binding, agent: handoff.agent, spec: handoff.spec,
+        profile: handoff.profile, context: handoff.context, bundle: handoff.bundle,
+        // The receipt schema strips mutable state/output. Normal status syncs must not
+        // disconnect an authorized browser from the same saved workspace and session.
+        receipt: handoff.receipt,
+      });
+      const bindingIdentity = ({ label: _label, ...binding }: Binding) => JSON.stringify(binding);
+      class BrowserSessionError extends Error {
+        constructor(readonly status: 403 | 409) {
+          super("Saved runtime access is no longer available. Refresh the handoff.");
+        }
+      }
+      // Resolve all authority afresh, including on gateway revalidation. This function is
+      // deliberately read-only: opening a browser must never launch or rewrite a handoff.
+      const authorize = async (expected?: { identity: string; binding: string }) => {
+        const entry = deps.instanceRegistry.resolve(ctx.instanceId);
+        if (entry.instance_id !== ctx.instanceId ||
+            gateway.config.ownerInstanceId !== ctx.instanceId || gateway.config.ownerUserId !== user)
+          throw new BrowserSessionError(403);
+        const freshCtx = { ...ctx, gatewayEndpoint: entry.gateway_endpoint, gatewayApiKey: entry.api_key };
+        if (idpSession) {
+          const session = deps.auth.resolveSession(ctx.instanceId, sessionToken);
+          if (!session || session.coreUserId !== user || session.userKey !== ctx.userKey)
+            throw new BrowserSessionError(403);
+        }
+        if (await resolveCallerUserId(deps, freshCtx) !== user)
+          throw new BrowserSessionError(403);
+        const member = await deps.metaKernel.invoke("team-member/get", { team_id: team, user_id: user }, freshCtx);
+        if (member.code !== 0 || (member.data as { status?: string } | null)?.status !== "active")
+          throw new BrowserSessionError(403);
+        const task = await deps.metaKernel.invoke("task/get", { task_id: taskId }, freshCtx);
+        const taskData = task.data as { task_id?: string; team_id?: string; creator_user_id?: string } | null;
+        if (task.code !== 0 || taskData?.task_id !== taskId || taskData.team_id !== team || taskData.creator_user_id !== user)
+          throw new BrowserSessionError(403);
+        const row = db.prepare("SELECT owner,body FROM cdesktop_handoffs WHERE instance=? AND team=? AND task=?")
+          .get(ctx.instanceId, team, taskId);
+        if (!row) throw new BrowserSessionError(409);
+        if (row.owner !== user) throw new BrowserSessionError(403);
+        const handoff = savedHandoffSchema.parse(JSON.parse(String(row.body)));
+        const identity = authorizationIdentity(handoff);
+        if (expected && expected.identity !== identity) throw new BrowserSessionError(409);
+        if (handoff.id !== handoff.receipt.id) throw new BrowserSessionError(409);
+        const available = (options.cdesktopBindings || loadBindings(process.env.CDESKTOP_BINDINGS_FILE || ""))
+          .filter((b) => b.instance === ctx.instanceId && b.team === team && b.user === user);
+        let binding = available.find((b) => b.id === handoff.binding && b.repo !== "managed");
+        // Managed-project bindings are derived from the current runner catalogue, never
+        // from a caller-provided repository or a previously trusted project identifier.
+        if (!binding) {
+          for (const runtime of available.filter((b) => b.manageProjects)) {
+            if (!handoff.binding.startsWith(`${runtime.id}:`) || !runner.projects) continue;
+            const projects = await runner.projects(runtime);
+            const project = projects.items.find((p) => `${runtime.id}:${p.id}` === handoff.binding);
+            if (project) binding = { ...runtime, id: handoff.binding, repo: `id:${project.id}`, label: project.name };
+          }
+        }
+        if (!binding || !binding.webUrl) throw new BrowserSessionError(403);
+        if (expected && expected.binding !== bindingIdentity(binding)) throw new BrowserSessionError(403);
+        const browserOrigin = new URL(binding.webUrl).origin;
+        if (browserOrigin !== gateway.config.upstreamOrigin)
+          throw new BrowserSessionError(403);
+        const scope = { ctx: freshCtx, team, user, bindings: [binding] };
+        const profile = handoff.profile as AgentProfile | undefined;
+        const context = handoff.context as Awaited<ReturnType<typeof linkedContext.assemble>> | undefined;
+        const bundle = handoff.bundle as AgentBundle | undefined;
+        if (profile) await agentProfiles(deps).get(scope, profile.id);
+        if (context?.references.length) await linkedContext.authorize(scope, context.references, taskId);
+        if (bundle) {
+          if (!profile || !context) throw new BrowserSessionError(409);
+          await agentBundles(deps).authorize(scope, profile, bundle, context, taskId);
+        }
+        const validReceipt = (receipt: z.infer<typeof savedReceiptSchema>) => {
+          const url = new URL(receipt.webUrl);
+          return receipt.id === handoff.id &&
+            receipt.workspaceId === handoff.receipt.workspaceId &&
+            receipt.sessionId === handoff.receipt.sessionId &&
+            url.origin === browserOrigin && !url.username && !url.password && !url.hash &&
+            url.pathname === `/workspaces/${receipt.workspaceId}` &&
+            url.searchParams.getAll("sessionId").length === 1 &&
+            url.searchParams.get("sessionId") === receipt.sessionId;
+        };
+        if (!validReceipt(handoff.receipt)) throw new BrowserSessionError(409);
+        const live = savedReceiptSchema.parse(await runner.read(binding, handoff.id));
+        if (!validReceipt(live)) throw new BrowserSessionError(409);
+        return { handoff, identity, binding: bindingIdentity(binding) };
+      };
+      try {
+        const initial = await authorize();
+        const grant = await gateway.issueGrant({
+          instanceId: ctx.instanceId, userId: user, teamId: team, taskId,
+          handoffId: initial.handoff.id, bindingId: initial.handoff.binding,
+          workspaceId: initial.handoff.receipt.workspaceId,
+          sessionId: initial.handoff.receipt.sessionId,
+          validate: async () => {
+            try {
+              const current = await authorize(initial);
+              return current.identity === initial.identity && current.binding === initial.binding;
+            } catch { return false; }
+          },
+        });
+        return c.json(grant);
+      } catch (error) {
+        return c.json({ error: "Saved runtime access is no longer available. Refresh the handoff." },
+          error instanceof BrowserSessionError ? error.status : 409);
+      }
+    }
     if (action.startsWith("context-") && c.req.method === "POST") {
       try {
         return c.json(
@@ -411,6 +554,7 @@ export function registerWorkbenchRoutes(
           ...(b.webUrl ? { webUrl: b.webUrl } : {}),
         })),
         ...(cdesktop ? { ready: bindings.length > 0 } : {}),
+        ...(cdesktop && deps.runtimeGateway ? { browserGateway: { origin: deps.runtimeGateway.config.origin } } : {}),
         projectRuntimes: configuredBindings
           .filter((b) => b.manageProjects)
           .map((b) => ({ id: b.id, label: b.label })),

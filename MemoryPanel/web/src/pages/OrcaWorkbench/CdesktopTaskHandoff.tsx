@@ -8,7 +8,11 @@ import {
   type HandoffAgentProfile as AgentProfile,
 } from './AgentBundleSummary';
 
-export type CdesktopOptions = { bindings: Binding[]; ready: boolean };
+export type CdesktopOptions = {
+  bindings: Binding[];
+  ready: boolean;
+  browserGateway?: { origin: string };
+};
 export type CdesktopHandoff = {
   id: string;
   binding: string;

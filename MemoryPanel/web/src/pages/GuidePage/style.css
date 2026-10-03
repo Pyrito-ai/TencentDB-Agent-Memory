@@ -662,7 +662,7 @@
   height: 20px;
   border-radius: 50%;
   background: var(--tea-color-bg-success-default);
-  color: #fff;
+  color: var(--success-foreground);
   font-size: 12px;
 }
 

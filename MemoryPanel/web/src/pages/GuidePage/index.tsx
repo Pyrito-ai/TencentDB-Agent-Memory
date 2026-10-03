@@ -10,6 +10,7 @@
  * 手动配置的配置文件路径与内容与 agents/setup-proxy.sh 的 write_* 函数保持一致
  * （本页为只读展示，不执行写入）。API Key 一律使用占位符，不出现真实密钥。
  */
+import { PyritoBrand } from '@/components/PyritoBrand';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -97,7 +98,7 @@ const MANUAL_IDES: ManualIde[] = [
     file: '~/.codex/config.toml',
     protocol: 'OpenAI Responses',
     config: (base, instanceId, mode, model) =>
-      `model_provider = "team-proxy"\nmodel = "${model}"\nmodel_reasoning_effort = "high"\ndisable_response_storage = true\n\n[model_providers.team-proxy]\nname       = "Baren team-proxy"\nwire_api   = "responses"\nbase_url   = "${proxyEndpoint(base, 'codex', instanceId, mode)}"\nexperimental_bearer_token = "${KEY_PLACEHOLDER}"\n\nrequest_max_retries    = 2\nstream_max_retries     = 3\nstream_idle_timeout_ms = 120000`,
+      `model_provider = "team-proxy"\nmodel = "${model}"\nmodel_reasoning_effort = "high"\ndisable_response_storage = true\n\n[model_providers.team-proxy]\nname       = "Pyrito team-proxy"\nwire_api   = "responses"\nbase_url   = "${proxyEndpoint(base, 'codex', instanceId, mode)}"\nexperimental_bearer_token = "${KEY_PLACEHOLDER}"\n\nrequest_max_retries    = 2\nstream_max_retries     = 3\nstream_idle_timeout_ms = 120000`,
     notes: ['guide.manual.note.codex'],
   },
   {
@@ -341,7 +342,7 @@ export function GuidePage() {
           <h1>{t('guide.title')}</h1>
           <p>{t('guide.subtitle')}</p>
         </div>
-        <img className="guide-brand" src="/baren-logo.svg" alt="Baren" />
+        <PyritoBrand className="guide-brand" />
       </header>
 
       <nav className="guide-main-tabs" aria-label={t('guide.tabs.aria')}>

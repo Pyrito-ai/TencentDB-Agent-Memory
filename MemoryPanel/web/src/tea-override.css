@@ -47,7 +47,7 @@
  * 让单卡片页面在宽屏下收缩/居中并和布局 gap 叠加；公共页面壳统一接管外间距。 */
 .tea-card {
   margin: 0;
-  border-radius: 0 !important;
+  border-radius: var(--radius-panel);
 }
 
 /* Tea 的 Content.Body 内层默认 max-width 为 1360px，超过该宽度后会居中留白，
@@ -236,7 +236,7 @@ a,
   line-height: 1.4;
 }
 
-/* 选中态：品牌色底 + 白字 */
+/* Selected navigation uses dark text for accessible amber contrast. */
 .tea-menu--light .tea-menu__list > li:not(.tea-menu__label).is-selected > .tea-menu__item,
 .tea-menu--light .tea-menu__list > li:not(.tea-menu__label).is-selected > .tea-menu__item:hover {
   background-color: var(--tea-color-bg-brand-default) !important;

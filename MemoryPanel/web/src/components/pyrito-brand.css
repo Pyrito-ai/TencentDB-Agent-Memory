@@ -1,0 +1,42 @@
+.pyrito-brand {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--foreground, #eef1f4);
+  font-family: 'Manrope', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  white-space: nowrap;
+}
+
+.pyrito-brand .pyrito-brand-mark {
+  display: block;
+  flex-shrink: 0;
+  width: 28px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.pyrito-brand.guide-brand {
+  font-size: 22px;
+}
+
+.pyrito-brand.guide-brand .pyrito-brand-mark {
+  width: 24px;
+  height: 28px;
+}
+
+@media (max-width: 639px) {
+  .pyrito-brand._memory-global-header-logo {
+    gap: 6px;
+    font-size: 21px;
+  }
+
+  .pyrito-brand._memory-global-header-logo .pyrito-brand-mark {
+    width: 23px;
+    height: 27px;
+  }
+}

@@ -297,7 +297,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--tea-color-bg-container-default);
+  background: var(--card);
 }
 
 ._memory-workbench-skeleton-line {
@@ -361,7 +361,7 @@
   line-height: 1.12;
   font-weight: 600;
   letter-spacing: -0.045em;
-  color: var(--primary);
+  color: var(--foreground);
   overflow-wrap: anywhere;
 }
 .work-page-header p {

@@ -1,3 +1,5 @@
+import { createOpsService } from './ops/config.js';
+import type { OpsService } from './ops/service.js';
 import type { InstanceEntry } from './config/instance-registry.js';
 import type { PanelConfig } from './config/panel-config.js';
 import { InstanceRegistry } from './config/instance-registry.js';
@@ -21,6 +23,7 @@ import { PanelUserIdResolver } from './infra/user-id-resolver.js';
 import type { RuntimeGateway } from './runtime-gateway.js';
 
 export interface PanelDeps {
+  ops?: OpsService;
   config: PanelConfig;
   logger: Logger;
   instanceRegistry: InstanceRegistry;
@@ -85,7 +88,7 @@ export function buildPanelDeps(config: PanelConfig): PanelDeps {
   );
   const userIdResolver = new PanelUserIdResolver(metaKernel, logger);
   const auth = new PanelAuthService({ config: config.auth, instances: instanceRegistry, metaKernel, logger });
-  return {
+  const deps: PanelDeps = {
     config,
     logger,
     instanceRegistry,
@@ -100,6 +103,8 @@ export function buildPanelDeps(config: PanelConfig): PanelDeps {
     auth,
     userIdResolver,
   };
+  deps.ops = createOpsService(deps);
+  return deps;
 }
 
 export type { InstanceEntry };

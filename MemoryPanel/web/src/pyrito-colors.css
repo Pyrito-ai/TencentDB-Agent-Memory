@@ -1,0 +1,57 @@
+/* Pyrito workspace palette. Dark is the default, independent of OS preference.
+ * Tailwind semantic colors and Tea tokens derive from this single source. */
+:root,
+.dark {
+  color-scheme: dark;
+  --pyrito-bg: #050403;
+  --pyrito-surface: #100d08;
+  --pyrito-raised: #1b150d;
+  --pyrito-line: #493821;
+  --pyrito-brass: #b88a44;
+  --pyrito-amber: #f0b55a;
+  --pyrito-glow: #ffd99a;
+  --pyrito-text: #f5f0e7;
+  --pyrito-secondary: #bdb3a4;
+  --radius-control: 4px;
+  --radius-panel: 6px;
+  --accent: #2c2113;
+  --accent-hover: #3b2b17;
+  --destructive: #ed817b;
+  --destructive-foreground: #240807;
+  --success: #84b99a;
+  --success-foreground: #07180e;
+  --chart-3: #8aa9ba;
+  --chart-5: #c49ebd;
+  --background: var(--pyrito-bg);
+  --background-deep: var(--pyrito-bg);
+  --foreground: var(--pyrito-text);
+  --card: var(--pyrito-surface);
+  --card-foreground: var(--pyrito-text);
+  --popover: var(--pyrito-raised);
+  --popover-foreground: var(--pyrito-text);
+  --primary: var(--pyrito-amber);
+  --primary-foreground: var(--pyrito-bg);
+  --secondary: var(--pyrito-raised);
+  --secondary-foreground: var(--pyrito-secondary);
+  --muted: var(--pyrito-raised);
+  --muted-foreground: var(--pyrito-secondary);
+  --accent-foreground: var(--pyrito-glow);
+  --warning: var(--pyrito-amber);
+  --warning-foreground: var(--pyrito-bg);
+  --border: var(--pyrito-line);
+  --input: var(--pyrito-brass);
+  --input-background: var(--pyrito-surface);
+  --ring: var(--pyrito-glow);
+  --heavy: var(--pyrito-brass);
+  --chart-1: var(--pyrito-amber);
+  --chart-2: var(--pyrito-brass);
+  --chart-4: var(--success);
+  --sidebar: var(--pyrito-surface);
+  --sidebar-foreground: var(--pyrito-text);
+  --sidebar-primary: var(--pyrito-amber);
+  --sidebar-primary-foreground: var(--pyrito-bg);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--pyrito-glow);
+  --sidebar-border: var(--pyrito-line);
+  --sidebar-ring: var(--pyrito-glow);
+}

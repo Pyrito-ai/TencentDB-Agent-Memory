@@ -1,13 +1,23 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { ArrowUp, Check, ChevronRight, Compass, LoaderCircle, RefreshCw, X } from 'lucide-react';
+import {
+  ArrowUp,
+  Check,
+  ChevronRight,
+  Compass,
+  LoaderCircle,
+  RefreshCw,
+  StickyNote,
+  X,
+} from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useTeams } from '@/services';
-import { getPanelSession } from '@/lib/panelSession';
+import { getPanelSession, type PanelSession } from '@/lib/panelSession';
+import { useCoordinatorNote, type CoordinatorNote } from './CoordinatorNoteContext';
 import { invalidateBackendCache } from '@/services/backendStore';
 import './global-coordinator.css';
 
 type State = {
-  messages: { role: string; text: string }[];
+  messages: { role: string; text: string; note?: CoordinatorNote }[];
   pending?: { id: string; name: string; args: Record<string, unknown>; status: string };
   revision: number;
   ready: boolean;
@@ -18,6 +28,7 @@ type CoordinatorProps = {
 };
 
 const PAGE_NAMES: Record<string, string> = {
+  '/ops': 'Ops',
   '/': 'Task board',
   '/today': 'Today',
   '/upcoming': 'Upcoming',
@@ -37,6 +48,7 @@ const PAGE_NAMES: Record<string, string> = {
   '/guide': 'Guide',
 };
 function proposalLabel(name: string) {
+  if (name === 'ops/note-save') return 'Save note';
   const parts = name.replace(/^meta\//, '').split('/');
   const action = parts.pop()?.replaceAll('-', ' ') || 'Change';
   const subject = parts.join(' ').replaceAll('-', ' ');
@@ -67,14 +79,25 @@ export function GlobalCoordinator(props: CoordinatorProps) {
   const session = getPanelSession();
   return activeTeamId && session ? (
     <Chat
-      key={JSON.stringify([session.instanceId, session.userKey, activeTeamId])}
+      key={JSON.stringify([
+        session.instanceId,
+        session.userKey,
+        session.user?.user_id,
+        activeTeamId,
+      ])}
       team={activeTeamId}
+      session={session}
       {...props}
     />
   ) : null;
 }
 
-function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
+function Chat({
+  team,
+  session,
+  open,
+  onClose,
+}: CoordinatorProps & { team: string; session: PanelSession }) {
   const location = useLocation();
   const titleId = useId();
   const contextId = useId();
@@ -82,6 +105,9 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const { selection, clear } = useCoordinatorNote();
+  const composerRef = useRef<HTMLTextAreaElement>(null);
+  const abort = useRef(new AbortController());
   const scrollRef = useRef<HTMLDivElement>(null);
   const keepAtBottom = useRef(true);
 
@@ -92,10 +118,9 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
 
   const request = useCallback(
     async (op: string, body?: unknown) => {
-      const session = getPanelSession();
-      if (!session) throw Error('Please sign in.');
       const r = await fetch(`/api/v1/coordinator/${encodeURIComponent(team)}/${op}`, {
         method: body ? 'POST' : 'GET',
+        signal: abort.current.signal,
         headers: {
           'Content-Type': 'application/json',
           'X-Tdai-Service-Id': session.instanceId,
@@ -107,7 +132,7 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
       if (!r.ok) throw Error(d.error || 'Coordinator unavailable.');
       return d;
     },
-    [team],
+    [team, session.instanceId, session.userKey],
   );
 
   async function load() {
@@ -125,6 +150,8 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
 
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+    abort.current = controller;
     request('state')
       .then((s) => {
         if (active) setState(s);
@@ -134,8 +161,13 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [request]);
+
+  useEffect(() => {
+    if (selection && open) composerRef.current?.focus();
+  }, [selection, open]);
 
   useEffect(() => {
     const scroller = scrollRef.current;
@@ -154,27 +186,38 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
     setBusy(true);
     setError('');
     keepAtBottom.current = true;
+    const controller = abort.current;
+    const sentText = text;
+    const sentSelection = selection;
     try {
       const s = await request(op, {
         revision: state.revision,
         text,
         page: location.pathname + location.search,
         id: state.pending?.id,
+        ...(op === 'message' && sentSelection
+          ? { note: { id: sentSelection.note.id, revision: sentSelection.note.revision } }
+          : {}),
       });
+      if (controller.signal.aborted) return;
       setState(s);
-      if (op === 'message') setText('');
+      if (op === 'message') {
+        setText((current) => (current === sentText ? '' : current));
+        if (sentSelection) clear(sentSelection.requestId);
+      }
       if (s.changed) {
         invalidateBackendCache();
         window.dispatchEvent(new Event('projects-changed'));
         window.dispatchEvent(new Event('coordinator-changed'));
       }
     } catch (e) {
+      if (controller.signal.aborted) return;
       setError((e as Error).message);
       await request('state')
         .then(setState)
         .catch(() => {});
     } finally {
-      setBusy(false);
+      if (!controller.signal.aborted) setBusy(false);
     }
   }
 
@@ -212,10 +255,9 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
       >
         <header className="global-coordinator-heading">
           <div className="global-coordinator-identity">
-            <img src="/baren-mark.svg" alt="" className="global-coordinator-mark" />
+            <img src="/pyrito-crystal.svg" alt="" className="global-coordinator-mark" />
             <div>
               <h2 id={titleId}>Coordinator</h2>
-              <p>Your work, in context</p>
             </div>
           </div>
           <span
@@ -270,15 +312,11 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
             aria-live="polite"
             aria-relevant="additions text"
           >
-            <div className="global-coordinator-eyebrow global-coordinator-conversation-label">
-              Conversation
-            </div>
             {!state?.messages.length && (
               <div className="global-coordinator-welcome">
                 <div className="global-coordinator-welcome-icon">
                   <Compass size={23} />
                 </div>
-                <h3>A little clarity for your day.</h3>
                 <p>
                   Ask what needs your attention, explore a project, or describe a change you want to
                   make.
@@ -298,6 +336,11 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
                 className={`global-coordinator-message${message.role === 'user' ? ' is-user' : ''}`}
               >
                 <strong>{message.role === 'user' ? 'You' : 'Coordinator'}</strong>
+                {message.note && (
+                  <div className="global-coordinator-message-note">
+                    <StickyNote size={13} aria-hidden="true" /> About: {message.note.title}
+                  </div>
+                )}
                 <p>{message.text.split('\n{')[0]}</p>
                 {message.text.includes('\n{') && (
                   <details>
@@ -378,11 +421,35 @@ function Chat({ team, open, onClose }: CoordinatorProps & { team: string }) {
               void act('message');
             }}
           >
+            {selection && (
+              <div className="global-coordinator-note" role="group" aria-label="Attached note">
+                <StickyNote size={16} aria-hidden="true" />
+                <div>
+                  <span>About this note</span>
+                  <strong>{selection.note.title}</strong>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Remove note from message"
+                  onClick={() => {
+                    clear(selection.requestId);
+                    composerRef.current?.focus();
+                  }}
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            )}
             <textarea
+              ref={composerRef}
               aria-label="Message coordinator"
               value={text}
               onChange={(event) => setText(event.target.value)}
-              placeholder="What would you like to work on?"
+              placeholder={
+                selection
+                  ? 'What would you like to do with this note?'
+                  : 'What would you like to work on?'
+              }
               rows={3}
               maxLength={6000}
             />

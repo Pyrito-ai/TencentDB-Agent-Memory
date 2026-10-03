@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from 'framer-motion';
 import {
+  StickyNote,
   Sun,
   Columns3,
   FolderOpen,
@@ -33,6 +34,7 @@ import { DOCK_PAGES, MORE_GROUPS, NAV_LABELS, PAGE_PATHS } from '@/constants/nav
 import './dock-navigation.css';
 
 const icons: Record<PageId, ReactNode> = {
+  ops: <StickyNote />,
   today: <Sun />,
   workbench_board: <Columns3 />,
   projects: <FolderOpen />,
@@ -67,7 +69,7 @@ function DockItem({
     const bounds = ref.current?.getBoundingClientRect();
     return bounds ? x - bounds.left - bounds.width / 2 : Infinity;
   });
-  const target = useTransform(distance, [-150, 0, 150], [48, 68, 48]);
+  const target = useTransform(distance, [-150, 0, 150], [48, 52, 48]);
   const size = useSpring(target, { mass: 0.1, stiffness: 180, damping: 18 });
   return (
     <motion.div className="baren-dock-item" style={animate ? { width: size } : undefined}>

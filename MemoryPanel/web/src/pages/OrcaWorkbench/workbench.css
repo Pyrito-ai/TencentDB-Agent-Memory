@@ -147,7 +147,7 @@
 }
 .coordinator-send button {
   background: var(--tea-color-bg-brand-default);
-  color: white;
+  color: var(--primary-foreground);
   border: 0;
 }
 .coordinator-welcome {

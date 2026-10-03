@@ -9,6 +9,7 @@ import {
   useAnalyticsChConfigured,
 } from '@/services/usePanelCapabilities';
 import { GlobalCoordinator } from '@/components/GlobalCoordinator';
+import { CoordinatorNoteProvider } from '@/components/CoordinatorNoteContext';
 import { GlobalHeader } from '@/layouts/GlobalHeader';
 import { DockNavigation } from '@/layouts/DockNavigation';
 import { OnboardingGuide, shouldShowOnboarding, resetOnboarding } from '@/layouts/OnboardingGuide';
@@ -32,7 +33,14 @@ function legacyHashToPath(): string | null {
 export function ConsoleLayout() {
   const { auth, logout } = useAuthStore();
   const { activeTeamId } = useTeams();
-  const coordinatorAvailable = !!activeTeamId && !!getPanelSession();
+  const session = getPanelSession();
+  const coordinatorAvailable = !!activeTeamId && !!session;
+  const coordinatorScope = JSON.stringify([
+    session?.instanceId,
+    session?.userKey,
+    session?.user?.user_id,
+    activeTeamId,
+  ]);
   const userRole = useCurrentRole();
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,6 +49,7 @@ export function ConsoleLayout() {
     () => window.matchMedia('(min-width: 800px)').matches,
   );
   const [refreshRevision, setRefreshRevision] = useState(0);
+  const openCoordinator = useCallback(() => setCoordinatorOpen(true), []);
   const [onboardingVisible, setOnboardingVisible] = useState(false);
   const currentUserId = auth?.user_id;
   const analyticsSwitchOn = usePanelAnalyticsEnabled();
@@ -75,53 +84,55 @@ export function ConsoleLayout() {
   }, [replay]);
 
   return (
-    <div className="_memory-app-shell baren-shell">
-      <a
-        href="#baren-main"
-        className="baren-skip-link"
-        onClick={(event) => {
-          event.preventDefault();
-          document.getElementById('baren-main')?.focus();
-        }}
-      >
-        Skip to content
-      </a>
-      <OnboardingGuide
-        visible={onboardingVisible}
-        userId={currentUserId}
-        userRole={userRole}
-        onClose={() => setOnboardingVisible(false)}
-      />
-      <GlobalHeader
-        userRole={userRole}
-        currentUser={auth?.user ?? ''}
-        currentUserId={currentUserId}
-        instanceName={auth?.instance_name}
-        onLogout={logout}
-        pageLabel={activePage ? NAV_LABELS[activePage] : 'Guide'}
-        activePage={activePage}
-        coordinatorAvailable={coordinatorAvailable}
-        coordinatorOpen={coordinatorOpen}
-        onToggleCoordinator={() => setCoordinatorOpen((open) => !open)}
-      />
-      <div
-        className={`baren-workspace${coordinatorAvailable && coordinatorOpen ? ' with-coordinator' : ''}`}
-      >
-        <div className="baren-work-area">
-          <div className="baren-page-scroll tea-layout__content-body">
-            <main
-              id="baren-main"
-              tabIndex={-1}
-              key={location.pathname + refreshRevision}
-              className="_memory-page-frame baren-page-frame"
-            >
-              <Outlet />
-            </main>
+    <CoordinatorNoteProvider scope={coordinatorScope} onOpen={openCoordinator}>
+      <div className="_memory-app-shell baren-shell">
+        <a
+          href="#baren-main"
+          className="baren-skip-link"
+          onClick={(event) => {
+            event.preventDefault();
+            document.getElementById('baren-main')?.focus();
+          }}
+        >
+          Skip to content
+        </a>
+        <OnboardingGuide
+          visible={onboardingVisible}
+          userId={currentUserId}
+          userRole={userRole}
+          onClose={() => setOnboardingVisible(false)}
+        />
+        <GlobalHeader
+          userRole={userRole}
+          currentUser={auth?.user ?? ''}
+          currentUserId={currentUserId}
+          instanceName={auth?.instance_name}
+          onLogout={logout}
+          pageLabel={activePage ? NAV_LABELS[activePage] : 'Guide'}
+          activePage={activePage}
+          coordinatorAvailable={coordinatorAvailable}
+          coordinatorOpen={coordinatorOpen}
+          onToggleCoordinator={() => setCoordinatorOpen((open) => !open)}
+        />
+        <div
+          className={`baren-workspace${coordinatorAvailable && coordinatorOpen ? ' with-coordinator' : ''}`}
+        >
+          <div className="baren-work-area">
+            <div className="baren-page-scroll tea-layout__content-body">
+              <main
+                id="baren-main"
+                tabIndex={-1}
+                key={location.pathname + refreshRevision}
+                className="_memory-page-frame baren-page-frame"
+              >
+                <Outlet />
+              </main>
+            </div>
+            <DockNavigation activePage={activePage} allowedPages={allowedPages} />
           </div>
-          <DockNavigation activePage={activePage} allowedPages={allowedPages} />
+          <GlobalCoordinator open={coordinatorOpen} onClose={() => setCoordinatorOpen(false)} />
         </div>
-        <GlobalCoordinator open={coordinatorOpen} onClose={() => setCoordinatorOpen(false)} />
       </div>
-    </div>
+    </CoordinatorNoteProvider>
   );
 }

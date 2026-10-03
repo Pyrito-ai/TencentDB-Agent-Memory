@@ -17,6 +17,7 @@ import {
 } from 'tea-icons-react';
 
 export type PageId =
+  | 'ops'
   | 'projects'
   | 'orca_workbench'
   | 'workbench_board'
@@ -51,22 +52,89 @@ export interface PageMeta {
 export function usePageMeta(): Record<PageId, PageMeta> {
   const { t } = useTranslation();
   return {
+    ops: { id: 'ops', label: 'Ops', group: t('menu.group.workbench'), order: 1.5 },
     projects: { id: 'projects', label: 'Projects', group: t('menu.group.workbench'), order: 0.5 },
-    orca_workbench: { id: 'orca_workbench', label: 'Workbench', desc: 'Work with connected subscription workers', group: t('menu.group.workbench'), order: 3 },
-    workbench_board: { id: 'workbench_board', label: t('menu.workbench_board'), desc: t('menu.desc.workbench_board'), group: t('menu.group.workbench'), order: 0, affix: true },
+    orca_workbench: {
+      id: 'orca_workbench',
+      label: 'Workbench',
+      desc: 'Work with connected subscription workers',
+      group: t('menu.group.workbench'),
+      order: 3,
+    },
+    workbench_board: {
+      id: 'workbench_board',
+      label: t('menu.workbench_board'),
+      desc: t('menu.desc.workbench_board'),
+      group: t('menu.group.workbench'),
+      order: 0,
+      affix: true,
+    },
     today: { id: 'today', label: 'Today', group: t('menu.group.workbench'), order: -2 },
     upcoming: { id: 'upcoming', label: 'Upcoming', group: t('menu.group.workbench'), order: -1 },
-    timesheets: { id: 'timesheets', label: t('menu.timesheets'), group: t('menu.group.workbench'), order: 4 },
+    timesheets: {
+      id: 'timesheets',
+      label: t('menu.timesheets'),
+      group: t('menu.group.workbench'),
+      order: 4,
+    },
     areas: { id: 'areas', label: 'Areas', group: t('menu.group.workbench'), order: 1 },
     loops: { id: 'loops', label: t('menu.loops'), group: t('menu.group.workbench'), order: 2 },
-    analytics:      { id: 'analytics',      label: t('menu.analytics'), desc: t('menu.desc.analytics'), group: t('menu.group.observability'), order: 0 },
-    wiki:            { id: 'wiki',            label: t('menu.wiki'), desc: t('menu.desc.wiki'), group: t('menu.group.assets'), order: 2 },
-    code:            { id: 'code',            label: t('menu.code'), desc: t('menu.desc.code'), group: t('menu.group.assets'), order: 3 },
-    skills:          { id: 'skills',          label: t('menu.skills'), desc: t('menu.desc.skills'), group: t('menu.group.assets'), order: 4 },
-    chat_memory:     { id: 'chat_memory',     label: t('menu.chat_memory'), desc: t('menu.desc.chat_memory'), group: t('menu.group.assets'), order: 5 },
-    team_members:    { id: 'team_members',    label: t('menu.team_members'), desc: t('menu.desc.team_members'), group: t('menu.group.organization'), order: 0 },
-    team_agents:     { id: 'team_agents',     label: t('menu.team_agents'), desc: t('menu.desc.team_agents'), group: t('menu.group.organization'), order: 1 },
-    api_keys:        { id: 'api_keys',        label: t('menu.api_keys'), desc: t('menu.desc.api_keys'), group: t('menu.group.organization'), order: 2 },
+    analytics: {
+      id: 'analytics',
+      label: t('menu.analytics'),
+      desc: t('menu.desc.analytics'),
+      group: t('menu.group.observability'),
+      order: 0,
+    },
+    wiki: {
+      id: 'wiki',
+      label: t('menu.wiki'),
+      desc: t('menu.desc.wiki'),
+      group: t('menu.group.assets'),
+      order: 2,
+    },
+    code: {
+      id: 'code',
+      label: t('menu.code'),
+      desc: t('menu.desc.code'),
+      group: t('menu.group.assets'),
+      order: 3,
+    },
+    skills: {
+      id: 'skills',
+      label: t('menu.skills'),
+      desc: t('menu.desc.skills'),
+      group: t('menu.group.assets'),
+      order: 4,
+    },
+    chat_memory: {
+      id: 'chat_memory',
+      label: t('menu.chat_memory'),
+      desc: t('menu.desc.chat_memory'),
+      group: t('menu.group.assets'),
+      order: 5,
+    },
+    team_members: {
+      id: 'team_members',
+      label: t('menu.team_members'),
+      desc: t('menu.desc.team_members'),
+      group: t('menu.group.organization'),
+      order: 0,
+    },
+    team_agents: {
+      id: 'team_agents',
+      label: t('menu.team_agents'),
+      desc: t('menu.desc.team_agents'),
+      group: t('menu.group.organization'),
+      order: 1,
+    },
+    api_keys: {
+      id: 'api_keys',
+      label: t('menu.api_keys'),
+      desc: t('menu.desc.api_keys'),
+      group: t('menu.group.organization'),
+      order: 2,
+    },
   };
 }
 
@@ -75,16 +143,88 @@ export const GROUP_ORDER_KEYS = ['workbench', 'observability', 'organization', '
 
 /** 每个页面在侧边栏菜单中的图标（Tea 官方图标，size 16） */
 export const ITEM_ICON: Record<PageId, JSX.Element> = {
+  ops: <ChatIcon size={16} />,
   projects: <BooksIcon size={16} />,
   orca_workbench: <ToolsIcon size={16} />,
-  workbench_board: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M6 7v5M12 7v9M18 7v3"/></svg>,
-  today: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg>,
-  upcoming: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18m-14 5h3m4 0h3"/></svg>,
-  timesheets: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>,
-  areas: <DashboardIcon size={16}/>,
-  loops: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"/></svg>,
+  workbench_board: (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M9 3v18M15 3v18M6 7v5M12 7v9M18 7v3" />
+    </svg>
+  ),
+  today: (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2" />
+    </svg>
+  ),
+  upcoming: (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M7 2v6m10-6v6M3 11h18m-14 5h3m4 0h3" />
+    </svg>
+  ),
+  timesheets: (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  ),
+  areas: <DashboardIcon size={16} />,
+  loops: (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    >
+      <path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1" />
+    </svg>
+  ),
   analytics: (
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width={16}
+      height={16}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="4" y1="20" x2="20" y2="20" />
       <rect x="6" y="10" width="3" height="6" rx="0.8" />
       <rect x="10.5" y="6" width="3" height="10" rx="0.8" />
@@ -103,7 +243,14 @@ export const ITEM_ICON: Record<PageId, JSX.Element> = {
 /** 分组图标（工作台 / 可观测 / 组织与权限 / 资产管理） */
 export const GROUP_ICON: Record<string, JSX.Element> = {
   workbench: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="3" y="3" width="7" height="7" rx="1.5" />
       <rect x="14" y="3" width="7" height="7" rx="1.5" />
       <rect x="3" y="14" width="7" height="7" rx="1.5" />
@@ -111,12 +258,26 @@ export const GROUP_ICON: Record<string, JSX.Element> = {
     </svg>
   ),
   observability: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
     </svg>
   ),
   organization: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -124,7 +285,14 @@ export const GROUP_ICON: Record<string, JSX.Element> = {
     </svg>
   ),
   assets: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M12 2l9 5-9 5-9-5 9-5z" />
       <path d="M3 12l9 5 9-5" />
       <path d="M3 17l9 5 9-5" />

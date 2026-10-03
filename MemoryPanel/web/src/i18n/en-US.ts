@@ -129,7 +129,7 @@ export const enUS = {
   'header.profile.role.member': 'Member',
   'header.profile.role.reviewer': 'Reviewer',
   'header.profile.close': 'Close',
-  'header.brand': 'Baren',
+  'header.brand': 'Pyrito',
 
   // ===== TeamSwitcher =====
   'teamSwitcher.selectTeam': 'Select Team',
@@ -155,12 +155,12 @@ export const enUS = {
     'This cascades to {{members}} members, {{agents}} agents, and all tasks and assets under the team. This cannot be undone.',
 
   // ===== LoginGate =====
-  'login.welcome': 'Welcome to Baren',
+  'login.welcome': 'Welcome to Pyrito',
   'login.subtitle': 'Please select a memory instance and enter your user_key to log in.',
   'login.tagline': 'Bring your projects, agents, and shared context together.',
   'login.field.instance': 'Memory Instance',
   'login.field.userKey': 'User Key',
-  'login.footer': 'Baren · Your coordinated workspace',
+  'login.footer': 'Pyrito · Your coordinated workspace',
   'login.placeholder.instance': 'Loading memory instances…',
   'login.placeholder.instanceError': 'Load failed, please refresh and retry',
   'login.placeholder.userKey': 'user_key, e.g. sk-mem-xxxxxxxxxxxxxxxx',
@@ -1430,10 +1430,10 @@ export const enUS = {
   'onboarding.start': 'Get started',
   'onboarding.finish': 'Finish',
   // Welcome (startContent, role-specific)
-  'onboarding.guide.start.admin.title': 'Welcome to Baren',
+  'onboarding.guide.start.admin.title': 'Welcome to Pyrito',
   'onboarding.guide.start.admin.desc':
     'You are an administrator: you manage teams and members. Let\'s walk through the core features — click "Next" to begin.',
-  'onboarding.guide.start.member.title': 'Welcome to Baren',
+  'onboarding.guide.start.member.title': 'Welcome to Pyrito',
   'onboarding.guide.start.member.desc':
     'You are a team member: you can manage Agents and assets within the team. Let\'s walk through the core features — click "Next" to begin.',
   // Login identity (shared by Admin / Member)
@@ -1482,7 +1482,7 @@ export const enUS = {
 
   // ===== GuidePage =====
   'guide.back': 'Back',
-  'guide.brand': 'Baren · Getting Started',
+  'guide.brand': 'Pyrito · Getting Started',
   'guide.title': 'Getting Started',
   'guide.subtitle':
     'Complete the quick setup first, then use best practices to turn team experience into reusable engineering assets.',

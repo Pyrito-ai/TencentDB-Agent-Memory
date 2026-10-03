@@ -12,6 +12,7 @@
  *      让 tea-component 内置组件文案（StatusTip 加载中、Table 暂无数据 等）
  *      随用户切换语言自动跟随。
  */
+import { PyritoBrand } from '@/components/PyritoBrand';
 import { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -51,7 +52,7 @@ export default function App() {
     if (auth === null) {
       return (
         <div className="baren-session-check" role="status">
-          <img src="/baren-logo.svg" alt="Baren" />
+          <PyritoBrand />
           <p>{t('app.checkingSession')}</p>
         </div>
       );

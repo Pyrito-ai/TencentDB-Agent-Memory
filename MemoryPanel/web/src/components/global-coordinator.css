@@ -218,6 +218,49 @@
   padding: 12px 14px;
   margin-bottom: 22px;
 }
+.global-coordinator-message-note {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: var(--coordinator-muted);
+  font-size: 11px;
+  margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+.global-coordinator-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: var(--coordinator-paper);
+  color: var(--coordinator-indigo);
+}
+.global-coordinator-note > svg {
+  flex: none;
+  margin-top: 3px;
+}
+.global-coordinator-note > div {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.global-coordinator-note span {
+  display: block;
+  color: var(--coordinator-muted);
+  font-size: 10px;
+}
+.global-coordinator-note strong {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.global-coordinator-note button {
+  flex: none;
+  border: 0;
+  padding: 4px;
+}
 .global-coordinator details {
   margin-top: 10px;
   color: var(--coordinator-muted);
@@ -294,12 +337,12 @@
 }
 .global-coordinator .global-coordinator-apply {
   background: var(--coordinator-indigo);
-  color: var(--coordinator-surface);
+  color: var(--primary-foreground);
   border-color: var(--coordinator-indigo);
 }
 .global-coordinator .global-coordinator-apply:hover:enabled {
-  background: var(--accent-foreground);
-  border-color: var(--accent-foreground);
+  background: color-mix(in srgb, var(--primary) 88%, var(--foreground));
+  border-color: color-mix(in srgb, var(--primary) 88%, var(--foreground));
 }
 .global-coordinator-working {
   display: flex;
@@ -389,10 +432,10 @@
   padding: 0;
   background: var(--coordinator-indigo);
   border-color: var(--coordinator-indigo);
-  color: var(--coordinator-surface);
+  color: var(--primary-foreground);
 }
 .global-coordinator-composer-bottom > button:hover:enabled {
-  background: var(--accent-foreground);
+  background: color-mix(in srgb, var(--primary) 88%, var(--foreground));
 }
 .global-coordinator .global-coordinator-footer-note {
   font-size: 9px;

@@ -145,3 +145,8 @@ z_config/
 
 # Isolated GUI preview: local reports, secrets, and generated QA artifacts
 MemoryPanel/web/.qa/
+
+# Private Gmail/Ops data and isolated previews
+MemoryPanel/data/private-ops/
+MemoryPanel/.ops-preview/
+.integration-snapshots/

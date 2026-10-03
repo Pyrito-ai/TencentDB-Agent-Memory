@@ -10,28 +10,55 @@ export const INITIAL_GATEWAY_CONNECTION: GatewayConnectionState = {
   error: '',
 };
 
+/** Named-frame POST navigation leaves src unchanged; inspect the loaded document instead. */
+export function isGatewayDocumentLoad(frame: Pick<HTMLIFrameElement, 'contentDocument'>): boolean {
+  try {
+    const document = frame.contentDocument;
+    return (
+      document === null ||
+      (document.URL !== '' && document.URL !== 'about:blank' && document.URL !== 'about:srcdoc')
+    );
+  } catch (cause) {
+    // Browsers normally return null for a cross-origin document; some deny the getter.
+    return cause instanceof DOMException && cause.name === 'SecurityError';
+  }
+}
+
 /** One mounted attempt. A slow document may recover; an expired grant must never post late. */
 export function createGatewayConnection(onChange: (state: GatewayConnectionState) => void) {
   let state = INITIAL_GATEWAY_CONNECTION;
   let disposed = false;
-  let timer: ReturnType<typeof setTimeout>;
+  let scheduled = false;
+  let started = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
   const update = (phase: GatewayConnectionState['phase'], error = '') => {
     if (disposed) return;
     clearTimeout(timer);
     state = { ...state, phase, error };
     onChange(state);
   };
-  timer = setTimeout(
-    () => update('error', 'cdesktop did not respond in time. Reconnect to try again.'),
-    20_000,
-  );
-
   return {
     get phase() {
       return state.phase;
     },
+    startGrant(request: () => void): boolean {
+      if (disposed || scheduled || state.phase !== 'waiting') return false;
+      scheduled = true;
+      // The iframe target exists after DOM commit. No about:blank load event or
+      // foreground timer is required, and StrictMode cleanup cancels its probe.
+      queueMicrotask(() => {
+        if (disposed || state.phase !== 'waiting') return;
+        started = true;
+        timer = setTimeout(
+          () => update('error', 'cdesktop did not respond in time. Reconnect to try again.'),
+          20_000,
+        );
+        request();
+      });
+      return true;
+    },
     submit(post: () => void): boolean {
-      if (disposed || state.phase !== 'waiting') return false;
+      if (disposed || !started || state.phase !== 'waiting') return false;
       // Mark submitted only when validation and form submission both succeeded.
       post();
       if (disposed) return false;

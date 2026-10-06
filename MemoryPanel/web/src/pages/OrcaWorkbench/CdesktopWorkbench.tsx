@@ -10,6 +10,7 @@ import { TaskPicker } from './TaskPicker';
 import { updateWorkbenchQuery } from './RuntimePicker';
 import { RuntimeGatewayFrame } from './RuntimeGatewayFrame';
 import { gatewaySessionIdentity } from './runtimeGateway';
+import { SessionHistory } from './SessionHistory';
 
 // The saved receipt names the native session. Only embed it on the configured runtime origin.
 function sessionFrameUrl(handoff: CdesktopHandoff | null, options?: CdesktopOptions) {
@@ -45,18 +46,42 @@ export function CdesktopWorkbench({ team }: { team: string }) {
       window.removeEventListener('workbench-query-change', changed);
     };
   }, []);
-  return <CdesktopSession key={taskId} team={team} taskId={taskId} />;
+  const [historyVersion, setHistoryVersion] = useState(0);
+  const sessionChanged = useCallback(() => setHistoryVersion((value) => value + 1), []);
+  return (
+    <div className="cdesktop-layout">
+      <SessionHistory
+        team={team}
+        taskId={taskId}
+        version={historyVersion}
+        onSelect={(id) => updateWorkbenchQuery({ task: id })}
+      />
+      <CdesktopSession key={taskId} team={team} taskId={taskId} onChange={sessionChanged} />
+    </div>
+  );
 }
 
-function CdesktopSession({ team, taskId }: { team: string; taskId: string }) {
+function CdesktopSession({
+  team,
+  taskId,
+  onChange,
+}: {
+  team: string;
+  taskId: string;
+  onChange: () => void;
+}) {
   const [handoff, setHandoff] = useState<CdesktopHandoff | null>(null);
   const [options, setOptions] = useState<CdesktopOptions>();
   const [frameVersion, setFrameVersion] = useState(0);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const receiveHandoff = useCallback((next: CdesktopHandoff | null, opts: CdesktopOptions) => {
-    setHandoff(next);
-    setOptions(opts);
-  }, []);
+  const receiveHandoff = useCallback(
+    (next: CdesktopHandoff | null, opts: CdesktopOptions) => {
+      setHandoff(next);
+      setOptions(opts);
+      if (next) onChange();
+    },
+    [onChange],
+  );
   const gatewayConfigured = options?.browserGateway !== undefined;
   // An unavailable gateway must never downgrade to a saved local runtime URL.
   const frameUrl = gatewayConfigured ? undefined : sessionFrameUrl(handoff, options);

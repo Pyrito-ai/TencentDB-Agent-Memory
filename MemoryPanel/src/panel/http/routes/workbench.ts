@@ -75,6 +75,26 @@ interface Run {
   created: number;
   messages?: Message[];
 }
+type SavedHandoff = {
+  id: string;
+  binding: string;
+  agent: "codex" | "claude";
+  spec: string;
+  profile?: AgentProfile;
+  bundle?: AgentBundle;
+  receipt?: Receipt;
+  error?: string;
+  taskTitle?: string;
+  created?: number;
+  updated?: number;
+};
+/** Groups a saved handoff for the session history: still working, finished, or needs a retry. */
+export function handoffStatus(handoff: SavedHandoff): "active" | "completed" | "attention" {
+  const state = handoff.receipt?.state;
+  if (state === "exited") return "completed";
+  if ((state === "running" || state === "launching") && !handoff.error) return "active";
+  return "attention";
+}
 export function registerWorkbenchRoutes(
   api: Hono,
   deps: PanelDeps,
@@ -191,7 +211,7 @@ export function registerWorkbenchRoutes(
     // cdesktop is an independent direct-handoff trial, not an Orca orchestration alias.
     if (
       cdesktop &&
-      !["options", "handoff-get", "handoff-launch", "handoff-sync", "browser-session", "browser-revoke"].includes(
+      !["options", "handoff-get", "handoff-launch", "handoff-sync", "handoff-list", "browser-session", "browser-revoke"].includes(
         action,
       )
     )
@@ -572,6 +592,69 @@ export function registerWorkbenchRoutes(
         .all(ctx.instanceId, team, user);
       return c.json({ items: rows.map((r) => JSON.parse(String(r.body))) });
     }
+    // Session history: every saved handoff for this caller, so active and finished
+    // conversations stay reachable without remembering which task started them.
+    if (action === "handoff-list" && c.req.method === "GET") {
+      const rows = db
+        .prepare(
+          `SELECT task,body FROM ${handoffTable} WHERE instance=? AND team=? AND owner=? ORDER BY rowid DESC LIMIT 200`,
+        )
+        .all(ctx.instanceId, team, user);
+      const saved = rows.map((r) => ({
+        task: String(r.task),
+        handoff: JSON.parse(String(r.body)) as SavedHandoff,
+      }));
+      if (c.req.query("refresh") === "1") {
+        // Best-effort status refresh for sessions that may have changed; never launches.
+        const stale = saved
+          .filter(({ handoff }) => handoff.receipt && handoffStatus(handoff) !== "completed")
+          .slice(0, 10);
+        await Promise.all(
+          stale.map(async (entry) => {
+            const key = `${handoffTable}:${ctx.instanceId}:${team}:${entry.task}`;
+            const binding = bindings.find((b) => b.id === entry.handoff.binding && b.repo !== "managed");
+            if (!binding || busy.has(key)) return;
+            busy.add(key);
+            try {
+              const receipt = await Promise.race([
+                runner.read(binding, entry.handoff.id),
+                new Promise<never>((_, reject) => setTimeout(() => reject(Error("timeout")), 4000)),
+              ]);
+              if (receipt.id !== entry.handoff.id) return;
+              if (cdesktop && receipt.webUrl &&
+                  (!binding.webUrl || new URL(receipt.webUrl).origin !== new URL(binding.webUrl).origin))
+                return;
+              entry.handoff.receipt = receipt;
+              delete entry.handoff.error;
+              entry.handoff.updated = Date.now();
+              db.prepare(`UPDATE ${handoffTable} SET body=? WHERE instance=? AND team=? AND task=? AND owner=?`)
+                .run(JSON.stringify(entry.handoff), ctx.instanceId, team, entry.task, user);
+            } catch {
+              /* keep the last saved status */
+            } finally {
+              busy.delete(key);
+            }
+          }),
+        );
+      }
+      const items = saved
+        .map(({ task, handoff }) => ({
+          id: handoff.id,
+          taskId: task,
+          taskTitle: handoff.taskTitle || "",
+          agent: handoff.agent,
+          binding: handoff.binding,
+          bindingLabel: bindings.find((b) => b.id === handoff.binding)?.label || handoff.binding,
+          profileName: handoff.profile?.name,
+          state: handoff.receipt?.state || "pending",
+          status: handoffStatus(handoff),
+          error: handoff.error,
+          created: handoff.created,
+          updated: handoff.updated,
+        }))
+        .sort((a, b) => (b.updated || 0) - (a.updated || 0));
+      return c.json({ items });
+    }
     if (c.req.method !== "POST")
       return c.json({ error: "Method not allowed" }, 405);
     const body = await c.req.json().catch(() => null);
@@ -630,16 +713,8 @@ export function registerWorkbenchRoutes(
             403,
           );
         let handoff = row
-          ? (JSON.parse(String(row.body)) as {
-              id: string;
-              binding: string;
-              agent: "codex" | "claude";
-              spec: string;
-              profile?: AgentProfile;
-              bundle?: AgentBundle;
-              receipt?: Receipt;
+          ? (JSON.parse(String(row.body)) as SavedHandoff & {
               context?: Awaited<ReturnType<typeof linkedContext.assemble>>;
-              error?: string;
             })
           : undefined;
         if (handoff?.profile) {
@@ -709,8 +784,12 @@ export function registerWorkbenchRoutes(
             { error: `Choose an available ${runtimeLabel} project and agent.` },
             400,
           );
-        const save = () =>
-          db
+        const save = () => {
+          const now = Date.now();
+          handoff!.created ||= now;
+          handoff!.updated = now;
+          if (task.title) handoff!.taskTitle = task.title.slice(0, 200);
+          return db
             .prepare(
               `INSERT INTO ${handoffTable} VALUES(?,?,?,?,?) ON CONFLICT(instance,team,task) DO UPDATE SET body=excluded.body`,
             )
@@ -721,6 +800,7 @@ export function registerWorkbenchRoutes(
               user,
               JSON.stringify(handoff),
             );
+        };
         if (!handoff) {
           let profile: AgentProfile | undefined;
           if (input.profileId) {

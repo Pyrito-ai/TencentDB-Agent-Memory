@@ -10,6 +10,7 @@
  *   3. 都没有 → 空串。miss 会 fire-and-forget 触发 auth/verify，
  *      下条同 user_key 的请求就能拿到
  */
+import { createHash } from 'node:crypto';
 import { createMiddleware } from 'hono/factory';
 import type { PanelApiCallTelemetry } from '../../infra/api-call-telemetry.js';
 import { formatClickHouseTimestamp } from '../../infra/api-call-telemetry.js';
@@ -51,7 +52,11 @@ export function apiCallTelemetryMiddleware(
     telemetry.record({
       timestamp: formatClickHouseTimestamp(new Date()),
       instance_id: panelMeta.instanceId ?? '',
-      user_key: c.req.path.startsWith('/api/v1/ops/') ? '' : (panelMeta.userKey ?? ''),
+      // Never log the credential itself: a short fingerprint still correlates calls per key.
+      user_key:
+        c.req.path.startsWith('/api/v1/ops/') || !panelMeta.userKey
+          ? ''
+          : `sha256:${createHash('sha256').update(panelMeta.userKey).digest('hex').slice(0, 16)}`,
       user_id: userId,
       endpoint: c.req.path,
       http_method: c.req.method,

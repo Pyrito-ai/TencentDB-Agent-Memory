@@ -119,6 +119,8 @@ export interface PanelConfig {
 
 export interface PanelAuthConfig {
   userKeyEnabled: boolean;
+  /** Lets an unknown user_key create a new account on first login. Off unless explicitly enabled. */
+  userKeySignupEnabled?: boolean;
   idpEnabled: boolean;
   sessionTtlSeconds: number;
   sessionCookieName: string;
@@ -173,6 +175,7 @@ function buildAuthConfig(): PanelAuthConfig {
 
   return {
     userKeyEnabled,
+    userKeySignupEnabled: envBoolFirst(['PANEL_AUTH_USER_KEY_SIGNUP'], false),
     idpEnabled,
     sessionTtlSeconds: envInt('PANEL_AUTH_SESSION_TTL_SECONDS', 28_800),
     sessionCookieName: env('PANEL_AUTH_SESSION_COOKIE_NAME', 'tdai_idp_session'),

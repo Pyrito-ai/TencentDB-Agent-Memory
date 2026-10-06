@@ -379,7 +379,7 @@ export function registerWorkbenchRoutes(
           await linkedContext.handle(
             { ctx, team, user, bindings: [] },
             action,
-            await c.req.json(),
+            await c.req.json().catch(() => null),
           ),
         );
       } catch (e) {
@@ -441,7 +441,7 @@ export function registerWorkbenchRoutes(
           runtime: z.string(),
           name: z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9 _-]{1,59}$/),
         })
-        .safeParse(await c.req.json());
+        .safeParse(await c.req.json().catch(() => null));
       if (!input.success)
         return c.json(
           {

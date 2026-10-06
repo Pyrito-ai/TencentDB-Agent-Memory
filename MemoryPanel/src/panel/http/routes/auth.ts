@@ -1,7 +1,7 @@
 import type { Context, Hono, Next } from 'hono';
 import type { PanelDeps } from '../../panel-deps.js';
 import { buildExpiredSessionCookie, buildSessionCookie, buildTransientCookie, readCookie } from '../../auth/cookies.js';
-import { PanelAuthError } from '../../auth/service.js';
+import { PanelAuthError, safeReturnPath } from '../../auth/service.js';
 
 const INSTANCE_QUERY = 'instance_id';
 const RETURN_QUERY = 'return_to';
@@ -30,8 +30,28 @@ function headersOf(c: { req: { raw: Request } }): Record<string, string | undefi
 }
 
 function returnTo(value: string | undefined): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//')) return '/';
-  return value;
+  return safeReturnPath(value);
+}
+
+/** Fixed-window limit for unauthenticated key probes; per client address, per process. */
+function userKeyRateLimit(limit = 20, windowMs = 60_000) {
+  const hits = new Map<string, { count: number; reset: number }>();
+  return async (c: Context, next: () => Promise<void>) => {
+    const now = Date.now();
+    if (hits.size > 10_000) {
+      for (const [key, entry] of hits) if (entry.reset <= now) hits.delete(key);
+    }
+    const client =
+      c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || c.req.header('x-real-ip') || 'local';
+    const entry = hits.get(client);
+    if (!entry || entry.reset <= now) {
+      hits.set(client, { count: 1, reset: now + windowMs });
+    } else if (++entry.count > limit) {
+      c.header('Retry-After', String(Math.ceil((entry.reset - now) / 1000)));
+      return c.json({ code: 429, message: 'TOO_MANY_REQUESTS', data: null }, 429);
+    }
+    return next();
+  };
 }
 
 function handleAuthError(c: Context, err: unknown): Response {
@@ -133,6 +153,7 @@ export function registerAuthRoutes(api: Hono, deps: PanelDeps): void {
   //
   // 走 Panel 而非前端直连 core：建号需要实例 admin 凭据，前端拿不到，
   // 且 auth/verify 是只读探测，无法建号。
+  api.use('/auth/user-key/*', userKeyRateLimit());
   api.post('/auth/user-key/preview', async (c: Context) => {
     try {
       const body = await c.req.json().catch(() => ({})) as {

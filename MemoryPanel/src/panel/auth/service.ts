@@ -87,6 +87,14 @@ function assertUsableUserKey(key: string): string {
   return trimmed;
 }
 
+/** Same-site path only: rejects "//host", "/\\host" and control characters. */
+export function safeReturnPath(value: string | undefined): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\u0000-\u001f]/.test(value)) {
+    return '/';
+  }
+  return value;
+}
+
 interface PendingWoaPayload {
   version: 1;
   instanceId: string;
@@ -393,6 +401,7 @@ export class PanelAuthService {
     display_name?: string;
     user_type?: string;
   }> {
+    this.assertUserKeyEnabled();
     const key = assertUsableUserKey(input.userKey);
     const entry = this.requireInstance(input.instanceId);
     // 预览是"只读探测"，用实例 admin key 作为网关 Bearer（无用户凭据可用）；
@@ -424,6 +433,7 @@ export class PanelAuthService {
     username?: string;
     requestId?: string;
   }): Promise<{ user_id: string; user: SessionUser; created: boolean }> {
+    this.assertUserKeyEnabled();
     const key = assertUsableUserKey(input.userKey);
     const entry = this.requireInstance(input.instanceId);
     const context = this.context(entry, entry.api_key, input.requestId);
@@ -434,6 +444,12 @@ export class PanelAuthService {
     if (probe?.code === 0 && probeData?.valid === true) {
       const { user_id, user } = this.readVerifiedUser(probe);
       return { user_id, user, created: false };
+    }
+
+    // Account creation needs an explicit opt-in: otherwise anyone who can reach the
+    // panel could mint accounts with the instance admin credential.
+    if (!this.config.userKeySignupEnabled) {
+      throw new PanelAuthError('USER_KEY_SIGNUP_DISABLED', 'self-service sign-up is disabled', 403);
     }
 
     // 不存在 → 用这把 key 建号。
@@ -459,6 +475,12 @@ export class PanelAuthService {
     }
     const { user_id, user } = await this.verifyCoreUser(input.instanceId, key, input.requestId);
     return { user_id, user, created: true };
+  }
+
+  private assertUserKeyEnabled(): void {
+    if (!this.config.userKeyEnabled) {
+      throw new PanelAuthError('USER_KEY_DISABLED', 'user_key login is disabled', 403);
+    }
   }
 
   /** 建号时的默认 username：截取 key 的可读片段，避免一长串密钥直接当展示名。 */
@@ -870,7 +892,6 @@ export class PanelAuthService {
   }
 
   private safeReturnTo(value: string): string {
-    if (!value || !value.startsWith('/') || value.startsWith('//')) return '/';
-    return value;
+    return safeReturnPath(value);
   }
 }

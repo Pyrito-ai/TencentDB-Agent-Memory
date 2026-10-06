@@ -45,7 +45,7 @@ export function RuntimePicker({
   onChange: (runtime: WorkbenchRuntime) => void;
 }) {
   if (VISIBLE_RUNTIMES.length < 2) return null;
-  const labels: Record<WorkbenchRuntime, string> = { orca: 'Orca', cdesktop: 'cdesktop' };
+  const labels: Record<WorkbenchRuntime, string> = { orca: 'Orca', cdesktop: 'Workbench' };
   return (
     <div className="workbench-runtime-picker" role="group" aria-label="Workbench runtime">
       {VISIBLE_RUNTIMES.map((option) => (

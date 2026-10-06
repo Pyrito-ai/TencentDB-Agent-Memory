@@ -90,9 +90,9 @@ function CdesktopSession({
   const reload = () => setFrameVersion((value) => value + 1);
   return (
     <div className="native-workbench cdesktop-workbench">
-      <section className="native-orca" aria-label="cdesktop workspace">
+      <section className="native-orca" aria-label="Workbench session">
         <header className="native-orca-toolbar">
-          <strong>cdesktop</strong>
+          <strong>Session</strong>
           {gatewayConfigured && <span>Development previews are not available here yet.</span>}
           {taskId && <a href={boardTaskUrl(taskId)}>Back to task</a>}
           <div />
@@ -106,7 +106,7 @@ function CdesktopSession({
             </button>
           )}
           {hasFrame && (
-            <button type="button" aria-label="Reload cdesktop interface" onClick={reload}>
+            <button type="button" aria-label="Reload session" onClick={reload}>
               <RefreshCw size={14} />
             </button>
           )}
@@ -137,7 +137,7 @@ function CdesktopSession({
         ) : frameUrl ? (
           <iframe
             key={`${handoff?.receipt?.sessionId || handoff?.id}:${frameVersion}`}
-            title="cdesktop native session interface"
+            title="Workbench session"
             src={frameUrl}
             referrerPolicy="no-referrer"
             sandbox="allow-scripts allow-same-origin allow-forms allow-downloads"
@@ -145,13 +145,11 @@ function CdesktopSession({
         ) : (
           <div className="orca-connection-empty">
             <PanelsTopLeft size={28} aria-hidden="true" />
-            <strong>
-              {handoff?.receipt ? 'cdesktop session saved' : 'Open a task in cdesktop'}
-            </strong>
+            <strong>{handoff?.receipt ? 'Session saved' : 'Open a task'}</strong>
             <p>
               {handoff?.receipt
-                ? 'The saved session does not have a usable browser URL on its configured runtime. Refresh its status or check the cdesktop connection.'
-                : 'Choose a Task Board task and send it to cdesktop. Its native session will open here.'}
+                ? 'The saved session does not have a usable browser URL on its configured runtime. Refresh its status or check the Workbench connection.'
+                : 'Choose a Task Board task and send it to the Workbench. Its session will open here.'}
             </p>
           </div>
         )}

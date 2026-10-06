@@ -37,7 +37,7 @@ export function RuntimeGatewayFrame({
         browserGatewayBootstrapUrl(origin, window.location.origin);
       } catch {
         current.fail(
-          'The cdesktop connection is not configured correctly. Check the connection and retry.',
+          'The Workbench connection is not configured correctly. Check the connection and retry.',
         );
         return;
       }
@@ -52,14 +52,14 @@ export function RuntimeGatewayFrame({
             current.fail(
               cause instanceof BrowserGatewayError
                 ? cause.message
-                : 'cdesktop could not open a secure session. Reconnect to try again.',
+                : 'The Workbench could not open a secure session. Reconnect to try again.',
             );
           }
         })
         .catch(() => {
           if (active && connection.current === current && current.phase === 'waiting') {
             current.fail(
-              'cdesktop is unavailable or your access has changed. Reconnect to try again.',
+              'The Workbench is unavailable or your access has changed. Reconnect to try again.',
             );
           }
         });
@@ -81,22 +81,22 @@ export function RuntimeGatewayFrame({
           {!state.submitted && <PanelsTopLeft size={28} aria-hidden="true" />}
           <strong>
             {state.phase === 'timed-out'
-              ? 'Still loading cdesktop'
+              ? 'Still loading the session'
               : state.error
-                ? 'Could not connect to cdesktop'
-                : 'Connecting to cdesktop…'}
+                ? 'Could not connect to the session'
+                : 'Connecting to the session…'}
           </strong>
           <p>{state.error || 'Opening your saved session.'}</p>
           {state.error && (
             <button type="button" onClick={onReconnect}>
-              Reconnect to cdesktop
+              Reconnect
             </button>
           )}
         </div>
       )}
       <iframe
         name={name}
-        title="cdesktop native session interface"
+        title="Workbench session"
         src="about:blank"
         style={state.submitted ? undefined : { display: 'none' }}
         referrerPolicy="no-referrer"
@@ -104,7 +104,9 @@ export function RuntimeGatewayFrame({
         onLoad={(event) => {
           if (isGatewayDocumentLoad(event.currentTarget)) connection.current?.frameLoaded();
         }}
-        onError={() => connection.current?.fail('cdesktop could not load. Reconnect to try again.')}
+        onError={() =>
+          connection.current?.fail('The Workbench could not load. Reconnect to try again.')
+        }
       />
     </>
   );

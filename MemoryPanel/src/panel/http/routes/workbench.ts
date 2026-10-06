@@ -216,7 +216,7 @@ export function registerWorkbenchRoutes(
       )
     )
       return c.json({ error: "Unknown cdesktop operation." }, 404);
-    const runtimeLabel = cdesktop ? "cdesktop" : "Orca";
+    const runtimeLabel = cdesktop ? "Workbench" : "Orca";
     const handoffTable = cdesktop ? "cdesktop_handoffs" : "orca_handoffs";
     const user = await resolveCallerUserId(deps, ctx);
     if (!user) return c.json({ error: "Please sign in." }, 401);

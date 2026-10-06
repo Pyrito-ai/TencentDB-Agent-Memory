@@ -22,7 +22,7 @@ export function browserGatewayBootstrapUrl(origin: string, panelOrigin: string):
   try {
     url = new URL(origin);
   } catch {
-    throw new BrowserGatewayError('The cdesktop connection is not configured correctly.');
+    throw new BrowserGatewayError('The Workbench connection is not configured correctly.');
   }
   if (
     url.protocol !== 'https:' ||
@@ -33,7 +33,7 @@ export function browserGatewayBootstrapUrl(origin: string, panelOrigin: string):
     url.search ||
     url.hash
   ) {
-    throw new BrowserGatewayError('The cdesktop connection is not configured correctly.');
+    throw new BrowserGatewayError('The Workbench connection is not configured correctly.');
   }
   return new URL('/_pyrito/session', url.origin).href;
 }
@@ -57,12 +57,12 @@ export function validateBrowserGatewayGrant(
     !Number.isFinite(Date.parse(grant.expiresAt))
   ) {
     throw new BrowserGatewayError(
-      'cdesktop could not open a secure session. Reconnect to try again.',
+      'The Workbench could not open a secure session. Reconnect to try again.',
     );
   }
   if (Date.parse(grant.expiresAt) <= now) {
     throw new BrowserGatewayError(
-      'The cdesktop connection expired before it opened. Reconnect to try again.',
+      'The Workbench connection expired before it opened. Reconnect to try again.',
     );
   }
   return grant as BrowserGatewayGrant;

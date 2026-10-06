@@ -50,7 +50,7 @@ export function createGatewayConnection(onChange: (state: GatewayConnectionState
         if (disposed || state.phase !== 'waiting') return;
         started = true;
         timer = setTimeout(
-          () => update('error', 'cdesktop did not respond in time. Reconnect to try again.'),
+          () => update('error', 'The Workbench did not respond in time. Reconnect to try again.'),
           20_000,
         );
         request();
@@ -68,7 +68,7 @@ export function createGatewayConnection(onChange: (state: GatewayConnectionState
         () =>
           update(
             'timed-out',
-            'cdesktop is taking longer than expected. Keep waiting or reconnect.',
+            'The Workbench is taking longer than expected. Keep waiting or reconnect.',
           ),
         45_000,
       );

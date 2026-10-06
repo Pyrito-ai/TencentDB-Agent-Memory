@@ -19,30 +19,39 @@ import { AgentsPage } from '@/pages/AgentsPage';
 import { ApiKeysPage } from '@/pages/ApiKeysPage';
 import { GuidePage } from '@/pages/GuidePage';
 import { AnalyticsPage } from '@/pages/AnalyticsPage';
+import { NotFoundPage, RouteErrorPage } from '@/components/RouteFallback';
 
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <ConsoleLayout />,
+    errorElement: <RouteErrorPage />,
     children: [
-      { index: true, element: <WorkbenchPage /> },
-      { path: 'projects', element: <ProjectsPage /> },
-      { path: 'workbench', element: <OrcaWorkbench /> },
-      { path: 'today', element: <WorkbenchPage view="today" /> },
-      { path: 'upcoming', element: <WorkbenchPage view="upcoming" /> },
-      { path: 'timesheets', element: <WorkbenchPage view="timesheets" /> },
-      { path: 'areas', element: <WorkbenchPage view="areas" /> },
-      { path: 'ops', element: <OpsPage /> },
-      { path: 'loops', element: <WorkbenchPage view="loops" /> },
-      { path: 'wiki', element: <WikiPage /> },
-      { path: 'code', element: <CodePage /> },
-      { path: 'skills', element: <SkillsPage /> },
-      { path: 'memory', element: <ChatMemoryPage /> },
-      { path: 'analytics', element: <AnalyticsPage /> },
-      { path: 'team/members', element: <MembersPage /> },
-      { path: 'team/agents', element: <AgentsPage /> },
-      { path: 'team/api-keys', element: <ApiKeysPage /> },
-      { path: 'guide', element: <GuidePage /> },
+      {
+        // Pathless boundary: a failing page shows an error inside the shell, not a blank app.
+        errorElement: <RouteErrorPage />,
+        children: [
+          { index: true, element: <WorkbenchPage /> },
+          { path: 'projects', element: <ProjectsPage /> },
+          { path: 'workbench', element: <OrcaWorkbench /> },
+          { path: 'today', element: <WorkbenchPage view="today" /> },
+          { path: 'upcoming', element: <WorkbenchPage view="upcoming" /> },
+          { path: 'timesheets', element: <WorkbenchPage view="timesheets" /> },
+          { path: 'areas', element: <WorkbenchPage view="areas" /> },
+          { path: 'ops', element: <OpsPage /> },
+          { path: 'loops', element: <WorkbenchPage view="loops" /> },
+          { path: 'wiki', element: <WikiPage /> },
+          { path: 'code', element: <CodePage /> },
+          { path: 'skills', element: <SkillsPage /> },
+          { path: 'memory', element: <ChatMemoryPage /> },
+          { path: 'analytics', element: <AnalyticsPage /> },
+          { path: 'team/members', element: <MembersPage /> },
+          { path: 'team/agents', element: <AgentsPage /> },
+          { path: 'team/api-keys', element: <ApiKeysPage /> },
+          { path: 'guide', element: <GuidePage /> },
+          { path: '*', element: <NotFoundPage /> },
+        ],
+      },
     ],
   },
 ];

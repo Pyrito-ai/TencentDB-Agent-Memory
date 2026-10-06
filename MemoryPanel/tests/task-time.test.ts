@@ -5,12 +5,12 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { registerTaskTimeRoutes } from '../src/panel/http/routes/task-time.js';
 import type { PanelDeps } from '../src/panel/panel-deps.js';
-let root: string; let app: Hono; let close: () => void; let active = true; let deps: PanelDeps;
+let root: string; let app: Hono; let close: () => void; let active = true; let deps: PanelDeps; let missing = new Set<string>();
 beforeEach(async () => {
- root=await mkdtemp(path.join(tmpdir(),'task-time-test-'));active=true;
+ root=await mkdtemp(path.join(tmpdir(),'task-time-test-'));active=true;missing=new Set();
  deps={instanceRegistry:{resolve:(id:string)=>({instance_id:id,gateway_endpoint:'',api_key:''})},metaKernel:{invoke:async(action:string,body:any)=>({code:0,data:
   action==='auth/verify'?{valid:body.user_key!=='invalid',user:{user_id:body.user_key}}:
-  action==='task/get'?{team_id:'team'}:action==='team-member/get'?{status:active&&body.user_id!=='outsider'?'active':'removed'}:null})}} as unknown as PanelDeps;
+  action==='task/get'?(missing.has(body.task_id)?null:{team_id:'team'}):action==='team-member/get'?{status:active&&body.user_id!=='outsider'?'active':'removed'}:null})}} as unknown as PanelDeps;
  app=new Hono();close=registerTaskTimeRoutes(app,deps,root);
  vi.spyOn(Date,'now').mockReturnValue(2000000000000);
 });
@@ -50,4 +50,24 @@ test('manual entries validate duration and dates, ignore forged authors and isol
  expect((await (await request('list',undefined,'alice','other')).json()).items).toHaveLength(0);
  expect((await (await request('list',undefined,'alice','task-a','other')).json()).items).toHaveLength(0);
  for(const patch of [{seconds:-1},{seconds:86401},{seconds:1.5},{started:Date.now()},{started:'bad'}])expect((await request('manual',{...body,...patch})).status).toBe(400);
+});
+test('author can stop a running timer after its task is deleted; others cannot',async()=>{
+ const entry=await (await request('start',{})).json();missing.add('task-a');
+ expect((await request('list')).status).toBe(404);
+ expect((await request('stop',{id:entry.id},'bob')).status).toBe(404);
+ expect((await request('stop',{id:'nope'})).status).toBe(404);
+ vi.mocked(Date.now).mockReturnValue(2000000060000);
+ expect((await request('stop',{id:entry.id})).status).toBe(200);
+ expect((await request('stop',{id:entry.id})).status).toBe(404);
+ expect((await request('start',{},'alice','task-b')).status).toBe(201);
+});
+test('stop-other stops only the caller\'s timer on another task',async()=>{
+ await request('start',{},'alice','task-b');await request('start',{},'bob','task-b');
+ const list=await (await request('list')).json();expect(list.otherRunning).toBe(true);
+ expect((await request('stop-other',{})).status).toBe(200);
+ expect((await request('stop-other',{})).status).toBe(409);
+ expect((await (await request('list')).json()).otherRunning).toBe(false);
+ expect((await (await request('list',undefined,'bob')).json()).otherRunning).toBe(true);
+ expect((await request('start',{})).status).toBe(201);
+ expect((await request('stop-other',{},'outsider')).status).toBe(403);
 });

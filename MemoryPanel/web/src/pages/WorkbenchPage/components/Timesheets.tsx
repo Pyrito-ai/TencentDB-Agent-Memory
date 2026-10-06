@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Download, RotateCw } from 'lucide-react';
 import { SummaryStrip } from '@/components/baren';
+import { readJsonResponse, readResponseError } from '@/lib/fetch-json';
 import { getPanelSession } from '@/lib/panelSession';
 import { useDisplayNameResolver } from '@/services/user-profile-store';
 import '../styles/timesheets.css';
@@ -32,6 +33,8 @@ type Sheet = {
 const hours = (seconds: number) =>
   `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m ${seconds % 60}s`;
 const today = () => new Date().toISOString().slice(0, 10);
+// Matches the server's per-request limit for approve, reopen and pay.
+const MAX_BULK = 200;
 export default function Timesheets({ teamId }: { teamId: string }) {
   const name = useDisplayNameResolver();
   const [from, setFrom] = useState(() => today().slice(0, 8) + '01'),
@@ -44,7 +47,8 @@ export default function Timesheets({ teamId }: { teamId: string }) {
     [version, setVersion] = useState(0);
   const [selected, setSelected] = useState<string[]>([]),
     [reference, setReference] = useState(''),
-    [payment, setPayment] = useState(false);
+    [payment, setPayment] = useState(false),
+    [capped, setCapped] = useState(0);
   const query = new URLSearchParams({ from, to, author }).toString();
   async function request(action: string, body?: unknown) {
     const session = getPanelSession();
@@ -61,21 +65,19 @@ export default function Timesheets({ teamId }: { teamId: string }) {
         body: body ? JSON.stringify(body) : undefined,
       },
     );
-    if (!response.ok) {
-      const data = await response.json();
-      throw Error(data.error || 'Timesheets request failed.');
-    }
+    if (!response.ok) throw Error(await readResponseError(response, 'Timesheets request failed.'));
     return response;
   }
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setSelected([]);
+    setCapped(0);
     setPayment(false);
     setError('');
     setSheet(null);
     void request('list')
-      .then((r) => r.json())
+      .then((r) => readJsonResponse<Sheet>(r, 'Timesheets request failed.'))
       .then((data) => {
         if (!cancelled) setSheet(data);
       })
@@ -92,10 +94,27 @@ export default function Timesheets({ teamId }: { teamId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId, from, to, author, version]);
   const chosen = sheet?.items.filter((e) => selected.includes(e.id)) || [];
+  const withinLimit = chosen.length > 0 && chosen.length <= MAX_BULK;
   const allPending =
-    chosen.length > 0 && chosen.every((e) => e.ended !== null && e.review_state === 'pending');
+    withinLimit && chosen.every((e) => e.ended !== null && e.review_state === 'pending');
   const allApproved =
-    chosen.length > 0 && chosen.every((e) => e.ended !== null && e.review_state === 'approved');
+    withinLimit && chosen.every((e) => e.ended !== null && e.review_state === 'approved');
+  const completedIn = (state: string) =>
+    sheet?.items.filter((e) => e.ended !== null && e.review_state === state) || [];
+  const pendingEntries = completedIn('pending'),
+    approvedEntries = completedIn('approved');
+  // Bulk actions apply to a single review state, so select-all targets one actionable group.
+  const selectAllGroup = pendingEntries.length ? pendingEntries : approvedEntries;
+  function selectGroup(entries: Entry[]) {
+    setPayment(false);
+    setSelected(entries.slice(0, MAX_BULK).map((e) => e.id));
+    setCapped(entries.length > MAX_BULK ? entries.length : 0);
+  }
+  function clearSelection() {
+    setPayment(false);
+    setSelected([]);
+    setCapped(0);
+  }
   async function mutate(action: string) {
     setBusy(true);
     setError('');
@@ -230,6 +249,16 @@ export default function Timesheets({ teamId }: { teamId: string }) {
           {sheet.canReview && (
             <div className={`timesheet-actions${selected.length ? ' has-selection' : ''}`}>
               <span>{selected.length} selected</span>
+              {pendingEntries.length > 0 && (
+                <button disabled={busy} onClick={() => selectGroup(pendingEntries)}>
+                  Select awaiting approval ({pendingEntries.length})
+                </button>
+              )}
+              {approvedEntries.length > 0 && (
+                <button disabled={busy} onClick={() => selectGroup(approvedEntries)}>
+                  Select approved ({approvedEntries.length})
+                </button>
+              )}
               <button
                 className="work-primary"
                 disabled={busy || !allPending}
@@ -246,6 +275,12 @@ export default function Timesheets({ teamId }: { teamId: string }) {
                 </button>
               )}
             </div>
+          )}
+          {capped > 0 && (
+            <p className="timesheet-hint" role="status">
+              Selected the first {MAX_BULK} of {capped} entries, the most one action can update. Run
+              the action, then select again for the rest.
+            </p>
           )}
           {payment && (
             <form
@@ -295,27 +330,19 @@ export default function Timesheets({ teamId }: { teamId: string }) {
                     <th>
                       <input
                         type="checkbox"
-                        aria-label="Select eligible entries"
-                        disabled={
-                          busy ||
-                          !sheet.items.some((e) => e.ended !== null && e.review_state !== 'paid')
+                        aria-label={
+                          pendingEntries.length
+                            ? 'Select entries awaiting approval'
+                            : 'Select approved entries'
                         }
+                        disabled={busy || !selectAllGroup.length}
                         checked={
                           selected.length > 0 &&
-                          sheet.items
-                            .filter((e) => e.ended !== null && e.review_state !== 'paid')
-                            .every((e) => selected.includes(e.id))
+                          selectAllGroup.slice(0, MAX_BULK).every((e) => selected.includes(e.id))
                         }
-                        onChange={(e) => {
-                          setPayment(false);
-                          setSelected(
-                            e.target.checked
-                              ? sheet.items
-                                  .filter((e) => e.ended !== null && e.review_state !== 'paid')
-                                  .map((e) => e.id)
-                              : [],
-                          );
-                        }}
+                        onChange={(e) =>
+                          e.target.checked ? selectGroup(selectAllGroup) : clearSelection()
+                        }
                       />
                     </th>
                   )}
@@ -339,6 +366,7 @@ export default function Timesheets({ teamId }: { teamId: string }) {
                           checked={selected.includes(e.id)}
                           onChange={(ev) => {
                             setPayment(false);
+                            setCapped(0);
                             setSelected((ids) =>
                               ev.target.checked ? [...ids, e.id] : ids.filter((id) => id !== e.id),
                             );

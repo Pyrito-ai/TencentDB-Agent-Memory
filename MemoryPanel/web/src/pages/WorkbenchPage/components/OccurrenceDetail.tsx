@@ -2,6 +2,13 @@ import { useState } from 'react';
 import TaskTime from './TaskTime';
 import { workApi as api } from '../hooks/useAreas';
 import type { Loop, Occurrence } from './loop-types';
+// Linked time is shown to the minute; seconds-level precision reads as noise here.
+function formatMinutes(seconds: number) {
+  const minutes = Math.round(Math.max(0, seconds) / 60);
+  if (seconds > 0 && minutes === 0) return '<1 min';
+  if (minutes < 60) return `${minutes} min`;
+  return `${Math.floor(minutes / 60)}h ${minutes % 60}m`;
+}
 export default function OccurrenceDetail({
   occurrence: o,
   loop,
@@ -99,7 +106,7 @@ export default function OccurrenceDetail({
               View result
             </a>
           )}
-          <p>Linked human time: {o.time.reduce((sum, t) => sum + t.seconds, 0) / 60} minutes</p>
+          <p>Linked human time: {formatMinutes(o.time.reduce((sum, t) => sum + t.seconds, 0))}</p>
           {mine && (
             <button disabled={busy} onClick={() => void mutate('undo', { id: o.id })}>
               Undo completion
@@ -150,7 +157,7 @@ export default function OccurrenceDetail({
                         setIds(e.target.checked ? [...ids, t.id] : ids.filter((id) => id !== t.id))
                       }
                     />
-                    {t.seconds / 60} minutes · {t.note || 'Task work'}
+                    {formatMinutes(t.seconds)} · {t.note || 'Task work'}
                   </label>
                 ))}
                 <p className="loop-help">

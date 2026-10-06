@@ -6,6 +6,8 @@ export const zhCN = {
   'time.stop': '停止计时',
   'time.manual': '手动记录工时',
   'time.other': '另一个任务正在计时，请先停止该计时。',
+  'time.stopOther': '停止该计时',
+  'time.stopOtherConfirm': '现在停止另一个任务上的计时？已计时长将保存为待审批记录。',
   'time.started': '开始时间（本地时间）',
   'time.minutes': '时长（分钟）',
   'time.note': '工作备注（可选）',

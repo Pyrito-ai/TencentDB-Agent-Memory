@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { readJsonResponse } from '@/lib/fetch-json';
 import { getPanelSession } from '@/lib/panelSession';
 import { useDisplayNameResolver } from '@/services/user-profile-store';
 interface Entry { id: string; author: string; started: number; ended: number | null; seconds: number | null; note: string; kind: string; review_state: string; loop_linked?: number }
@@ -16,7 +17,7 @@ export default function TaskTime({ taskId, currentUser }: { taskId: string; curr
   const session = getPanelSession(); if (!session) throw new Error(t('board.activity.login'));
   const r = await fetch(`/api/v1/task/time/${encodeURIComponent(taskId)}/${action}`, { method: body ? 'POST' : 'GET',
    headers: { 'Content-Type':'application/json', 'X-Tdai-Service-Id':session.instanceId, 'X-Tdai-User-Key':session.userKey }, body: body ? JSON.stringify(body) : undefined });
-  const data = await r.json(); if (!r.ok) throw new Error(data.error || t('board.activity.failed')); return data;
+  return readJsonResponse(r, t('board.activity.failed'));
  }
  async function refresh() {
   const data = await request('list'); setEntries(data.items);setOther(data.otherRunning);setOffset(data.serverNow-Date.now());setLoaded(true);
@@ -47,7 +48,7 @@ export default function TaskTime({ taskId, currentUser }: { taskId: string; curr
     : <button disabled={busy||other||!loaded} onClick={()=>void mutate('start',{})}>{t('time.start')}</button>}
    <button disabled={busy} onClick={()=>setManual(!manual)}>{t('time.manual')}</button>
   </div>
-  {other && <p>{t('time.other')}</p>}
+  {other && <p>{t('time.other')} <button disabled={busy} onClick={()=>{if(window.confirm(t('time.stopOtherConfirm')))void mutate('stop-other',{});}}>{t('time.stopOther')}</button></p>}
   {manual && <form className="project-board-fields" onSubmit={e=>{e.preventDefault();void mutate('manual',{started:new Date(started).getTime(),seconds:Number(minutes)*60,note});}}>
    <label>{t('time.started')}<input type="datetime-local" required value={started} disabled={busy} onChange={e=>setStarted(e.target.value)} /></label>
    <label>{t('time.minutes')}<input type="number" min="1" max="1440" step="1" required value={minutes} disabled={busy} onChange={e=>setMinutes(e.target.value)} /></label>

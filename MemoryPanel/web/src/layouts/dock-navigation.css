@@ -200,16 +200,16 @@
 }
 .is-compact .baren-dock {
   width: 100%;
-  justify-content: flex-start;
+  justify-content: safe center;
   gap: 4px;
-  padding: 9px 6px 6px;
+  padding: 9px 8px 6px;
   min-height: 68px;
   border-radius: 6px;
 }
 .is-compact .baren-dock-item {
   width: 44px;
-  min-width: 32px;
-  flex: 1 1 44px;
+  min-width: 36px;
+  flex: 0 1 44px;
 }
 .is-compact .baren-dock-separator {
   display: none;

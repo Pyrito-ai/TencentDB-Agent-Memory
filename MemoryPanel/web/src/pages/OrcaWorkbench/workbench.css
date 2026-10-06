@@ -972,3 +972,25 @@
     width: 100%;
   }
 }
+
+/* Edge-to-edge Workbench: no frame on the top or sides, just a divider above the dock. */
+.runtime-workbench {
+  gap: 0;
+}
+.workbench-runtime-toolbar {
+  padding: 8px 12px;
+}
+.cdesktop-layout {
+  border-width: 0 0 1px;
+  border-radius: 0;
+}
+.cdesktop-layout > .native-workbench {
+  border: 0;
+  border-radius: 0;
+}
+.runtime-workbench.is-focused {
+  padding: 0;
+}
+.runtime-workbench.is-focused .cdesktop-layout {
+  border-bottom: 0;
+}

@@ -243,13 +243,13 @@
   }
 }
 
-/* The Workbench hosts a full agent session: use the width, and only clear the floating dock.
-   Kept last so it wins over the responsive page padding above. */
-.baren-shell .baren-page-frame:has(> .runtime-workbench) {
-  padding: 12px 16px 92px;
+/* The Workbench hosts a full agent session: edge to edge, no outer padding or scrollbar
+   gutter; only the bottom clears the floating dock. Kept last so it wins over the
+   responsive page padding above. */
+.baren-shell .baren-page-scroll:has(> .baren-page-frame > .runtime-workbench) {
+  padding: 0;
+  scrollbar-gutter: auto;
 }
-@media (max-width: 639px) {
-  .baren-shell .baren-page-frame:has(> .runtime-workbench) {
-    padding: 8px 8px 88px;
-  }
+.baren-shell .baren-page-frame:has(> .runtime-workbench) {
+  padding: 0 0 88px;
 }

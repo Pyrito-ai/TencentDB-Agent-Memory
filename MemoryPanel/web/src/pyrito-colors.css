@@ -1,21 +1,23 @@
 /* Pyrito workspace palette. Dark is the default, independent of OS preference.
- * Tailwind semantic colors and Tea tokens derive from this single source. */
+ * Tailwind semantic colors and Tea tokens derive from this single source.
+ * Neutral graphite surfaces and lines; amber is reserved for actions, selection and focus
+ * (the marketing site keeps the warmer Starship palette). */
 :root,
 .dark {
   color-scheme: dark;
-  --pyrito-bg: #050403;
-  --pyrito-surface: #100d08;
-  --pyrito-raised: #1b150d;
-  --pyrito-line: #493821;
+  --pyrito-bg: #09090b;
+  --pyrito-surface: #121215;
+  --pyrito-raised: #1b1b20;
+  --pyrito-line: #2a2a31;
   --pyrito-brass: #b88a44;
   --pyrito-amber: #f0b55a;
   --pyrito-glow: #ffd99a;
-  --pyrito-text: #f5f0e7;
-  --pyrito-secondary: #bdb3a4;
+  --pyrito-text: #f4f4f5;
+  --pyrito-secondary: #a1a1aa;
   --radius-control: 4px;
   --radius-panel: 6px;
-  --accent: #2c2113;
-  --accent-hover: #3b2b17;
+  --accent: #222228;
+  --accent-hover: #2c2c33;
   --destructive: #ed817b;
   --destructive-foreground: #240807;
   --success: #84b99a;
@@ -39,10 +41,11 @@
   --warning: var(--pyrito-amber);
   --warning-foreground: var(--pyrito-bg);
   --border: var(--pyrito-line);
-  --input: var(--pyrito-brass);
+  --pyrito-control-line: #3a3a43;
+  --input: var(--pyrito-control-line);
   --input-background: var(--pyrito-surface);
   --ring: var(--pyrito-glow);
-  --heavy: var(--pyrito-brass);
+  --heavy: #52525b;
   --chart-1: var(--pyrito-amber);
   --chart-2: var(--pyrito-brass);
   --chart-4: var(--success);

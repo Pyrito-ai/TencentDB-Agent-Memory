@@ -5,12 +5,13 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Maximize2,
+  Minimize2,
   Plus,
   RefreshCw,
   PanelsTopLeft,
 } from 'lucide-react';
 import { useTeams } from '@/services';
-import { PageHeading } from '@/components/baren';
 import {
   request,
   requestedTask,
@@ -75,6 +76,15 @@ export function Workspace({ team }: { team: string }) {
     orca: requestedRuntime() === 'orca',
     cdesktop: requestedRuntime() === 'cdesktop',
   }));
+  const [focused, setFocused] = useState(false);
+  useEffect(() => {
+    if (!focused) return;
+    const exit = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setFocused(false);
+    };
+    window.addEventListener('keydown', exit);
+    return () => window.removeEventListener('keydown', exit);
+  }, [focused]);
   useEffect(() => {
     const changed = () => {
       const next = requestedRuntime();
@@ -91,19 +101,24 @@ export function Workspace({ team }: { team: string }) {
     };
   }, []);
   return (
-    <div className="runtime-workbench">
-      <div className="workbench-runtime-toolbar">
-        <PageHeading
-          title="Workbench"
-          description="Keep your task and its execution in view."
-          actions={
-            <RuntimePicker
-              runtime={runtime}
-              onChange={(next) => updateWorkbenchQuery({ runtime: next })}
-            />
-          }
+    <div className={`runtime-workbench${focused ? ' is-focused' : ''}`}>
+      <header className="workbench-runtime-toolbar">
+        <h1>Workbench</h1>
+        <RuntimePicker
+          runtime={runtime}
+          onChange={(next) => updateWorkbenchQuery({ runtime: next })}
         />
-      </div>
+        <button
+          type="button"
+          className="workbench-focus-toggle"
+          aria-pressed={focused}
+          title={focused ? 'Exit focus mode (Esc)' : 'Focus mode: fill the window'}
+          onClick={() => setFocused((value) => !value)}
+        >
+          {focused ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+          <span>{focused ? 'Exit focus' : 'Focus'}</span>
+        </button>
+      </header>
       {isRuntimeVisible('orca') && visited.orca && (
         <div className="workbench-runtime-pane" hidden={runtime !== 'orca'}>
           <OrcaWorkspace team={team} visible={runtime === 'orca'} />

@@ -498,6 +498,33 @@ export function installMockApi() {
       if (action === 'options')
         return json({ bindings: [], projectRuntimes: [], coordinatorReady: false });
       if (action === 'cdesktop-options') return json({ bindings: [], ready: false });
+      if (action === 'cdesktop-handoff-list')
+        return json({
+          items: [
+            {
+              id: 'session-1',
+              taskId: 'baren-task-1',
+              taskTitle: 'Draft the onboarding checklist',
+              agent: 'claude',
+              bindingLabel: 'Pyrito workspace',
+              state: 'running',
+              status: 'active',
+              created: Date.now() - 3_600_000,
+              updated: Date.now() - 600_000,
+            },
+            {
+              id: 'session-2',
+              taskId: 'baren-task-2',
+              taskTitle: 'Audit access boundaries',
+              agent: 'codex',
+              bindingLabel: 'Pyrito workspace',
+              state: 'exited',
+              status: 'completed',
+              created: Date.now() - 172_800_000,
+              updated: Date.now() - 86_400_000,
+            },
+          ],
+        });
       if (action === 'runs' || action === 'handoff-profiles') return json({ items: [] });
       if (action === 'handoff-get' || action === 'cdesktop-handoff-get')
         return json({ handoff: null });

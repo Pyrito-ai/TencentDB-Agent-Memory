@@ -242,3 +242,14 @@
     gap: 8px;
   }
 }
+
+/* The Workbench hosts a full agent session: use the width, and only clear the floating dock.
+   Kept last so it wins over the responsive page padding above. */
+.baren-shell .baren-page-frame:has(> .runtime-workbench) {
+  padding: 12px 16px 92px;
+}
+@media (max-width: 639px) {
+  .baren-shell .baren-page-frame:has(> .runtime-workbench) {
+    padding: 8px 8px 88px;
+  }
+}

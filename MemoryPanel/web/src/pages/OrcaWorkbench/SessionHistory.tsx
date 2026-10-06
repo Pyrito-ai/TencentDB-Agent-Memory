@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { History, Plus, RefreshCw } from 'lucide-react';
+import { History, PanelLeftClose, PanelLeftOpen, Plus, RefreshCw } from 'lucide-react';
 import { request } from './api';
 
 export type SessionSummary = {
@@ -30,6 +30,16 @@ const STATE_LABELS: Record<string, string> = {
   unknown: 'Status uncertain',
 };
 
+const COLLAPSED_KEY = 'pyrito.workbench.sessionsCollapsed';
+
+function readCollapsed() {
+  try {
+    return window.localStorage.getItem(COLLAPSED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 function when(time?: number) {
   if (!time) return '';
   const date = new Date(time);
@@ -53,6 +63,16 @@ export function SessionHistory({
   const [items, setItems] = useState<SessionSummary[]>();
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+  const toggle = () =>
+    setCollapsed((value) => {
+      try {
+        window.localStorage.setItem(COLLAPSED_KEY, value ? '0' : '1');
+      } catch {
+        /* preference is per-browser convenience only */
+      }
+      return !value;
+    });
   const load = useCallback(
     async (refresh: boolean) => {
       setBusy(true);
@@ -80,6 +100,34 @@ export function SessionHistory({
     }, 60000);
     return () => window.clearInterval(timer);
   }, [load]);
+  if (collapsed)
+    return (
+      <nav className="cdesktop-history is-collapsed" aria-label="cdesktop sessions">
+        <button type="button" aria-label="Show sessions" title="Show sessions" onClick={toggle}>
+          <PanelLeftOpen size={14} />
+        </button>
+        <button
+          type="button"
+          aria-label="New session"
+          title="New session"
+          onClick={() => onSelect('')}
+        >
+          <Plus size={13} />
+        </button>
+        {items?.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            aria-label={item.taskTitle || item.taskId}
+            title={`${item.taskTitle || item.taskId} · ${STATE_LABELS[item.state] || item.state}`}
+            aria-current={item.taskId === taskId ? 'true' : undefined}
+            onClick={() => onSelect(item.taskId)}
+          >
+            <span className={`cdesktop-history-dot is-${item.status}`} aria-hidden="true" />
+          </button>
+        ))}
+      </nav>
+    );
   return (
     <nav className="cdesktop-history" aria-label="cdesktop sessions">
       <header>
@@ -102,6 +150,9 @@ export function SessionHistory({
           onClick={() => onSelect('')}
         >
           <Plus size={13} />
+        </button>
+        <button type="button" aria-label="Hide sessions" title="Hide sessions" onClick={toggle}>
+          <PanelLeftClose size={13} />
         </button>
       </header>
       {error && <p role="alert">{error}</p>}

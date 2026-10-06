@@ -135,9 +135,45 @@ let previewExecution: any = {
     reasons: ['Task must be Ready.', 'Approve this task specification explicitly.'],
   },
 };
+const previewSessions = [
+  {
+    id: 'session-1',
+    taskId: 'task-runtime',
+    taskTitle: 'Connect the runtime bridge',
+    agent: 'codex',
+    bindingLabel: 'Tencent Agent Memory',
+    state: 'running',
+    status: 'active',
+    created: now - 3600_000,
+    updated: now - 300_000,
+  },
+  {
+    id: 'session-2',
+    taskId: 'task-launch',
+    taskTitle: 'Draft launch announcement copy for the beta waitlist',
+    agent: 'claude',
+    bindingLabel: 'Tencent Agent Memory',
+    state: 'pending',
+    status: 'attention',
+    error: 'cdesktop has not confirmed the handoff.',
+    created: now - 7200_000,
+    updated: now - 7000_000,
+  },
+  {
+    id: 'session-3',
+    taskId: 'task-audit',
+    taskTitle: 'Audit access boundaries',
+    agent: 'codex',
+    bindingLabel: 'Tencent Agent Memory',
+    state: 'exited',
+    status: 'completed',
+    created: now - 3 * 86400_000,
+    updated: now - 2 * 86400_000,
+  },
+];
 window.fetch = async (input, init) => {
   const url = String(input);
-  const action = url.split('/').pop();
+  const action = url.split('/').pop()?.split('?')[0];
   if (url.includes('/meta/task/list'))
     return Response.json({ code: 0, data: { items: previewTasks, total: previewTasks.length } });
   if (url.includes('/projects/') && action === 'list')
@@ -234,6 +270,28 @@ window.fetch = async (input, init) => {
     }
     if (action === 'execution-accept') previewExecution.acceptedSnapshot = b.snapshot;
     return Response.json({ ...previewExecution, taskId: b.taskId });
+  }
+  if (action === 'cdesktop-handoff-list')
+    return Response.json({ items: previewSessions });
+  if (action === 'cdesktop-options')
+    return Response.json({
+      bindings: [{ id: 'cd-demo', label: 'Tencent Agent Memory' }],
+      ready: true,
+    });
+  if (action === 'handoff-profiles') return Response.json({ items: [] });
+  if (action === 'cdesktop-handoff-get') {
+    const session = previewSessions.find((item) => item.taskId === b.taskId);
+    return Response.json({
+      handoff: session
+        ? {
+            id: session.id,
+            binding: 'cd-demo',
+            agent: session.agent,
+            spec: `${session.taskTitle}\n\nSynthetic handoff brief.`,
+            receipt: { id: session.id, state: session.state },
+          }
+        : null,
+    });
   }
   if (action === 'options')
     return Response.json({

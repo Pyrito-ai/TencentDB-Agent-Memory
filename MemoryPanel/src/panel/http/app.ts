@@ -26,6 +26,13 @@ export function buildPanelApp(deps: PanelDeps): Hono {
   const app = new Hono();
 
   app.use('*', requestLogger(deps.logger));
+  app.use('*', async (c, next) => {
+    await next();
+    // Baseline hardening; HSTS and CSP belong at the TLS proxy, which knows the public origins.
+    c.header('X-Content-Type-Options', 'nosniff');
+    c.header('X-Frame-Options', 'SAMEORIGIN');
+    c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  });
 
   registerHealthRoutes(app);
 

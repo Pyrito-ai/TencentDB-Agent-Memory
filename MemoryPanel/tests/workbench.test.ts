@@ -267,6 +267,46 @@ test("cdesktop does not expose an untrusted receipt origin", async () => {
   expect(result.handoff.error).toContain("has not confirmed");
   expect(result.handoff.receipt).toBeUndefined();
 });
+test("cdesktop session history lists active and completed chats per owner", async () => {
+  await req("cdesktop-handoff-launch", { taskId: "task", binding: "cd1", agent: "codex" });
+  await req("cdesktop-handoff-launch", { taskId: "task-2", binding: "cd1", agent: "claude" });
+  const listed = await (await app.request("/workbench/team/cdesktop-handoff-list", { headers: headers() })).json();
+  expect(listed.items.map((item: any) => item.taskId)).toEqual(["task-2", "task"]);
+  expect(listed.items[0]).toMatchObject({
+    taskTitle: "Task",
+    agent: "claude",
+    bindingLabel: "cdesktop trial",
+    state: "running",
+    status: "active",
+  });
+  expect(listed.items[0].created).toBeTypeOf("number");
+  expect(listed.items[0].updated).toBeGreaterThanOrEqual(listed.items[0].created);
+
+  // A refresh picks up finished sessions and persists them as completed.
+  read.mockImplementation(async (_b, id) => ({ id, state: "exited" }));
+  const refreshed = await (
+    await app.request("/workbench/team/cdesktop-handoff-list?refresh=1", { headers: headers() })
+  ).json();
+  expect(refreshed.items.every((item: any) => item.status === "completed")).toBe(true);
+  read.mockReset();
+  const reloaded = await (await app.request("/workbench/team/cdesktop-handoff-list", { headers: headers() })).json();
+  expect(reloaded.items.every((item: any) => item.state === "exited")).toBe(true);
+  expect(read).not.toHaveBeenCalled();
+
+  // History is private to its owner and to the runtime that saved it.
+  const bob = await (await app.request("/workbench/team/cdesktop-handoff-list", { headers: headers("bob") })).json();
+  expect(bob.items).toEqual([]);
+  expect((await (await app.request("/workbench/team/handoff-list", { headers: headers() })).json()).items).toEqual([]);
+  expect((await app.request("/workbench/team/cdesktop-handoff-list", { headers: headers("outsider") })).status).toBe(403);
+});
+test("failed cdesktop launches are listed as needing attention", async () => {
+  launch.mockRejectedValue(Error("offline"));
+  await req("cdesktop-handoff-launch", { taskId: "task", binding: "cd1", agent: "codex" });
+  const listed = await (await app.request("/workbench/team/cdesktop-handoff-list", { headers: headers() })).json();
+  expect(listed.items).toHaveLength(1);
+  expect(listed.items[0]).toMatchObject({ status: "attention", state: "pending" });
+  expect(listed.items[0].error).toContain("has not confirmed");
+});
 afterEach(async () => {
   close();
   await rm(root, { recursive: true, force: true });
@@ -287,6 +327,9 @@ function req(
     },
     body: body ? JSON.stringify(body) : undefined,
   });
+}
+function headers(user = "alice", instance = "default") {
+  return { "X-Tdai-Service-Id": instance, "X-Tdai-User-Key": user };
 }
 async function make() {
   await req("execution-bind", { projectId: "p", binding: "r1" });

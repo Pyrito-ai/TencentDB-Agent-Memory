@@ -44,10 +44,14 @@ type Occurrence = {
   brief: string;
   period: string;
   state: string;
+  created_at: number;
   completed_at: number | null;
   note: string;
   result_url: string;
 };
+// A lost task/create may still land in Core shortly after its response failed. Only once
+// this window has passed with no matching task is a fresh create considered safe.
+export const HANDOFF_RECOVERY_GRACE_MS = 2 * 60 * 1000;
 export function registerLoops(api: Hono, deps: PanelDeps, db: DatabaseSync) {
   db.exec(`CREATE TABLE IF NOT EXISTS loop_settings(instance TEXT NOT NULL,team TEXT NOT NULL,timezone TEXT NOT NULL,PRIMARY KEY(instance,team));
  CREATE TABLE IF NOT EXISTS loops(id TEXT PRIMARY KEY,instance TEXT NOT NULL,team TEXT NOT NULL,project_id TEXT NOT NULL,name TEXT NOT NULL,brief TEXT NOT NULL,frequency TEXT NOT NULL,target INTEGER NOT NULL,timezone TEXT NOT NULL,agents TEXT NOT NULL DEFAULT '[]',created_by TEXT NOT NULL,created_at INTEGER NOT NULL,archived INTEGER NOT NULL DEFAULT 0);
@@ -575,15 +579,22 @@ export function registerLoops(api: Hono, deps: PanelDeps, db: DatabaseSync) {
             }
             if (offset + 100 >= data.total || !data.items.length) break;
           }
-          if (!taskId)
+          if (
+            !taskId &&
+            Date.now() - Number(occurrence.created_at) <
+              HANDOFF_RECOVERY_GRACE_MS
+          )
             return c.json(
               {
                 error:
-                  "The prior task creation could not be confirmed. Check the Task Board before starting another occurrence.",
+                  "The prior task creation is still being confirmed. Retry in a couple of minutes.",
               },
               409,
             );
-        } else {
+        }
+        // No confirmed task (first attempt, or a recovery that found none after the grace window):
+        // create it now so the preparing slot is not stranded.
+        if (!taskId) {
           const e = await deps.metaKernel.invoke(
             "task/create",
             {

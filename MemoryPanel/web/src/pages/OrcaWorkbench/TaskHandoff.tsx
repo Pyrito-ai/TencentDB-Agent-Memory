@@ -281,7 +281,7 @@ function OrcaTaskHandoff({ team, taskId }: { team: string; taskId: string }) {
                   {selectedProfile.bundle
                     ? 'Uses the role, rules and package from '
                     : 'Uses the role and rules from '}
-                  <a href="#/agents">Agents</a>.{' '}
+                  <a href="#/team/agents">Agents</a>.{' '}
                 </>
               )}
               Tool connections and model settings remain configured in Orca.

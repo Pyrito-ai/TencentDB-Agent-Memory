@@ -36,7 +36,17 @@ export function registerTaskTimeRoutes(api: Hono, deps: PanelDeps,
     if (!author) return c.json({ error: 'Unauthorized' }, 401);
     const env = await deps.metaKernel.invoke('task/get', { task_id: taskId }, ctx);
     const task = env.code === 0 ? env.data as { team_id: string; title?: string } | null : null;
-    if (!task) return c.json({ error: 'Task not found' }, 404);
+    if (!task) {
+      // A deleted task must not strand its author's running timer: the one-running index would block every future start.
+      if (c.req.param('action') === 'stop' && c.req.method === 'POST') {
+        const body = await c.req.json().catch(() => null);
+        const id = body && typeof body === 'object' && typeof body.id === 'string' ? body.id : '';
+        const now = Date.now(); c.header('Cache-Control', 'private, no-store');
+        const result = db.prepare('UPDATE task_time SET ended=?, seconds=MAX(0,CAST((?-started)/1000 AS INTEGER)) WHERE id=? AND instance=? AND task=? AND author=? AND ended IS NULL').run(now,now,id,instance,taskId,author);
+        if (result.changes) return c.json({ ok: true });
+      }
+      return c.json({ error: 'Task not found' }, 404);
+    }
     const member = await deps.metaKernel.invoke('team-member/get', { team_id: task.team_id, user_id: author }, ctx);
     if (member.code !== 0 || (member.data as { status?: string } | null)?.status !== 'active') return c.json({ error: 'Forbidden' }, 403);
     db.prepare('UPDATE task_time SET team=?,title=? WHERE instance=? AND task=? AND team IS NULL').run(task.team_id,task.title||taskId,instance,taskId);
@@ -75,6 +85,12 @@ export function registerTaskTimeRoutes(api: Hono, deps: PanelDeps,
     const id = typeof body.id === 'string' ? body.id : '';
     if (action === 'stop') {
       const result = db.prepare('UPDATE task_time SET ended=?, seconds=MAX(0,CAST((?-started)/1000 AS INTEGER)) WHERE id=? AND instance=? AND task=? AND author=? AND ended IS NULL').run(now,now,id,instance,taskId,author);
+      if (!result.changes) return c.json({ error: 'Running timer not found or already stopped.' }, 409);
+      return c.json({ ok: true });
+    }
+    if (action === 'stop-other') {
+      // Stops the caller's own timer on another task without revealing which task it was.
+      const result = db.prepare('UPDATE task_time SET ended=?, seconds=MAX(0,CAST((?-started)/1000 AS INTEGER)) WHERE instance=? AND author=? AND task<>? AND ended IS NULL').run(now,now,instance,author,taskId);
       if (!result.changes) return c.json({ error: 'Running timer not found or already stopped.' }, 409);
       return c.json({ ok: true });
     }

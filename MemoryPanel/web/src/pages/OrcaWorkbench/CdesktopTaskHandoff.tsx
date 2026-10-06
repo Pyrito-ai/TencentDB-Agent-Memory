@@ -178,7 +178,7 @@ export function CdesktopTaskHandoff({
                     {selectedProfile.bundle
                       ? 'Uses the role, rules and package from '
                       : 'Uses the role and rules from '}
-                    <a href="#/agents">Agents</a>.{' '}
+                    <a href="#/team/agents">Agents</a>.{' '}
                   </>
                 )}
                 Tool connections, account and model settings come from cdesktop.

@@ -1,16 +1,17 @@
-import {beforeEach,afterEach,test,expect} from 'vitest';
+import {beforeEach,afterEach,test,expect,vi} from 'vitest';
 import {Hono} from 'hono';
 import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {registerTaskTimeRoutes} from '../src/panel/http/routes/task-time.js';
+import {HANDOFF_RECOVERY_GRACE_MS} from '../src/panel/http/routes/loops.js';
 import {periodFor,loopStats,nextPeriod} from '../src/panel/http/routes/loop-periods.js';
 import type {PanelDeps} from '../src/panel/panel-deps.js';
-let app:Hono,root:string,close:()=>void,project:string,loop:string,area:string;let tasks:any[],failAfterCreate:boolean;
+let app:Hono,root:string,close:()=>void,project:string,loop:string,area:string;let tasks:any[],failAfterCreate:boolean,failBeforeCreate:boolean;
 beforeEach(async()=>{
- root=await mkdtemp(path.join(tmpdir(),'loops-test-'));tasks=[];failAfterCreate=false;
+ root=await mkdtemp(path.join(tmpdir(),'loops-test-'));tasks=[];failAfterCreate=false;failBeforeCreate=false;
  const deps={instanceRegistry:{resolve:(id:string)=>({instance_id:id,gateway_endpoint:'',api_key:''})},metaKernel:{invoke:async(action:string,b:any)=>{
-  if(action==='task/create'){const task={...b,task_id:'task-'+tasks.length};tasks.push(task);if(failAfterCreate)throw Error('Lost response');return {code:0,data:task};}
+  if(action==='task/create'){if(failBeforeCreate)throw Error('Core unavailable');const task={...b,task_id:'task-'+tasks.length};tasks.push(task);if(failAfterCreate)throw Error('Lost response');return {code:0,data:task};}
   return {code:0,data:action==='auth/verify'?{valid:b.user_key!=='invalid',user:{user_id:b.user_key}}:action==='team-member/get'?{status:b.user_id==='outsider'?'removed':'active',role:b.user_id==='admin'?'admin':'member'}:action==='team/get'?{owner_user_id:'admin'}:action==='agent/get'?{team_id:b.agent_id==='foreign'?'other':'team',status:'active',visibility:b.agent_id==='private'?'private':'team',owner_user_id:'admin'}:action==='task/get'?tasks.find(t=>t.task_id===b.task_id):action==='task/list'?{items:tasks,total:tasks.length}:null};
  }}} as unknown as PanelDeps;
  app=new Hono();close=registerTaskTimeRoutes(app,deps,root);
@@ -18,7 +19,7 @@ beforeEach(async()=>{
  project=(await (await req('projects/team/create',{name:'Project'})).json()).id;
  loop=(await (await req('loops/team/create',{name:'Review',brief:'Review the findings',projectId:project,frequency:'weekly',target:2,agents:['agent']})).json()).id;
 });
-afterEach(async()=>{close();await rm(root,{recursive:true,force:true});});
+afterEach(async()=>{close();vi.restoreAllMocks();await rm(root,{recursive:true,force:true});});
 function req(route:string,body?:unknown,who='alice',instance='default') {if(body&&/loops\/.*\/(create|update)$/.test(route))body={areaId:area,ownerId:'alice',mode:'flexible',startDate:'',...body as object};return app.request('/'+route,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','X-Tdai-Service-Id':instance,'X-Tdai-User-Key':who},body:body?JSON.stringify(body):undefined});}
 async function start(requestId='request-1234567890',who='alice',agentId=''){const r=await req('loops/team/start',{loopId:loop,requestId,agentId},who);expect(r.status).toBeLessThan(300);return (await r.json()).occurrence;}
 test('timezone buckets respect DST, month/year transitions and Monday weeks; streaks require targets',()=>{
@@ -36,6 +37,15 @@ test('manual handoff creates exactly one project-linked task and never auto-comp
 test('lost Core response is reconciled by request ID instead of creating a second task',async()=>{
  failAfterCreate=true;expect((await req('loops/team/start',{loopId:loop,requestId:'lost-response-123456',agentId:''})).status).toBe(502);
  failAfterCreate=false;const o=await start('lost-response-123456');expect(o.task_id).toBe(tasks[0].task_id);expect(tasks).toHaveLength(1);
+});
+test('a preparing occurrence whose task was never created is retried after the grace window, not stranded',async()=>{
+ failBeforeCreate=true;expect((await req('loops/team/start',{loopId:loop,requestId:'never-created-123456',agentId:''})).status).toBe(502);
+ failBeforeCreate=false;expect((await req('loops/team/start',{loopId:loop,requestId:'never-created-123456',agentId:''})).status).toBe(409);
+ expect(tasks).toHaveLength(0);
+ const later=Date.now()+HANDOFF_RECOVERY_GRACE_MS+1000;vi.spyOn(Date,'now').mockReturnValue(later);
+ const o=await start('never-created-123456');expect(o.state).toBe('open');expect(o.task_id).toBe(tasks[0].task_id);expect(tasks).toHaveLength(1);
+ expect((await start('never-created-123456')).task_id).toBe(o.task_id);expect(tasks).toHaveLength(1);
+ expect((await req('loops/team/start',{loopId:loop,requestId:'never-created-123456',agentId:''},'bob')).status).toBe(409);
 });
 test('completion is contributor-attributed, idempotent and counts toward the shared target',async()=>{
  const a=await start();const b=await start('request-bob-123456','bob');

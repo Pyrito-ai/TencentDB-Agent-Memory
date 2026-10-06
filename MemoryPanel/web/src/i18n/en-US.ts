@@ -25,6 +25,9 @@ export const enUS = {
   'time.manual': 'Log time manually',
   'time.other':
     'You have a timer running on another task. Stop it there before starting a new timer.',
+  'time.stopOther': 'Stop that timer',
+  'time.stopOtherConfirm':
+    'Stop your timer on the other task now? The time so far is saved as a pending entry.',
   'time.started': 'Work started (local time)',
   'time.minutes': 'Duration in minutes',
   'time.note': 'Work note (optional)',

@@ -501,7 +501,7 @@
   flex-direction: column;
   height: auto;
   flex: 1 1 auto;
-  min-height: 520px;
+  min-height: 420px;
   color: var(--tea-color-text-primary);
   background: transparent;
   font: 13px var(--font-sans, 'Manrope', sans-serif);
@@ -517,8 +517,47 @@
 }
 .workbench-runtime-toolbar {
   flex: 0 0 auto;
-  padding: 7px 12px;
-  border-bottom: 1px solid var(--tea-color-border-primary-default);
+  flex-wrap: nowrap;
+}
+.workbench-runtime-toolbar h1 {
+  flex: 1;
+  margin: 0;
+  line-height: 1.4;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.workbench-focus-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 6px;
+  background: var(--tea-color-bg-primary-default);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.workbench-focus-toggle:hover,
+.workbench-focus-toggle[aria-pressed='true'] {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.workbench-focus-toggle:focus-visible {
+  outline: 2px solid var(--tea-color-border-brand-default);
+  outline-offset: 2px;
+}
+/* Focus mode: the Workbench covers everything below the app header, including the
+   dock and Coordinator; Esc or the toggle restores the normal layout. */
+.runtime-workbench.is-focused {
+  position: fixed;
+  inset: 64px 0 0;
+  z-index: 50;
+  min-height: 0;
+  padding: 8px 12px 12px;
+  background: var(--background);
 }
 .task-handoff-runtime-heading {
   margin-top: 16px;
@@ -584,6 +623,39 @@
 .cdesktop-layout > .native-workbench {
   flex: 1;
   min-width: 0;
+  min-height: 0;
+}
+.cdesktop-layout .native-orca {
+  min-height: 0;
+}
+.cdesktop-layout {
+  border: 1px solid var(--tea-color-border-primary-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.cdesktop-history.is-collapsed {
+  flex: 0 0 40px;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+.cdesktop-history.is-collapsed button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.cdesktop-history.is-collapsed button:hover,
+.cdesktop-history.is-collapsed button[aria-current='true'] {
+  border-color: var(--tea-color-border-primary-default);
+  background: var(--tea-color-bg-primary-default);
 }
 .cdesktop-history {
   flex: 0 0 240px;
@@ -695,6 +767,11 @@
     border-right: 0;
     border-bottom: 1px solid var(--tea-color-border-primary-default);
   }
+  .cdesktop-history.is-collapsed {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 6px 8px;
+  }
 }
 .cdesktop-handoff-panel {
   max-height: 55%;
@@ -726,13 +803,13 @@
 /* Baren host surfaces. Native runtime documents retain their own interface. */
 .runtime-workbench {
   container: native-workspace / inline-size;
-  gap: 24px;
+  gap: 8px;
   min-width: 0;
 }
 .workbench-runtime-toolbar {
-  padding: 8px 0 20px;
-  gap: 20px;
-  align-items: flex-start;
+  padding: 0 2px;
+  gap: 12px;
+  align-items: center;
 }
 .workbench-runtime-picker {
   gap: 3px;
@@ -871,21 +948,6 @@
   }
   .orca-connection-empty {
     padding: 30px 20px;
-  }
-}
-
-.workbench-runtime-toolbar .baren-heading {
-  width: 100%;
-  margin: 0;
-  align-items: flex-start;
-}
-.workbench-runtime-toolbar .baren-heading > :first-child {
-  min-width: 0;
-  flex: 1 1 220px;
-}
-@container native-workspace (max-width: 620px) {
-  .workbench-runtime-toolbar .baren-heading > :last-child {
-    width: 100%;
   }
 }
 

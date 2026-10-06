@@ -2,7 +2,7 @@
 
 Implemented on `codex/pyrito-app-brand`, from `e29edf6c58536a5f8fa6dbf9acca21705689a1fb`.
 
-The workspace now uses the approved website crystal, lowercase wordmark, Manrope and IBM Plex Mono, near-black surfaces, warm white text and amber actions. `web/src/pyrito-colors.css` is the palette source for existing semantic and Tea component tokens. Error, success and chart colors remain distinguishable. Internal identifiers and backend contracts retain their existing names.
+The workspace now uses the approved website crystal, lowercase wordmark, Manrope and IBM Plex Mono, neutral graphite surfaces and lines, near-white text and amber actions. (October 2026: the app moved off the website's warm brown-black and brass tones so amber reads as the only accent; the website keeps its Starship palette.) `web/src/pyrito-colors.css` is the palette source for existing semantic and Tea component tokens. Error, success and chart colors remain distinguishable. Internal identifiers and backend contracts retain their existing names.
 
 The header, dock, login, forms, Coordinator and shared page surfaces inherit the identity. Decorative Today/Coordinator slogans were removed. Navigation motion is restrained and the mobile dock fits all seven controls at 320px.
 

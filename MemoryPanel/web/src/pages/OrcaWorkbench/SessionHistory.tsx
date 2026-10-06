@@ -48,7 +48,7 @@ function when(time?: number) {
     : date.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
-/** Saved cdesktop sessions for this user, so past and running chats stay one click away. */
+/** Saved Workbench (cdesktop) sessions for this user, so past and running chats stay one click away. */
 export function SessionHistory({
   team,
   taskId,
@@ -102,7 +102,7 @@ export function SessionHistory({
   }, [load]);
   if (collapsed)
     return (
-      <nav className="cdesktop-history is-collapsed" aria-label="cdesktop sessions">
+      <nav className="cdesktop-history is-collapsed" aria-label="Workbench sessions">
         <button type="button" aria-label="Show sessions" title="Show sessions" onClick={toggle}>
           <PanelLeftOpen size={14} />
         </button>
@@ -129,7 +129,7 @@ export function SessionHistory({
       </nav>
     );
   return (
-    <nav className="cdesktop-history" aria-label="cdesktop sessions">
+    <nav className="cdesktop-history" aria-label="Workbench sessions">
       <header>
         <History size={14} aria-hidden="true" />
         <strong>Sessions</strong>
@@ -158,7 +158,7 @@ export function SessionHistory({
       {error && <p role="alert">{error}</p>}
       {!items && !error && <p>Loading sessions…</p>}
       {items && !items.length && (
-        <p>No sessions yet. Choose a task and send it to cdesktop to start one.</p>
+        <p>No sessions yet. Choose a task and send it to the Workbench to start one.</p>
       )}
       {items &&
         GROUPS.map(({ status, label }) => {

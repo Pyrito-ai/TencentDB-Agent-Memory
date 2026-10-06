@@ -75,7 +75,7 @@ export function CdesktopTaskHandoff({
         }
       })
       .catch((e: unknown) => {
-        if (active) setError(e instanceof Error ? e.message : 'Could not load cdesktop.');
+        if (active) setError(e instanceof Error ? e.message : 'Could not load the Workbench.');
       });
     return () => {
       active = false;
@@ -99,7 +99,7 @@ export function CdesktopTaskHandoff({
       });
       setHandoff(result.handoff);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not reach cdesktop.');
+      setError(e instanceof Error ? e.message : 'Could not reach the Workbench.');
     } finally {
       lock.current = false;
       setBusy(false);
@@ -107,13 +107,13 @@ export function CdesktopTaskHandoff({
   }
   const selectedProfile = handoff?.profile || profiles.find((profile) => profile.id === profileId);
   return (
-    <section className="task-execution cdesktop-handoff" aria-label="Send task to cdesktop">
+    <section className="task-execution cdesktop-handoff" aria-label="Send task to Workbench">
       <div className="task-execution-heading">
-        <strong>{handoff ? 'cdesktop session' : 'Send to cdesktop'}</strong>
+        <strong>{handoff ? 'Workbench session' : 'Send to Workbench'}</strong>
         {!embedded && <a href={workbenchUrl('cdesktop', taskId)}>Open Workbench</a>}
       </div>
       {error && <p role="alert">{error}</p>}
-      {!loaded && !error && <p>Loading cdesktop projects…</p>}
+      {!loaded && !error && <p>Loading projects…</p>}
       {!loaded && error && (
         <button type="button" onClick={() => setLoadVersion((value) => value + 1)}>
           Retry connection
@@ -123,15 +123,15 @@ export function CdesktopTaskHandoff({
         <>
           {!options?.ready || !options.bindings.length ? (
             <p>
-              cdesktop is not connected for this team yet. Configure a cdesktop project to open work
-              sessions here.
+              The Workbench is not connected for this team yet. Configure a Workbench project to
+              open work sessions here.
             </p>
           ) : (
             <>
               <label>
-                cdesktop project
+                Project
                 <select
-                  aria-label="cdesktop project"
+                  aria-label="Project"
                   value={binding}
                   disabled={busy}
                   onChange={(event) => setBinding(event.target.value)}
@@ -147,7 +147,7 @@ export function CdesktopTaskHandoff({
               <label>
                 Agent
                 <select
-                  aria-label="cdesktop agent"
+                  aria-label="Agent"
                   value={agent}
                   disabled={busy}
                   onChange={(event) => setAgent(event.target.value as 'codex' | 'claude')}
@@ -159,7 +159,7 @@ export function CdesktopTaskHandoff({
               <label>
                 Agent profile
                 <select
-                  aria-label="cdesktop agent profile"
+                  aria-label="Agent profile"
                   value={profileId}
                   disabled={busy}
                   onChange={(event) => setProfileId(event.target.value)}
@@ -181,7 +181,7 @@ export function CdesktopTaskHandoff({
                     <a href="#/team/agents">Agents</a>.{' '}
                   </>
                 )}
-                Tool connections, account and model settings come from cdesktop.
+                Tool connections, account and model settings come from the Workbench runtime.
               </small>
               <AgentBundlePreview bundle={selectedProfile?.bundle} />
               {selectedProfile && (
@@ -195,7 +195,7 @@ export function CdesktopTaskHandoff({
                 </details>
               )}
               <p>
-                Sends the task brief, project context and linked Wiki excerpts to a new cdesktop
+                Sends the task brief, project context and linked Wiki excerpts to a new Workbench
                 worktree.
               </p>
               <button
@@ -203,7 +203,7 @@ export function CdesktopTaskHandoff({
                 disabled={busy || !binding}
                 onClick={() => void act('cdesktop-handoff-launch')}
               >
-                {busy ? 'Sending…' : 'Send to cdesktop'}
+                {busy ? 'Sending…' : 'Send to Workbench'}
               </button>
             </>
           )}
@@ -235,7 +235,7 @@ export function CdesktopTaskHandoff({
             sent={handoff.receipt?.state === 'running' || handoff.receipt?.state === 'exited'}
           />
           <details className="handoff-receipt">
-            <summary>cdesktop session receipt</summary>
+            <summary>Session receipt</summary>
             <dl>
               <dt>Handoff</dt>
               <dd>{handoff.id}</dd>
@@ -276,12 +276,12 @@ export function CdesktopTaskHandoff({
               </button>
             )}
             <button type="button" disabled={busy} onClick={() => void act('cdesktop-handoff-sync')}>
-              {busy ? 'Refreshing…' : 'Refresh cdesktop status'}
+              {busy ? 'Refreshing…' : 'Refresh status'}
             </button>
           </div>
           <small>
-            Continue in the cdesktop session. Task Board status stays manual; this does not merge or
-            deploy.
+            Continue in the Workbench session. Task Board status stays manual; this does not merge
+            or deploy.
           </small>
         </>
       )}
